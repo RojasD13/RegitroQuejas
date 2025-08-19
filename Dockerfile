@@ -1,24 +1,14 @@
-spring.application.name=RegistroQuejas
+# Imagen base con JDK 17 (ajusta la versión según uses)
+FROM eclipse-temurin:17-jdk-alpine
 
-# Base de datos (Render expone DATABASE_URL con formato Heroku-style)
-spring.datasource.url=${JDBC_DATABASE_URL}
-spring.datasource.username=${JDBC_DATABASE_USERNAME}
-spring.datasource.password=${JDBC_DATABASE_PASSWORD}
-spring.datasource.driver-class-name=org.postgresql.Driver
+# Crear directorio para la app
+WORKDIR /app
 
-# JPA / Hibernate
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+# Copiar el JAR generado por Maven/Gradle
+COPY target/*.jar app.jar
 
-# Render expone PORT automáticamente
-server.port=${PORT:8080}
+# Exponer el puerto de tu aplicación
+EXPOSE 8080
 
-# Configuración de Thymeleaf
-spring.thymeleaf.cache=false
-spring.thymeleaf.prefix=classpath:/templates/
-spring.thymeleaf.suffix=.html
-spring.thymeleaf.mode=HTML
-spring.thymeleaf.encoding=UTF-8
-
-# Logging
-logging.level.org.springframework.web=DEBUG
+# Comando de inicio
+ENTRYPOINT ["java", "-jar", "app.jar"]
