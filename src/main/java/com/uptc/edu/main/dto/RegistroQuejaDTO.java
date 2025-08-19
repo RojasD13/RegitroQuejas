@@ -2,9 +2,7 @@ package com.uptc.edu.main.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-
-public class RegistroQuejaDTO {
+    public class RegistroQuejaDTO {
 
     @NotNull
     private Long empresaId;
@@ -28,4 +26,5 @@ public class RegistroQuejaDTO {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    
 }
