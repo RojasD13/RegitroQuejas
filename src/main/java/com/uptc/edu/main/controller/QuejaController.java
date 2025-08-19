@@ -23,12 +23,10 @@ public class QuejaController {
     @Autowired
     private EmpresaRepo empresaRepo;
 
-    // 1️⃣ Mostrar el formulario con la lista de empresas
     @GetMapping("/registro")
     public String mostrarFormulario(Model model) {
         List<Empresa> empresas = empresaRepo.findAll();
 
-        // Cargamos la lista de nombres de empresa al modelo
         model.addAttribute("entidades", empresas.stream()
                 .map(Empresa::getNombreEmpresa)
                 .toList());
@@ -40,7 +38,7 @@ public class QuejaController {
 
 
 
-    // 2️⃣ Procesar el formulario
+    // Procesar el formulario
     @PostMapping("/enviar-queja")
     public String registrarQueja(
             @RequestParam("entidad") String nombreEmpresa,
@@ -74,7 +72,6 @@ public class QuejaController {
     }
 
 
-     // 1️⃣ Mostrar formulario de búsqueda
     @GetMapping("/quejas")
     public String mostrarQuejasporEmpresa(Model model) {
         List<Empresa> empresas = empresaRepo.findAll();
@@ -83,7 +80,6 @@ public class QuejaController {
         return "buscar";
     }
 
-    // 2️⃣ Procesar la búsqueda
     @PostMapping("/buscar-quejas")
     public String buscarQuejas(
             @RequestParam("entidad") Long empresaId,
