@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: springboot-quejas
+    env: docker
+    plan: free   # Puedes cambiar a starter si necesitas más recursos
+    branch: main
+    autoDeploy: true
+
+    # Render va a usar tu Dockerfile
+    dockerfilePath: ./Dockerfile
+
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: postgres-quejas
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: postgres-quejas
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: postgres-quejas
+          property: password
+
+databases:
+  - name: postgres-quejas
+    plan: free
