@@ -31,14 +31,13 @@ public class QuejaController {
                 .map(Empresa::getNombreEmpresa)
                 .toList());
 
-        return "registro"; // nombre del HTML (templates/registroQueja.html)
+        return "registro"; 
     }
 
 
 
 
 
-    // Procesar el formulario
     @PostMapping("/enviar-queja")
     public String registrarQueja(
             @RequestParam("entidad") String nombreEmpresa,
