@@ -8,21 +8,25 @@ services:
     dockerfilePath: ./Dockerfile
 
     envVars:
-      # Variables de base de datos (usando datos reales de Render)
+      # Variables de base de datos (usando URL INTERNA de Render)
       - key: SPRING_DATASOURCE_URL
-        value: postgresql://springuser:HS3zPGTGBI3DgxShzh6tSwkLRCZfmIqF@dpg-d2hupd7diees73cl-a/registrodb_n686
+        value: jdbc:postgresql://dpg-d2hupd7diees73cl-a:5432/registrodb_n686
       - key: SPRING_DATASOURCE_USERNAME
         value: springuser
       - key: SPRING_DATASOURCE_PASSWORD
         value: HS3zPGTGBI3DgxShzh6tSwkLRCZfmIqF
       
-      # Variables JPA que faltaban
+      # Variables JPA
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
       - key: SPRING_JPA_SHOW_SQL
-        value: false  # false para producción
+        value: false
       
-      # Variable de perfil (opcional pero recomendado)
+      # Hibernate dialect explícito
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.PostgreSQLDialect
+      
+      # Variable de perfil
       - key: SPRING_PROFILES_ACTIVE
         value: prod
 
