@@ -1,22 +1,20 @@
 package com.uptc.edu.main.controller;
 
-import com.uptc.edu.main.moldel.Queja;
-import com.uptc.edu.main.dto.QuejaEmpresaDTO;
-import com.uptc.edu.main.dto.RegistroQuejaDTO;
-import com.uptc.edu.main.moldel.Empresa;
-import com.uptc.edu.main.repository.EmpresaRepo;
-import com.uptc.edu.main.repository.QuejaRepo;
-
-import jakarta.validation.Valid;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
-@RequestMapping("/quejas")
+import com.uptc.edu.main.moldel.Empresa;
+import com.uptc.edu.main.moldel.Queja;
+import com.uptc.edu.main.repository.EmpresaRepo;
+import com.uptc.edu.main.repository.QuejaRepo;
+
+@Controller
 public class QuejaController {
 
     @Autowired
@@ -25,35 +23,82 @@ public class QuejaController {
     @Autowired
     private EmpresaRepo empresaRepo;
 
-    @PostMapping
-    public ResponseEntity<?> registrarQueja(@RequestBody @Valid RegistroQuejaDTO quejaDTO) {
-        try {
-            Empresa empresa = empresaRepo.findById(quejaDTO.getEmpresaId())
-                .orElseThrow(() -> new RuntimeException("Empresa no encontrada con ID: " + quejaDTO.getEmpresaId()));
+    @GetMapping("/registro")
+    public String mostrarFormulario(Model model) {
+        List<Empresa> empresas = empresaRepo.findAll();
 
-            Queja queja = new Queja();
-            queja.setDescripcion(quejaDTO.getDescripcion());
-            queja.setEmpresa(empresa);
+        model.addAttribute("entidades", empresas.stream()
+                .map(Empresa::getNombreEmpresa)
+                .toList());
 
-            Queja quejaGuardada = quejaRepo.save(queja);
-            
-            QuejaEmpresaDTO response = new QuejaEmpresaDTO();
-            response.setId(quejaGuardada.getId());
-            response.setDescripcion(quejaGuardada.getDescripcion());
-            response.setNombreEmpresa(quejaGuardada.getEmpresa().getNombreEmpresa());
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return "registro"; 
     }
 
-    @GetMapping("/empresa/{empresaId}")
-    public ResponseEntity<?> getQuejasPorEmpresa(@PathVariable Long empresaId) {
-        empresaRepo.findById(empresaId)
-                .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
-        List<Queja> quejas = quejaRepo.findByEmpresaId(empresaId);
-        return ResponseEntity.ok(quejas);
+
+
+
+    @PostMapping("/enviar-queja")
+    public String registrarQueja(
+            @RequestParam("entidad") String nombreEmpresa,
+            @RequestParam("descripcion") String descripcion,
+            Model model) {
+
+        try {
+            Empresa empresa = empresaRepo.findByNombreEmpresa(nombreEmpresa)
+                    .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+
+            Queja queja = new Queja();
+            queja.setDescripcion(descripcion);
+            queja.setEmpresa(empresa);
+
+            quejaRepo.save(queja);
+
+            model.addAttribute("mensaje", "La queja fue registrada exitosamente.");
+            model.addAttribute("tipoMensaje", "success");
+        } catch (Exception e) {
+            model.addAttribute("mensaje", "Error al registrar la queja: " + e.getMessage());
+            model.addAttribute("tipoMensaje", "error");
+        }
+
+        // volver a cargar la lista de entidades
+        List<Empresa> empresas = empresaRepo.findAll();
+        model.addAttribute("entidades", empresas.stream()
+                .map(Empresa::getNombreEmpresa)
+                .toList());
+
+        return "registro"; // recargar la misma vista con mensaje
+    }
+
+
+    @GetMapping("/quejas")
+    public String mostrarQuejasporEmpresa(Model model) {
+        List<Empresa> empresas = empresaRepo.findAll();
+        model.addAttribute("entidades", empresas); // enviamos todas las empresas
+        model.addAttribute("quejas", null); // lista vacía al inicio
+        return "buscar";
+    }
+
+    @PostMapping("/buscar-quejas")
+    public String buscarQuejas(
+            @RequestParam("entidad") Long empresaId,
+            Model model) {
+
+        List<Empresa> empresas = empresaRepo.findAll();
+        model.addAttribute("entidades", empresas);
+
+        Empresa empresaSeleccionada = empresaRepo.findById(empresaId)
+                .orElse(null);
+
+        if (empresaSeleccionada != null) {
+            List<Queja> quejas = quejaRepo.findByEmpresa(empresaSeleccionada);
+            model.addAttribute("quejas", quejas);
+            model.addAttribute("entidadSeleccionada", empresaSeleccionada.getNombreEmpresa());
+        } else {
+            model.addAttribute("quejas", List.of());
+            model.addAttribute("entidadSeleccionada", null);
+        }
+
+        return "buscar";
     }
 }
