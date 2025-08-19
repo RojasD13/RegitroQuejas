@@ -1,22 +1,24 @@
 package com.uptc.edu.main.controller;
 
-import com.uptc.edu.main.dto.EmpresaResumenDTO;
-import com.uptc.edu.main.repository.EmpresaRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/empresas")
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.uptc.edu.main.dto.EmpresaResumenDTO;
+import com.uptc.edu.main.repository.EmpresaRepo;
+
+@Controller
 public class EmpresaController {
     
     @Autowired
     private EmpresaRepo empresaRepo;
 
-    @GetMapping("/resumen")
-    public ResponseEntity<List<EmpresaResumenDTO>> getEmpresasConTotalQuejas() {
+    @GetMapping("/analisis")
+    public String getEmpresasConTotalQuejas(Model model) {
         List<EmpresaResumenDTO> resumen = empresaRepo.findAllByOrderByNombreEmpresaAsc()
             .stream()
             .map(empresa -> {
@@ -27,7 +29,21 @@ public class EmpresaController {
                 return dto;
             })
             .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(resumen);
+
+        // total de quejas
+        long totalQuejas = resumen.stream().mapToLong(EmpresaResumenDTO::getTotalQuejas).sum();
+        // número de entidades
+        int totalEntidades = resumen.size();
+        // promedio de quejas
+        long promedio = totalEntidades > 0 ? totalQuejas / totalEntidades : 0;
+
+        // Se agregan atributos al modelo
+        model.addAttribute("resumen", resumen);
+        model.addAttribute("totalQuejas", totalQuejas);
+        model.addAttribute("totalEntidades", totalEntidades);
+        model.addAttribute("promedio", promedio);
+
+        return "analisis"; // renderiza el archivo analisis.html
     }
+
 }
