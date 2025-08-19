@@ -1,24 +1,24 @@
-# 🏗 Etapa 1: Construcción
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
-WORKDIR /app
+spring.application.name=RegistroQuejas
 
-# Copiar pom.xml y descargar dependencias primero (para cache)
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+# Base de datos (Render expone DATABASE_URL con formato Heroku-style)
+spring.datasource.url=${JDBC_DATABASE_URL}
+spring.datasource.username=${JDBC_DATABASE_USERNAME}
+spring.datasource.password=${JDBC_DATABASE_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
 
-# Copiar el código fuente y compilar
-COPY src ./src
-RUN mvn clean package -DskipTests
+# JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 
-# 🏗 Etapa 2: Imagen final
-FROM eclipse-temurin:17-jdk-jammy
-WORKDIR /app
+# Render expone PORT automáticamente
+server.port=${PORT:8080}
 
-# Copiamos el .jar generado desde la etapa anterior
-COPY --from=builder /app/target/*.jar app.jar
+# Configuración de Thymeleaf
+spring.thymeleaf.cache=false
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.mode=HTML
+spring.thymeleaf.encoding=UTF-8
 
-# Puerto interno de la aplicación
-EXPOSE 8080
-
-# Perfil "prod" para Render
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+# Logging
+logging.level.org.springframework.web=DEBUG
