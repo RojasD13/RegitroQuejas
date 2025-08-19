@@ -2,26 +2,29 @@ services:
   - type: web
     name: springboot-quejas
     env: docker
-    plan: free   # Puedes cambiar a starter si necesitas más recursos
+    plan: free
     branch: main
     autoDeploy: true
-
-    # Render va a usar tu Dockerfile
     dockerfilePath: ./Dockerfile
 
     envVars:
+      # Variables de base de datos (usando datos reales de Render)
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: postgres-quejas
-          property: connectionString
+        value: postgresql://springuser:HS3zPGTGBI3DgxShzh6tSwkLRCZfmIqF@dpg-d2hupd7diees73cl-a/registrodb_n686
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: postgres-quejas
-          property: user
+        value: springuser
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: postgres-quejas
-          property: password
+        value: HS3zPGTGBI3DgxShzh6tSwkLRCZfmIqF
+      
+      # Variables JPA que faltaban
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: false  # false para producción
+      
+      # Variable de perfil (opcional pero recomendado)
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
 
 databases:
   - name: postgres-quejas
