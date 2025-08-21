@@ -1,6 +1,6 @@
 package com.uptc.edu.main;
 
-import com.uptc.edu.main.moldel.Empresa;
+import com.uptc.edu.main.model.Empresa;
 import com.uptc.edu.main.repository.EmpresaRepo;
 import com.uptc.edu.main.service.EmpresaService;
 

@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.uptc.edu.main.moldel.Empresa;
-import com.uptc.edu.main.moldel.Queja;
+import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Queja;
 import com.uptc.edu.main.repository.QuejaRepo;
 
 @Service

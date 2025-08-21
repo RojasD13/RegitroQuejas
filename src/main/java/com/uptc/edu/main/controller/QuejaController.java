@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.uptc.edu.main.moldel.Empresa;
-import com.uptc.edu.main.moldel.Queja;
+import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Queja;
 import com.uptc.edu.main.repository.EmpresaRepo;
 import com.uptc.edu.main.repository.QuejaRepo;
 

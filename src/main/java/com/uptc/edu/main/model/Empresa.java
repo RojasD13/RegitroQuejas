@@ -1,4 +1,4 @@
-package com.uptc.edu.main.moldel;
+package com.uptc.edu.main.model;
 
 import jakarta.persistence.*;
 import lombok.*;
