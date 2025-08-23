@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<body>
+    <!-- Fragment del Sidebar -->
+    <nav class="sidebar" th:fragment="sidebar(activeMenu)">
+        <div class="sidebar-header">
+            <i class="fas fa-chart-line sidebar-icon" th:if="${activeMenu == 'analisis'}"></i>
+            <h2>Centro de Quejas</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li th:class="${activeMenu == 'registro'} ? 'active' : ''">
+                <a href="/registro">
+                    <i class="fas fa-plus-circle" th:if="${activeMenu != 'analisis'}"></i>
+                    <i class="fas fa-edit" th:if="${activeMenu == 'analisis'}"></i>
+                    Registro de Quejas
+                </a>
+            </li>
+            <li th:class="${activeMenu == 'buscar'} ? 'active' : ''">
+                <a href="/quejas">
+                    <i class="fas fa-search"></i>
+                    Buscar Quejas
+                </a>
+            </li>
+            <li th:class="${activeMenu == 'analisis'} ? 'active' : ''">
+                <a href="/analisis">
+                    <i class="fas fa-chart-bar"></i>
+                    Analisis
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+
+</html>

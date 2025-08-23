@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Quejas - Centro de Quejas</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Script de reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Sidebar Component -->
+        <div th:replace="fragments/sidebar :: sidebar('buscar')"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Buscar Quejas</h1>
+            </div>
+
+            <!-- Mensaje de error para CAPTCHA -->
+            <div th:if="${captchaError}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${captchaError}">Error en la verificación CAPTCHA</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+
+            <!-- Formulario de Búsqueda -->
+            <div class="search-container">
+                <form th:action="@{/buscar-quejas}" method="post" class="search-form" id="searchForm">
+                    <div class="search-group">
+                        <label for="entidad" class="form-label">Entidad Pública</label>
+                        <select id="entidad" name="entidad" class="form-select">
+                            <option value="">Seleccione una entidad</option>
+
+                            <option th:each="entidad : ${entidades}" th:value="${entidad.id}"
+                                th:text="${entidad.nombreEmpresa}"
+                                th:selected="${entidad.nombreEmpresa == entidadSeleccionada}">
+                            </option>
+                        </select>
+                        <small class="form-help">Elija la entidad para ver sus quejas registradas.</small>
+                    </div>
+
+                    <!-- Widget de reCAPTCHA -->
+                    <div class="captcha-container">
+                        <div id="recaptcha" class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                            data-callback="captchaSuccess" data-expired-callback="captchaExpired"></div>
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="submit" class="btn-primary" id="btn-buscar" disabled>
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Resultados de Búsqueda -->
+            <div class="results-section">
+                <div class="results-header">
+                    <h2>Resultados de Búsqueda</h2>
+                </div>
+
+                <div class="results-container">
+                    <div th:if="${quejas != null and !quejas.empty}" class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Descripcion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="queja : ${quejas}">
+                                    <td class="resumen-cell" th:text="${queja.id}">Numero de queja</td>
+                                    <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Estado vacío -->
+                    <div th:if="${quejas == null or quejas.empty}" class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>No se encontraron resultados</h3>
+                        <p th:if="${entidadSeleccionada != null and entidadSeleccionada != 'Seleccione una entidad'}">
+                            No hay quejas registradas para "<span th:text="${entidadSeleccionada}"></span>"
+                        </p>
+                        <p th:if="${entidadSeleccionada == null or entidadSeleccionada == 'Seleccione una entidad'}">
+                            Seleccione una entidad para ver las quejas registradas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="info-section">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>¿Cómo buscar?</h3>
+                        <p>Seleccione una entidad pública del menú desplegable para ver todas las quejas registradas
+                            contra esa institución.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        // JavaScript específico para la página de búsqueda
+        document.addEventListener('DOMContentLoaded', function () {
+            // Funcionalidad para los botones de acción
+            const actionButtons = document.querySelectorAll('.btn-action');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const action = this.querySelector('i').classList.contains('fa-eye') ? 'ver' : 'descargar';
+                    const row = this.closest('tr');
+                    const resumen = row.querySelector('.resumen-cell').textContent;
+
+                    if (action === 'ver') {
+                        alert(`Ver detalles de: ${resumen}`);
+                    } else {
+                        alert(`Descargando: ${resumen}`);
+                    }
+                });
+            });
+
+            // Validación básica del formulario
+            document.getElementById('searchForm').addEventListener('submit', function (e) {
+                const entidad = document.getElementById('entidad').value;
+                if (!entidad) {
+                    alert('Por favor seleccione una entidad');
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Función al completar CAPTCHA exitosamente
+        function captchaSuccess() {
+            document.getElementById('btn-buscar').disabled = false;
+        }
+
+        // Función cuando el CAPTCHA expira
+        function captchaExpired() {
+            document.getElementById('btn-buscar').disabled = true;
+            grecaptcha.reset();
+        }
+
+        // Resetear CAPTCHA al recargar
+        document.addEventListener('DOMContentLoaded', () => {
+            grecaptcha.reset();
+        });
+    </script>
+</body>
+
+</html>

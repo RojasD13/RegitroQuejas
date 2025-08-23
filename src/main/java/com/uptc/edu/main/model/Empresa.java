@@ -1,16 +1,21 @@
 package com.uptc.edu.main.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+
 
 @Entity
 @Table(name = "empresas")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Empresa {
 
     @Id
@@ -24,4 +29,23 @@ public class Empresa {
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Queja> quejas;
+
+    
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
+    }   
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
+    }
+    public List<Queja> getQuejas() {
+        return quejas;
+    }
+
 }

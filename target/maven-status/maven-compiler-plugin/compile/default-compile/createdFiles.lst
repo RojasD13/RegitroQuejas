@@ -1,0 +1,13 @@
+com\uptc\edu\main\moldel\Empresa.class
+com\uptc\edu\main\controller\EmpresaController.class
+com\uptc\edu\main\repository\EmpresaRepo.class
+com\uptc\edu\main\Main.class
+com\uptc\edu\main\dto\QuejaEmpresaDTO.class
+com\uptc\edu\main\repository\QuejaRepo.class
+com\uptc\edu\main\dto\EmpresaResumenDTO.class
+com\uptc\edu\main\filter\RateLimitFilter.class
+com\uptc\edu\main\dto\RegistroQuejaDTO.class
+com\uptc\edu\main\moldel\Queja.class
+com\uptc\edu\main\service\EmpresaService.class
+com\uptc\edu\main\service\QuejaService.class
+com\uptc\edu\main\controller\QuejaController.class
