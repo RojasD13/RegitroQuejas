@@ -43,7 +43,7 @@ public class EmpresaController {
         model.addAttribute("totalEntidades", totalEntidades);
         model.addAttribute("promedio", promedio);
 
-        return "analisis"; // renderiza el archivo analisis.html
+        return "analisis";
     }
 
 }

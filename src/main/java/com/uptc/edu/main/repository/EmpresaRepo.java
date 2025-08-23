@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.uptc.edu.main.moldel.Empresa;
+import com.uptc.edu.main.model.Empresa;
 
 
 public interface EmpresaRepo extends JpaRepository<Empresa, Long> {

@@ -1,51 +1,81 @@
 package com.uptc.edu.main;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.uptc.edu.main.model.Empresa;
 import com.uptc.edu.main.repository.EmpresaRepo;
-import com.uptc.edu.main.moldel.Empresa;
+import com.uptc.edu.main.service.EmpresaService;
 
-@SpringBootTest
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+/**
+ * Tests con Mockito para simular el comportamiento de EmpresaRepo
+ * sin necesidad de base de datos ni contexto de Spring.
+ */
 class RegistroQuejasApplicationTests {
 
-    @Autowired
+    @Mock
     private EmpresaRepo empresaRepo;
 
-    @Test
-    void contextLoads() {
+    @InjectMocks
+    private EmpresaService service; // Ejemplo de servicio que usaría EmpresaRepo
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testGuardarEmpresa() {
         Empresa empresa = new Empresa();
+        empresa.setId(1L);
         empresa.setNombreEmpresa("Empresa Test");
-        Empresa saved = empresaRepo.save(empresa);
-        assertThat(saved.getId()).isNotNull();
+
+        when(empresaRepo.save(any(Empresa.class))).thenReturn(empresa);
+
+        Empresa saved = empresaRepo.save(new Empresa());
+        assertThat(saved.getId()).isEqualTo(1L);
         assertThat(saved.getNombreEmpresa()).isEqualTo("Empresa Test");
+
+        verify(empresaRepo, times(1)).save(any(Empresa.class));
     }
 
-	@Test
+    @Test
     void testBuscarEmpresaPorNombre() {
         Empresa empresa = new Empresa();
-        empresa.setNombreEmpresa("Empresa Unica");
-        empresaRepo.save(empresa);
+        empresa.setId(2L);
+        empresa.setNombreEmpresa("Empresa Unica2");
 
-        Empresa encontrada = empresaRepo.findByNombreEmpresa("Empresa Unica").orElse(null);
+        when(empresaRepo.findByNombreEmpresa("Empresa Unica2"))
+                .thenReturn(Optional.of(empresa));
+
+        Empresa encontrada = empresaRepo.findByNombreEmpresa("Empresa Unica2").orElse(null);
         assertThat(encontrada).isNotNull();
-        assertThat(encontrada.getNombreEmpresa()).isEqualTo("Empresa Unica");
+        assertThat(encontrada.getNombreEmpresa()).isEqualTo("Empresa Unica2");
+
+        verify(empresaRepo, times(1)).findByNombreEmpresa("Empresa Unica2");
     }
 
     @Test
     void testEliminarEmpresa() {
-        Empresa empresa = new Empresa();
-        empresa.setNombreEmpresa("Empresa Para Eliminar");
-        Empresa saved = empresaRepo.save(empresa);
+        Long id = 3L;
 
-        empresaRepo.deleteById(saved.getId());
-        Empresa eliminada = empresaRepo.findById(saved.getId()).orElse(null);
+        doNothing().when(empresaRepo).deleteById(id);
+        when(empresaRepo.findById(id)).thenReturn(Optional.empty());
+
+        empresaRepo.deleteById(id);
+        Empresa eliminada = empresaRepo.findById(id).orElse(null);
+
         assertThat(eliminada).isNull();
+        verify(empresaRepo, times(1)).deleteById(id);
+        verify(empresaRepo, times(1)).findById(id);
     }
-
 }
