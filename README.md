@@ -28,7 +28,7 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 - **Google reCAPTCHA:** Protección contra bots en el formulario de búsqueda.
 - **Diseño responsivo:** Adaptación a dispositivos móviles mediante CSS.
 
-## Instalación
+### Instalación
 
 1. Clonar el repositorio:
    ```bash
@@ -54,6 +54,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
