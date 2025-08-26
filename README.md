@@ -13,11 +13,9 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 
 - **Java:** 17
 - **Spring Boot:** 3.5.4
-- **Base de datos:** PostgreSQL
+- **Base de datos:** PostgreSQL v17.6
 - **Gestor de dependencias:** Maven
 - **Servidor:** Tomcat embebido
-- **Dirección Servidor de despliegue:** `https://dashboard.render.com/web/srv-d2jnpvili9vc73c1l080/deploys/dep-d2jp5tje5dus738dbg3g?r=2025-08-21%4021%3A42%3A18~2025-08-21%4021%3A46%3A30`.
-- **Imagen de Docker:** `https://hub.docker.com/r/danielrojas94/springboot-complains/tags`
 
 ### Frontend
 
@@ -35,15 +33,25 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
 2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
-   + 2.1. Para configuración de desliegue:
-     + 2.1.1 **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
-      + 2.1.2 **username:** `neondb_owner`
-      + 2.1.3 **password:** `npg_dmwC9Obx1ESB`
+   + 2.1. Para configuración del servidor en desliegue:
+      + **url:** `jdbc:postgresql://localhost:5432/RegistroDB}`
+      + **username:** `${DB_USERNAME:nombre_de_usuario_configurado_en_su_postgreSQL}`
+      + **password:** `${DB_PASSWORD:contraseña_configurada_en_su_postgreSQL}`
+   + 2.2. Para configuración del servidor en local
+      + **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
+      + **username:** `neondb_owner`
+      + **password:** `npg_dmwC9Obx1ESB` 
 
 ## Uso
 
-1. Accede a la interfaz web en tu navegador en `http://localhost:8080/registro`. (Local)
-2. Para acceder al despliegue de la appi acceder desde el navegador a `https://springboot-complains.onrender.com/registro`.
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/RegitroQuejas.git
+   ```
+2. Abrir el proyecto y dirigirse al archivo main `src\main\java\com\uptc\edu\main`
+3. Correr el método main
+4. Accede a la interfaz web en tu navegador en `http://localhost:8080/registro`. (Local)
+5. Para acceder al despliegue de la appi acceder desde el navegador a `https://springboot-complains.onrender.com/registro`.
 
 
 ## Licencia
@@ -54,6 +62,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
