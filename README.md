@@ -34,11 +34,11 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ```bash
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
-2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
-   2.1. Para configuración de desliegue:
-      2.1.1 **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
-      2.1.2 **username:** `neondb_owner`
-      2.1.3 **password:** `npg_dmwC9Obx1ESB`
++ 2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
+   + 2.1. Para configuración de desliegue:
+     + 2.1.1 **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
+      + 2.1.2 **username:** `neondb_owner`
+      + 2.1.3 **password:** `npg_dmwC9Obx1ESB`
 
 ## Uso
 
@@ -54,6 +54,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
