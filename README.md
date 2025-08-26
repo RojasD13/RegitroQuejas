@@ -16,6 +16,8 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 - **Base de datos:** PostgreSQL
 - **Gestor de dependencias:** Maven
 - **Servidor:** Tomcat embebido
+- **Dirección Servidor de despliegue:** `https://dashboard.render.com/web/srv-d2jnpvili9vc73c1l080/deploys/dep-d2jp5tje5dus738dbg3g?r=2025-08-21%4021%3A42%3A18~2025-08-21%4021%3A46%3A30`.
+- **Imagen de Docker:** `https://hub.docker.com/r/danielrojas94/springboot-complains/tags`
 
 ### Frontend
 
@@ -33,6 +35,10 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
 2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
+   2.1. Para configuración de desliegue:
+      2.1.1 **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
+      2.1.2 **username:** `neondb_owner`
+      2.1.3 **password:** `npg_dmwC9Obx1ESB`
 
 ## Uso
 
@@ -48,5 +54,6 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
