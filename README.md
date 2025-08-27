@@ -1,4 +1,4 @@
-﻿# RegitroQuejas
+﻿# RegistroQuejas
 
 RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de usuarios en una entidad pública.
 
@@ -64,6 +64,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
