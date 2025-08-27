@@ -33,11 +33,11 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
 2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
-   + 2.1. Para configuración del servidor en desliegue:
+   + 2.1. Para configuración del servidor en local:
       + **url:** `jdbc:postgresql://localhost:5432/RegistroDB}`
       + **username:** `${DB_USERNAME:nombre_de_usuario_configurado_en_su_postgreSQL}`
       + **password:** `${DB_PASSWORD:contraseña_configurada_en_su_postgreSQL}`
-   + 2.2. Para configuración del servidor en local
+   + 2.2. Para configuración del servidor en despliegue
       + **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
       + **username:** `neondb_owner`
       + **password:** `npg_dmwC9Obx1ESB` 
@@ -62,6 +62,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
