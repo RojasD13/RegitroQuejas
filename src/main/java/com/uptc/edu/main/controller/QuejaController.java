@@ -34,15 +34,27 @@ public class QuejaController {
         return "registro"; 
     }
 
-
-
-
-
     @PostMapping("/enviar-queja")
     public String registrarQueja(
             @RequestParam("entidad") String nombreEmpresa,
             @RequestParam("descripcion") String descripcion,
             Model model) {
+
+        // Validación para evitar error de longitud en PostgreSQL
+        int longitudReal = descripcion.replace("\r\n", "  ")
+                                     .replace("\n", " ")
+                                     .replace("\r", " ")
+                                     .length();
+        if (longitudReal > 1000) {
+            model.addAttribute("mensaje", "La descripción es demasiado larga (máx. 1000 caracteres considerando saltos de línea).");
+            model.addAttribute("tipoMensaje", "error");
+            // volver a cargar la lista de entidades
+            List<Empresa> empresas = empresaRepo.findAll();
+            model.addAttribute("entidades", empresas.stream()
+                    .map(Empresa::getNombreEmpresa)
+                    .toList());
+            return "registro";
+        }
 
         try {
             Empresa empresa = empresaRepo.findByNombreEmpresa(nombreEmpresa)
@@ -69,7 +81,6 @@ public class QuejaController {
 
         return "registro"; // recargar la misma vista con mensaje
     }
-
 
     @GetMapping("/quejas")
     public String mostrarQuejasporEmpresa(Model model) {
