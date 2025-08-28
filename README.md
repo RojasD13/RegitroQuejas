@@ -48,10 +48,12 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ```bash
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
-2. Abrir el proyecto y dirigirse al archivo main `src\main\java\com\uptc\edu\main`
-3. Correr el método main 
-   + 3.1. mvn clean install
-   + 3.2. mvn spring-boot:run
+2. Abrir el proyecto y dirigirse al archivo `Main.java` ubicado en: `src\main\java\com\uptc\edu\main`
+3. Correr el método main o mediante línea de comandos: 
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
 4. Accede a la interfaz web en tu navegador en `http://localhost:8080/registro`. (Local)
 5. Para acceder al despliegue de la appi acceder desde el navegador a `https://springboot-complains.onrender.com/registro`.
 
