@@ -39,6 +39,7 @@
                             Nombre de la Entidad <span class="required">*</span>
                         </label>
                         <select id="entidad" name="entidad" class="form-select" required>
+                            <option value="">Seleccione una entidad</option>
                             <option th:each="entidad : ${entidades}" th:value="${entidad}" th:text="${entidad}">
                             </option>
                         </select>
