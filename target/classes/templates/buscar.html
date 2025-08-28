@@ -70,14 +70,12 @@
                     <div th:if="${quejas != null and !quejas.empty}" class="results-table-container">
                         <table class="results-table">
                             <thead>
-                                <tr>
-                                    <th>Id</th>
+                                <tr>                            
                                     <th>Descripcion</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="queja : ${quejas}">
-                                    <td class="resumen-cell" th:text="${queja.id}">Numero de queja</td>
+                                <tr th:each="queja : ${quejas}">                            
                                     <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
                                 </tr>
                             </tbody>
