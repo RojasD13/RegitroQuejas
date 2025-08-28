@@ -32,7 +32,7 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ```bash
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
-2. Configurar las variables del archivo application.properties (url, username y password) si es necesario.
+2. Configurar las variables del archivo `application.properties` (url, username y password) si es necesario; ubicado en [src\main\resources](src\main\resources).
    + 2.1. Para configuración del servidor en local:
       + **url:** `jdbc:postgresql://localhost:5432/RegistroDB}`
       + **username:** `${DB_USERNAME:nombre_de_usuario_configurado_en_su_postgreSQL}`
@@ -48,7 +48,7 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ```bash
    git clone https://github.com/tu-usuario/RegitroQuejas.git
    ```
-2. Abrir el proyecto y dirigirse al archivo `Main.java` ubicado en: `src\main\java\com\uptc\edu\main`
+2. Abrir el proyecto y dirigirse al archivo `Main.java` ubicado en: [src\main\java\com\uptc\edu\main](src\main\java\com\uptc\edu\main)
 3. Correr el método main o mediante línea de comandos: 
    ```bash
    mvn clean install
