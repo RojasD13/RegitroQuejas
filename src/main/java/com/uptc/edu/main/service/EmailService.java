@@ -34,18 +34,21 @@ public class EmailService {
             
             String fechaHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
             
-            String contenido = String.format(
-                "NOTIFICACIÓN AUTOMÁTICA - SISTEMA DE QUEJAS UPTC\n" +
-                "===============================================\n\n" +
-                "Se ha habilitado el botón de búsqueda en el sistema.\n\n" +
-                "Fecha y hora: %s\n" +
-                "Dirección IP: %s\n" +
-                "Navegador: %s\n\n" +
-                "Estado: El usuario completó exitosamente la verificación CAPTCHA\n" +
-
-                fechaHora,
-                ipUsuario != null ? ipUsuario : "No disponible",
-                userAgent != null ? userAgent.substring(0, Math.min(userAgent.length(), 50)) + "..." : "No disponible"
+            String contenido = """
+                    NOTIFICACIÓN AUTOMÁTICA - SISTEMA DE QUEJAS UPTC
+                    ===============================================
+                    
+                    Se ha habilitado el botón de búsqueda en el sistema.
+                    
+                    Fecha y hora: %s
+                    Dirección IP: %s
+                    Navegador: %s
+                    
+                    Estado: El usuario completó exitosamente la verificación CAPTCHA
+                    """.formatted(
+                    fechaHora,
+                    ipUsuario != null ? ipUsuario : "No disponible",
+                    userAgent != null ? userAgent.substring(0, Math.min(userAgent.length(), 50)) + "..." : "No disponible"
             );
             
             message.setText(contenido);
@@ -67,19 +70,23 @@ public class EmailService {
             
             String fechaHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
             
-            String contenido = String.format(
-                "REPORTE DE BÚSQUEDA - SISTEMA DE QUEJAS UPTC\n" +
-                "===========================================\n\n" +
-                "Se ha realizado una consulta en el sistema.\n\n" +
-                "Fecha y hora: %s\n" +
-                "Entidad consultada: %s\n" +
-                "Quejas encontradas: %d\n" +
-                "Dirección IP: %s\n\n" +
-                "Esta información es útil para el análisis de uso del sistema.\n\n" +
-                fechaHora,
-                entidadSeleccionada,
-                numeroQuejas,
-                ipUsuario != null ? ipUsuario : "No disponible"
+            String contenido = """
+                    REPORTE DE BÚSQUEDA - SISTEMA DE QUEJAS UPTC
+                    ===========================================
+                    
+                    Se ha realizado una consulta en el sistema.
+                    
+                    Fecha y hora: %s
+                    Entidad consultada: %s
+                    Quejas encontradas: %d
+                    Dirección IP: %s
+                    
+                    Esta información es útil para el análisis de uso del sistema.
+                    """.formatted(
+                    fechaHora,
+                    entidadSeleccionada,
+                    numeroQuejas,
+                    ipUsuario != null ? ipUsuario : "No disponible"
             );
             
             message.setText(contenido);

@@ -43,7 +43,7 @@ public class QuejaController {
     @PostMapping("/enviar-queja")
     public String registrarQueja(
             @RequestParam("entidad") String nombreEmpresa,
-            @RequestParam("descripcion") String descripcion,
+            @RequestParam String descripcion,
             Model model) {
 
         try {
