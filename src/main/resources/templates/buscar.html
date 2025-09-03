@@ -116,6 +116,40 @@
 
     <script th:src="@{/js/app.js}"></script>
     <script>
+        // Función al completar CAPTCHA exitosamente
+        function captchaSuccess() {
+            document.getElementById('btn-buscar').disabled = false;
+
+            // Enviar notificación por email cuando se habilite el botón
+            enviarNotificacionCaptcha();
+        }
+
+        // Función cuando el CAPTCHA expira
+        function captchaExpired() {
+            document.getElementById('btn-buscar').disabled = true;
+            grecaptcha.reset();
+        }
+
+        // Función para enviar notificación por email
+        async function enviarNotificacionCaptcha() {
+            try {
+                const response = await fetch('/api/notificar-captcha-completado', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    console.log('Notificación enviada correctamente');
+                } else {
+                    console.warn('Error al enviar notificación:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error de red al enviar notificación:', error);
+            }
+        }
+
         // JavaScript específico para la página de búsqueda
         document.addEventListener('DOMContentLoaded', function () {
             // Funcionalidad para los botones de acción
@@ -144,21 +178,14 @@
             });
         });
 
-        // Función al completar CAPTCHA exitosamente
-        function captchaSuccess() {
-            document.getElementById('btn-buscar').disabled = false;
-        }
-
-        // Función cuando el CAPTCHA expira
-        function captchaExpired() {
-            document.getElementById('btn-buscar').disabled = true;
-            grecaptcha.reset();
-        }
-
         // Resetear CAPTCHA al recargar
         document.addEventListener('DOMContentLoaded', () => {
-            grecaptcha.reset();
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset();
+            }
         });
+
+
     </script>
 </body>
 
