@@ -2,100 +2,93 @@ package com.uptc.edu.main.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private static final DateTimeFormatter TIMESTAMP_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
+    private final String adminEmail;
+    private final String fromEmail;
+    private final String appName;
 
-    @Value("${app.admin.email:andres.vargas02@uptc.edu.co}")
-    private String adminEmail;
-
-    @Value("${spring.mail.username:andres.vargas02@uptc.edu.co}")
-    private String fromEmail;
-
-    public void enviarNotificacionBotonHabilitado(String ipUsuario, String userAgent) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(adminEmail);
-            message.setSubject("Botón de Búsqueda Habilitado - Sistema de Quejas UPTC");
-            
-            String fechaHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-            
-            String contenido = """
-                    NOTIFICACIÓN AUTOMÁTICA - SISTEMA DE QUEJAS UPTC
-                    ===============================================
-                    
-                    Se ha habilitado el botón de búsqueda en el sistema.
-                    
-                    Fecha y hora: %s
-                    Dirección IP: %s
-                    Navegador: %s
-                    
-                    Estado: El usuario completó exitosamente la verificación CAPTCHA
-                    """.formatted(
-                    fechaHora,
-                    ipUsuario != null ? ipUsuario : "No disponible",
-                    userAgent != null ? userAgent.substring(0, Math.min(userAgent.length(), 50)) + "..." : "No disponible"
-            );
-            
-            message.setText(contenido);
-            
-            emailSender.send(message);
-            logger.info("Notificación enviada exitosamente a {}", adminEmail);
-            
-        } catch (Exception e) {
-            logger.error("Error al enviar notificación por email: {}", e.getMessage(), e);
-        }
+    public EmailService(JavaMailSender emailSender,
+                        @Value("${app.admin.email}") String adminEmail,
+                        @Value("${spring.mail.username}") String fromEmail,
+                        @Value("${spring.application.name:RegistroQuejas}") String appName) {
+        this.emailSender = Objects.requireNonNull(emailSender, "emailSender");
+        this.adminEmail = Objects.requireNonNull(adminEmail, "app.admin.email must be configured");
+        this.fromEmail = Objects.requireNonNull(fromEmail, "spring.mail.username must be configured");
+        this.appName = (appName == null || appName.isBlank()) ? "RegistroQuejas" : appName;
     }
 
-    public void enviarNotificacionBusquedaRealizada(String entidadSeleccionada, int numeroQuejas, String ipUsuario) {
+    /**
+     * Envía una notificación de búsqueda con información de:
+     *  - Entidad consultada
+     *  - IP del cliente
+     *  - Método HTTP
+     *  - URI solicitada
+     */
+    @Async
+    public void enviarNotificacionBusquedaRealizada(
+            String entidadSeleccionada,
+            String ipUsuario,
+            String httpMethod,
+            String requestUri) {
+
+        if (httpMethod == null || httpMethod.isBlank()) {
+            httpMethod = "UNKNOWN";
+        }
+        if (requestUri == null || requestUri.isBlank()) {
+            requestUri = "No disponible";
+        }
+        if (entidadSeleccionada == null || entidadSeleccionada.isBlank()) {
+            entidadSeleccionada = "No especificada";
+        }
+
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
             message.setTo(adminEmail);
-            message.setSubject("Búsqueda de Quejas Realizada - Sistema UPTC");
-            
-            String fechaHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-            
-            String contenido = """
-                    REPORTE DE BÚSQUEDA - SISTEMA DE QUEJAS UPTC
-                    ===========================================
-                    
-                    Se ha realizado una consulta en el sistema.
-                    
-                    Fecha y hora: %s
-                    Entidad consultada: %s
-                    Quejas encontradas: %d
-                    Dirección IP: %s
-                    
-                    Esta información es útil para el análisis de uso del sistema.
-                    """.formatted(
+            message.setSubject("Búsqueda realizada - Sistema " + appName);
+
+            String fechaHora = LocalDateTime.now().format(TIMESTAMP_FMT);
+
+            String contenido = String.format(
+                    "REPORTE DE BÚSQUEDA - %s%n"
+                  + "===========================================%n%n"
+                  + "Se ha realizado una consulta en el sistema.%n%n"
+                  + "Fecha y hora: %s%n"
+                  + "Método HTTP: %s%n"
+                  + "URI solicitada: %s%n"
+                  + "Entidad consultada: %s%n"
+                  + "Dirección IP: %s%n%n"
+                  + "Esta información es útil para el análisis de uso y seguridad del sistema.%n",
+                    appName,
                     fechaHora,
+                    httpMethod,
+                    requestUri,
                     entidadSeleccionada,
-                    numeroQuejas,
-                    ipUsuario != null ? ipUsuario : "No disponible"
+                    (ipUsuario != null && !ipUsuario.isBlank()) ? ipUsuario : "No disponible"
             );
-            
+
             message.setText(contenido);
-            
             emailSender.send(message);
-            logger.info("Notificación de búsqueda enviada exitosamente");
-            
+            logger.info("Notificación de búsqueda enviada exitosamente a {}", adminEmail);
+
         } catch (Exception e) {
-            logger.error("Error al enviar notificación de búsqueda: {}", e.getMessage(), e);
+            logger.error("Error al enviar notificación de búsqueda", e);
         }
     }
 }

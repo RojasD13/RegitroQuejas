@@ -37,7 +37,7 @@ public class QuejaController {
                 .map(Empresa::getNombreEmpresa)
                 .toList());
 
-        return "registro"; 
+        return "registro";
     }
 
     @PostMapping("/enviar-queja")
@@ -69,14 +69,14 @@ public class QuejaController {
                 .map(Empresa::getNombreEmpresa)
                 .toList());
 
-        return "registro"; // recargar la misma vista con mensaje
+        return "registro";
     }
 
     @GetMapping("/quejas")
     public String mostrarQuejasporEmpresa(Model model) {
         List<Empresa> empresas = empresaRepo.findAll();
-        model.addAttribute("entidades", empresas); // enviamos todas las empresas
-        model.addAttribute("quejas", null); // lista vacía al inicio
+        model.addAttribute("entidades", empresas);
+        model.addAttribute("quejas", null);
         return "buscar";
     }
 
@@ -97,15 +97,17 @@ public class QuejaController {
             model.addAttribute("quejas", quejas);
             model.addAttribute("entidadSeleccionada", empresaSeleccionada.getNombreEmpresa());
 
-            // Enviar notificación por email de forma asíncrona
+            // Enviar notificación por email de forma asíncrona (EmailService ya tiene @Async)
             String ipUsuario = obtenerIpCliente(request);
-            new Thread(() -> {
-                emailService.enviarNotificacionBusquedaRealizada(
-                    empresaSeleccionada.getNombreEmpresa(), 
-                    quejas.size(), 
-                    ipUsuario
-                );
-            }).start();
+            String httpMethod = request.getMethod();
+            String requestUri = request.getRequestURI();
+
+            emailService.enviarNotificacionBusquedaRealizada(
+                empresaSeleccionada.getNombreEmpresa(),
+                ipUsuario,
+                httpMethod,
+                requestUri
+            );
 
         } else {
             model.addAttribute("quejas", List.of());
@@ -120,12 +122,12 @@ public class QuejaController {
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
             return xForwardedFor.split(",")[0].trim();
         }
-        
+
         String xRealIP = request.getHeader("X-Real-IP");
         if (xRealIP != null && !xRealIP.isEmpty()) {
             return xRealIP;
         }
-        
+
         return request.getRemoteAddr();
     }
 }
