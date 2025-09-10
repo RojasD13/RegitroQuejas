@@ -18,7 +18,7 @@ public class EmpresaController {
     private EmpresaRepo empresaRepo;
 
     @GetMapping("/analisis")
-    public String getEmpresasConTotalQuejas(Model model) {
+    public String obtenerTotalQuejasPorEmpresas(Model model) {
         List<EmpresaResumenDTO> resumen = empresaRepo.findAllByOrderByNombreEmpresaAsc()
             .stream()
             .map(empresa -> {
