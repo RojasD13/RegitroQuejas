@@ -1,22 +1,31 @@
 package com.uptc.edu.main;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import com.uptc.edu.main.service.EmailService;
 
-// Descomenta esta clase solo para probar el envío de emails
-//@Component
+@Component
+@Profile("dev")
 public class EmailTest implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmailTest.class);
+
+    private final EmailService emailService;
+
     @Autowired
-    private EmailService emailService;
+    public EmailTest(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     @Override
     public void run(String... args) throws Exception {
-        // Prueba el envío de email al iniciar la aplicación
-        emailService.enviarNotificacionBotonHabilitado("192.168.1.1", "Chrome/Test");
-        System.out.println("Email de prueba enviado");
+        // Envía un email de prueba (de forma asíncrona). No bloqueará el arranque.
+        emailService.enviarNotificacionBusquedaRealizada("EntidadPrueba", "127.0.0.1", "GET", "/");
+        logger.info("Email de prueba disparado (profile=dev). Revisa logs y la bandeja del admin configurado en app.admin.email.");
     }
 }
