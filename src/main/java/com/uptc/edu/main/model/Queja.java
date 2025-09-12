@@ -1,6 +1,7 @@
 package com.uptc.edu.main.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,5 +35,8 @@ public class Queja {
     @JoinColumn(name = "id_empresa", nullable = false)
     @JsonIgnore
     private Empresa empresa;
+
+    @Column(name = "visible", nullable = false)
+    private Boolean isVisible = true;
 
 }

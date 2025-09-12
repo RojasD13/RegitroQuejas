@@ -1,9 +1,11 @@
 package com.uptc.edu.main.dto;
 
 public class QuejaEmpresaDTO {
+
     private Long id;
     private String descripcion;
     private String nombreEmpresa;
+    private Boolean isVisible;
 
     public Long getId() {
         return id;
@@ -29,5 +31,12 @@ public class QuejaEmpresaDTO {
         this.nombreEmpresa = nombreEmpresa;
     }
 
+    public Boolean getIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(Boolean isVisible) {
+        this.isVisible = isVisible;
+    }
 
 }
