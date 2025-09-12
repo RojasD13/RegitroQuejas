@@ -11,6 +11,10 @@ HELP.md
 .settings
 .springBeans
 .sts4-cache
+*.lst
+*.war
+*.jar
+*.jar.original
 
 ### IntelliJ IDEA ###
 .idea
