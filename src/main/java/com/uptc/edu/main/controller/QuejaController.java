@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.model.Empresa;
 import com.uptc.edu.main.model.Queja;
@@ -46,38 +48,50 @@ public class QuejaController {
             @RequestParam String descripcion,
             Model model) {
 
-        try {
-            Empresa empresa = empresaRepo.findByNombreEmpresa(nombreEmpresa)
-                    .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-
+        empresaRepo.findByNombreEmpresa(nombreEmpresa).ifPresentOrElse(empresa -> {
             Queja queja = new Queja();
             queja.setDescripcion(descripcion);
             queja.setEmpresa(empresa);
-
             quejaRepo.save(queja);
 
             model.addAttribute("mensaje", "La queja fue registrada exitosamente.");
             model.addAttribute("tipoMensaje", "success");
-        } catch (Exception e) {
-            model.addAttribute("mensaje", "Error al registrar la queja: " + e.getMessage());
+        }, () -> {
+            model.addAttribute("mensaje", "Error: empresa no encontrada.");
             model.addAttribute("tipoMensaje", "error");
-        }
+        });
 
-        // volver a cargar la lista de entidades
-        List<Empresa> empresas = empresaRepo.findAll();
-        model.addAttribute("entidades", empresas.stream()
-                .map(Empresa::getNombreEmpresa)
-                .toList());
+        model.addAttribute("entidades",
+                empresaRepo.findAll().stream()
+                        .map(Empresa::getNombreEmpresa)
+                        .toList());
 
         return "registro";
     }
 
     @GetMapping("/quejas")
-    public String mostrarQuejasporEmpresa(Model model) {
-        List<Empresa> empresas = empresaRepo.findAll();
-        model.addAttribute("entidades", empresas);
-        model.addAttribute("quejas", null);
+    public String mostrarQuejasporEmpresa(@RequestParam(required = false) Long empresaId, Model model) {
+        model.addAttribute("entidades", empresaRepo.findAll());
+
+        List<Queja> quejas = (empresaId == null)
+                ? quejaRepo.findByIsVisibleTrue()
+                : quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresaId);
+
+        model.addAttribute("quejas", quejas);
         return "buscar";
+    }
+
+    @PostMapping("/quejas/{id}/ocultar")
+    public String ocultarQueja(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        quejaRepo.findById(id).ifPresentOrElse(queja -> {
+            queja.setIsVisible(false);
+            quejaRepo.save(queja);
+            redirectAttributes.addFlashAttribute("mensaje", "Queja ocultada exitosamente");
+        }, () -> {
+            redirectAttributes.addFlashAttribute("error", "La queja no existe");
+        });
+
+        return "redirect:/quejas";
     }
 
     @PostMapping("/buscar-quejas")
@@ -86,33 +100,22 @@ public class QuejaController {
             Model model,
             HttpServletRequest request) {
 
-        List<Empresa> empresas = empresaRepo.findAll();
-        model.addAttribute("entidades", empresas);
+        model.addAttribute("entidades", empresaRepo.findAll());
 
-        Empresa empresaSeleccionada = empresaRepo.findById(empresaId)
-                .orElse(null);
-
-        if (empresaSeleccionada != null) {
-            List<Queja> quejas = quejaRepo.findByEmpresa(empresaSeleccionada);
+        empresaRepo.findById(empresaId).ifPresentOrElse(empresa -> {
+            List<Queja> quejas = quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId());
             model.addAttribute("quejas", quejas);
-            model.addAttribute("entidadSeleccionada", empresaSeleccionada.getNombreEmpresa());
-
-            // Enviar notificación por email de forma asíncrona (EmailService ya tiene @Async)
-            String ipUsuario = obtenerIpCliente(request);
-            String httpMethod = request.getMethod();
-            String requestUri = request.getRequestURI();
+            model.addAttribute("entidadSeleccionada", empresa.getNombreEmpresa());
 
             emailService.enviarNotificacionBusquedaRealizada(
-                empresaSeleccionada.getNombreEmpresa(),
-                ipUsuario,
-                httpMethod,
-                requestUri
-            );
-
-        } else {
+                    empresa.getNombreEmpresa(),
+                    obtenerIpCliente(request),
+                    request.getMethod(),
+                    request.getRequestURI());
+        }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", null);
-        }
+        });
 
         return "buscar";
     }
