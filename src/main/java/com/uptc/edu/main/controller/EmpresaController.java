@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.uptc.edu.main.dto.EmpresaResumenDTO;
 import com.uptc.edu.main.repository.EmpresaRepo;
+import com.uptc.edu.main.repository.QuejaRepo;
 
 @Controller
 public class EmpresaController {
     
     @Autowired
     private EmpresaRepo empresaRepo;
+
+    @Autowired
+    private QuejaRepo quejaRepo;
 
     @GetMapping("/analisis")
     public String obtenerTotalQuejasPorEmpresas(Model model) {
@@ -25,23 +29,22 @@ public class EmpresaController {
                 EmpresaResumenDTO dto = new EmpresaResumenDTO();
                 dto.setId(empresa.getId());
                 dto.setNombreEmpresa(empresa.getNombreEmpresa());
-                dto.setTotalQuejas((long) empresa.getQuejas().size());
+                dto.setTotalQuejas((long) quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId()).size());
                 return dto;
             })
             .collect(Collectors.toList());
+        model.addAttribute("resumen", resumen);
 
-        // total de quejas
+        /* // Calcular totales basados en quejas visibles
         long totalQuejas = resumen.stream().mapToLong(EmpresaResumenDTO::getTotalQuejas).sum();
-        // número de entidades
         int totalEntidades = resumen.size();
-        // promedio de quejas
         long promedio = totalEntidades > 0 ? totalQuejas / totalEntidades : 0;
 
-        // Se agregan atributos al modelo
-        model.addAttribute("resumen", resumen);
+        // Agregar atributos al modelo
+        
         model.addAttribute("totalQuejas", totalQuejas);
         model.addAttribute("totalEntidades", totalEntidades);
-        model.addAttribute("promedio", promedio);
+        model.addAttribute("promedio", promedio); */
 
         return "analisis";
     }
