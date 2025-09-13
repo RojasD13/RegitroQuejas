@@ -15,6 +15,7 @@ HELP.md
 *.war
 *.jar
 *.jar.original
+*.class
 
 ### IntelliJ IDEA ###
 .idea
