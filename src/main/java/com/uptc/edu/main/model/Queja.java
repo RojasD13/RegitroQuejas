@@ -2,6 +2,9 @@ package com.uptc.edu.main.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,10 +15,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "quejas")
-
-public class Queja{
+@Getter
+@Setter
+public class Queja {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,23 +36,7 @@ public class Queja{
     @JsonIgnore
     private Empresa empresa;
 
-    public Long getId() {
-        return id;
-    }       
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getDescripcion() {
-        return descripcion;
-    }
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
-    }
-    
+    @Column(name = "visible", nullable = false)
+    private Boolean isVisible = true;
+
 }
