@@ -29,6 +29,19 @@
                 <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
 
+            <!-- Mensajes de éxito/error -->
+            <div th:if="${mensaje}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${mensaje}">Mensaje de éxito</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}">Mensaje de error</span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+
             <!-- Formulario de Búsqueda -->
             <div class="search-container">
                 <form th:action="@{/buscar-quejas}" method="post" class="search-form" id="searchForm">
@@ -71,12 +84,21 @@
                         <table class="results-table">
                             <thead>
                                 <tr>                            
-                                    <th>Descripcion</th>
+                                    <th>Descripción</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="queja : ${quejas}">                            
                                     <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
+                                    <td class="actions-cell">
+                                        <button type="button" 
+                                                class="btn-delete" 
+                                                th:onclick="'confirmarBorrado(' + ${queja.id} + ')'"
+                                                title="Borrar queja">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -114,6 +136,23 @@
         </main>
     </div>
 
+    <!-- Modal de confirmación -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar acción</h3>
+            <p>¿Está seguro de que desea borrar esta queja?</p>
+            <div class="modal-buttons">
+                <button id="btnConfirmar" class="btn-confirm">Confirmar</button>
+                <button id="btnCancelar" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario oculto para el PATCH -->
+    <form id="deleteForm" method="post" style="display: none;">
+        <input type="hidden" name="_method" value="PATCH">
+    </form>
+
     <script th:src="@{/js/app.js}"></script>
     <script>
         // Función al completar CAPTCHA exitosamente
@@ -150,9 +189,46 @@
             }
         }
 
+        // Variables globales para el modal
+        let quejaIdABorrar = null;
+
+        // Función para mostrar modal de confirmación
+        function confirmarBorrado(quejaId) {
+            quejaIdABorrar = quejaId;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        // Función para ocultar queja
+        function ocultarQueja(quejaId) {
+            const form = document.getElementById('deleteForm');
+            form.action = `/quejas/${quejaId}/ocultar`;
+            form.submit();
+        }
+
         // JavaScript específico para la página de búsqueda
         document.addEventListener('DOMContentLoaded', function () {
-            // Funcionalidad para los botones de acción
+            // Configurar botones del modal
+            document.getElementById('btnConfirmar').addEventListener('click', function() {
+                if (quejaIdABorrar) {
+                    ocultarQueja(quejaIdABorrar);
+                }
+                document.getElementById('confirmModal').style.display = 'none';
+            });
+
+            document.getElementById('btnCancelar').addEventListener('click', function() {
+                document.getElementById('confirmModal').style.display = 'none';
+                quejaIdABorrar = null;
+            });
+
+            // Cerrar modal al hacer clic fuera de él
+            document.getElementById('confirmModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                    quejaIdABorrar = null;
+                }
+            });
+
+            // Funcionalidad para los botones de acción (código existente)
             const actionButtons = document.querySelectorAll('.btn-action');
             actionButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -184,8 +260,6 @@
                 grecaptcha.reset();
             }
         });
-
-
     </script>
 </body>
 

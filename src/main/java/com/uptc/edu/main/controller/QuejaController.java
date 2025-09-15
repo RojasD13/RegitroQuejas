@@ -19,6 +19,7 @@ import com.uptc.edu.main.repository.QuejaRepo;
 import com.uptc.edu.main.service.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class QuejaController {
@@ -83,16 +84,23 @@ public class QuejaController {
     }
 
     @PatchMapping("/quejas/{id}/ocultar")
-    public String ocultarQueja(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String ocultarQueja(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
+
         quejaRepo.findById(id).ifPresentOrElse(queja -> {
             queja.setIsVisible(false);
             quejaRepo.save(queja);
-            redirectAttributes.addFlashAttribute("mensaje", "Queja ocultada exitosamente");
+
+            redirectAttributes.addFlashAttribute("mensaje", "Queja eliminada exitosamente");
+            session.setAttribute("ultimaEmpresaBuscada", queja.getEmpresa().getId());
         }, () -> {
             redirectAttributes.addFlashAttribute("error", "La queja no existe");
         });
 
-        return "redirect:/quejas";
+        Long empresaId = (Long) session.getAttribute("ultimaEmpresaBuscada");
+        return "redirect:/quejas" + (empresaId != null ? "?empresaId=" + empresaId : "");
     }
 
     @PostMapping("/buscar-quejas")
