@@ -63,9 +63,8 @@
                 <form th:action="@{/buscar-quejas}" method="post" class="search-form" id="searchForm">
                     <div class="search-group">
                         <label for="entidad" class="form-label">Entidad Pública</label>
-                        <select id="entidad" name="entidad" class="form-select">
-                            <option value="" disabled>Seleccione una entidad</option>
-
+                        <select id="entidad" name="entidad" class="form-select" required>
+                            <option value="">Seleccione una entidad</option>
                             <option th:each="entidad : ${entidades}" th:value="${entidad.id}"
                                 th:text="${entidad.nombreEmpresa}"
                                 th:selected="${entidad.nombreEmpresa == entidadSeleccionada}">
