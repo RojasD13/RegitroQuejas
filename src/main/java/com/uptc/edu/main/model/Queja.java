@@ -1,20 +1,13 @@
 package com.uptc.edu.main.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "quejas")
@@ -37,6 +30,38 @@ public class Queja {
     private Empresa empresa;
 
     @Column(name = "visible", nullable = false)
-    private Boolean isVisible = true;
+    private boolean isVisible = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
+    private Estado estado = Estado.PROCESO;
+
+    @OneToMany(mappedBy = "queja", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Comentario> comentarios = new ArrayList<>();
+
+    public void addComentario(Comentario comentario) {
+        comentarios.add(comentario);
+        comentario.setQueja(this);
+    }
+
+    public void removeComentario(Comentario comentario) {
+        comentarios.remove(comentario);
+        comentario.setQueja(null);
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
 }
