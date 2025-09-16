@@ -6,7 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Hoja de estilo de paginación (subida por ti) -->
+    <link rel="stylesheet" th:href="@{/css/pagination.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Fallback / variable CSS usada por pagination.css -->
+    <style>
+        :root {
+            /* si tu style.css ya define --secondary-color, este valor no sobrescribe.
+               Es solo un fallback por si no existe, así la paginación tendrá color coherente */
+            --secondary-color: #2c7be5;
+        }
+
+        /* pequeño ajuste para la clase .hidden usada en filas */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
     <!-- Script de reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -48,7 +64,7 @@
                     <div class="search-group">
                         <label for="entidad" class="form-label">Entidad Pública</label>
                         <select id="entidad" name="entidad" class="form-select">
-                            <option value="">Seleccione una entidad</option>
+                            <option value="" disabled>Seleccione una entidad</option>
 
                             <option th:each="entidad : ${entidades}" th:value="${entidad.id}"
                                 th:text="${entidad.nombreEmpresa}"
@@ -73,48 +89,70 @@
                 </form>
             </div>
 
-            <!-- Resultados de Búsqueda -->
-            <div class="results-section">
+            <!-- Resultados de Búsqueda - Solo mostrar si se ha seleccionado una entidad -->
+            <div class="results-section"
+                th:if="${entidadSeleccionada != null and entidadSeleccionada != '' and entidadSeleccionada != 'Seleccione una entidad'}">
                 <div class="results-header">
                     <h2>Resultados de Búsqueda</h2>
                 </div>
 
                 <div class="results-container">
-                    <div th:if="${quejas != null and !quejas.empty}" class="results-table-container">
-                        <table class="results-table">
+                    <div th:if="${quejas != null and !quejas.empty}" class="results-table-container"
+                        id="tableContainer">
+                        <table class="results-table" id="resultsTable">
                             <thead>
-                                <tr>                            
+                                <tr>
                                     <th>Descripción</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr th:each="queja : ${quejas}">                            
+                            <tbody id="tableBody">
+                                <tr th:each="queja : ${quejas}"
+                                    th:attr="data-queja-id=${queja.id}, data-descripcion=${queja.descripcion}"
+                                    class="table-row">
                                     <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
                                     <td class="actions-cell">
-                                        <button type="button" 
-                                                class="btn-delete" 
-                                                th:onclick="'confirmarBorrado(' + ${queja.id} + ')'"
-                                                title="Borrar queja">
+                                        <button type="button" class="btn-delete"
+                                            th:onclick="'confirmarBorrado(' + ${queja.id} + ')'" title="Borrar queja">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+
+                        <!-- Controles de paginación: lo mostramos siempre (si hay quejas) y el JS se encargará de ocultarlo si no hace falta -->
+                        <div id="paginationContainer" class="pagination-container"
+                            th:if="${quejas != null and !quejas.empty}" style="display: none;">
+                            <div class="pagination-info">
+                                <span id="paginationInfo">Mostrando 1-10 de <span
+                                        th:text="${#lists.size(quejas)}"></span> resultados</span>
+                            </div>
+                            <div class="pagination-controls" role="navigation" aria-label="Paginación">
+                                <button id="prevBtn" class="pagination-btn" disabled aria-label="Anterior">
+                                    <i class="fas fa-chevron-left"></i>
+                                    Anterior
+                                </button>
+                                <div class="pagination-pages" id="paginationPages" aria-live="polite"
+                                    aria-atomic="true">
+                                    <!-- Pages will be generated by JavaScript -->
+                                </div>
+                                <button id="nextBtn" class="pagination-btn" aria-label="Siguiente">
+                                    Siguiente
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Estado vacío -->
+                    <!-- Estado vacío - solo cuando no hay quejas para la entidad seleccionada -->
                     <div th:if="${quejas == null or quejas.empty}" class="empty-state">
                         <div class="empty-icon">
                             <i class="fas fa-search"></i>
                         </div>
                         <h3>No se encontraron resultados</h3>
-                        <p th:if="${entidadSeleccionada != null and entidadSeleccionada != 'Seleccione una entidad'}">
+                        <p>
                             No hay quejas registradas para "<span th:text="${entidadSeleccionada}"></span>"
-                        </p>
-                        <p th:if="${entidadSeleccionada == null or entidadSeleccionada == 'Seleccione una entidad'}">
-                            Seleccione una entidad para ver las quejas registradas.
                         </p>
                     </div>
                 </div>
@@ -128,7 +166,8 @@
                     </div>
                     <div class="info-content">
                         <h3>¿Cómo buscar?</h3>
-                        <p>Seleccione una entidad pública del menú desplegable para ver todas las quejas registradas
+                        <p>Seleccione una entidad pública del menú desplegable y complete el CAPTCHA para ver todas las
+                            quejas registradas
                             contra esa institución.</p>
                     </div>
                 </div>
@@ -153,7 +192,6 @@
         <input type="hidden" name="_method" value="PATCH">
     </form>
 
-    <script th:src="@{/js/app.js}"></script>
     <script>
         // Función al completar CAPTCHA exitosamente
         function captchaSuccess() {
@@ -166,7 +204,9 @@
         // Función cuando el CAPTCHA expira
         function captchaExpired() {
             document.getElementById('btn-buscar').disabled = true;
-            grecaptcha.reset();
+            if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+                grecaptcha.reset();
+            }
         }
 
         // Función para enviar notificación por email
@@ -189,8 +229,141 @@
             }
         }
 
-        // Variables globales para el modal
+        // Variables globales para el modal y paginación
         let quejaIdABorrar = null;
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let totalItems = 0;
+        let allRows = [];
+
+        // Función de paginación
+        function initializePagination() {
+            allRows = Array.from(document.querySelectorAll('.table-row'));
+            totalItems = allRows.length;
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            // Mostrar u ocultar contenedor de paginación según cantidad de filas
+            if (paginationContainer) {
+                if (totalItems <= itemsPerPage) {
+                    paginationContainer.style.display = 'none';
+                    // Asegurarse de que todas las filas estén visibles si no hay paginación
+                    allRows.forEach(r => r.classList.remove('hidden'));
+                    return;
+                } else {
+                    paginationContainer.style.display = 'flex';
+                }
+            }
+
+            // Inicializar controles
+            createPageButtons();
+            updatePagination();
+
+            // Event listeners para botones de navegación
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updatePagination();
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (currentPage < Math.ceil(totalItems / itemsPerPage)) {
+                        currentPage++;
+                        updatePagination();
+                    }
+                });
+            }
+        }
+
+        function updatePagination() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            // Mostrar/ocultar filas
+            allRows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Actualizar información de paginación
+            const paginationInfo = document.getElementById('paginationInfo');
+            if (paginationInfo) {
+                const start = startIndex + 1;
+                const end = Math.min(endIndex, totalItems);
+                paginationInfo.innerHTML = `Mostrando ${start}-${end} de ${totalItems} resultados`;
+            }
+
+            // Actualizar botones de navegación
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+            // Actualizar botones de página (solo cambia la clase active)
+            updatePageButtons();
+        }
+
+        function createPageButtons() {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pagesContainer = document.getElementById('paginationPages');
+            if (!pagesContainer) return;
+            pagesContainer.innerHTML = ''; // aseguramos limpieza antes de crear
+
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            // Ajustar el rango si hay pocas páginas al final
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'page-btn';
+                pageBtn.textContent = i;
+                pageBtn.setAttribute('aria-label', `Página ${i}`);
+                if (i === currentPage) pageBtn.classList.add('active');
+
+                pageBtn.addEventListener('click', () => {
+                    if (currentPage === i) return;
+                    currentPage = i;
+                    updatePagination();
+                });
+                pagesContainer.appendChild(pageBtn);
+            }
+        }
+
+        function updatePageButtons() {
+            const pageButtons = document.querySelectorAll('.page-btn');
+            pageButtons.forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.textContent, 10) === currentPage);
+            });
+            // No recreamos botones aquí para evitar duplicados; createPageButtons se encarga al iniciar
+        }
+
+        // Función para scroll automático a la tabla
+        function scrollToTable() {
+            const tableContainer = document.getElementById('tableContainer');
+            if (tableContainer) {
+                setTimeout(() => {
+                    tableContainer.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+        }
 
         // Función para mostrar modal de confirmación
         function confirmarBorrado(quejaId) {
@@ -207,26 +380,42 @@
 
         // JavaScript específico para la página de búsqueda
         document.addEventListener('DOMContentLoaded', function () {
-            // Configurar botones del modal
-            document.getElementById('btnConfirmar').addEventListener('click', function() {
-                if (quejaIdABorrar) {
-                    ocultarQueja(quejaIdABorrar);
-                }
-                document.getElementById('confirmModal').style.display = 'none';
-            });
+            // Inicializar paginación si hay tabla
+            if (document.getElementById('tableContainer')) {
+                initializePagination();
+                scrollToTable(); // Scroll automático cuando hay resultados
+            }
 
-            document.getElementById('btnCancelar').addEventListener('click', function() {
-                document.getElementById('confirmModal').style.display = 'none';
-                quejaIdABorrar = null;
-            });
+            // Configurar botones del modal
+            const btnConfirmar = document.getElementById('btnConfirmar');
+            const btnCancelar = document.getElementById('btnCancelar');
+
+            if (btnConfirmar) {
+                btnConfirmar.addEventListener('click', function () {
+                    if (quejaIdABorrar) {
+                        ocultarQueja(quejaIdABorrar);
+                    }
+                    document.getElementById('confirmModal').style.display = 'none';
+                });
+            }
+
+            if (btnCancelar) {
+                btnCancelar.addEventListener('click', function () {
+                    document.getElementById('confirmModal').style.display = 'none';
+                    quejaIdABorrar = null;
+                });
+            }
 
             // Cerrar modal al hacer clic fuera de él
-            document.getElementById('confirmModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.style.display = 'none';
-                    quejaIdABorrar = null;
-                }
-            });
+            const confirmModal = document.getElementById('confirmModal');
+            if (confirmModal) {
+                confirmModal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                        quejaIdABorrar = null;
+                    }
+                });
+            }
 
             // Funcionalidad para los botones de acción (código existente)
             const actionButtons = document.querySelectorAll('.btn-action');
@@ -234,8 +423,7 @@
                 button.addEventListener('click', function () {
                     const action = this.querySelector('i').classList.contains('fa-eye') ? 'ver' : 'descargar';
                     const row = this.closest('tr');
-                    const resumen = row.querySelector('.resumen-cell').textContent;
-
+                    const resumen = row ? row.querySelector('.resumen-cell')?.textContent : '';
                     if (action === 'ver') {
                         alert(`Ver detalles de: ${resumen}`);
                     } else {
@@ -245,18 +433,31 @@
             });
 
             // Validación básica del formulario
-            document.getElementById('searchForm').addEventListener('submit', function (e) {
-                const entidad = document.getElementById('entidad').value;
-                if (!entidad) {
-                    alert('Por favor seleccione una entidad');
-                    e.preventDefault();
-                }
-            });
+            const searchForm = document.getElementById('searchForm');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function (e) {
+                    const entidad = document.getElementById('entidad').value;
+                    if (!entidad) {
+                        alert('Por favor seleccione una entidad');
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Prevenir selección de la opción deshabilitada
+            const entidadSelect = document.getElementById('entidad');
+            if (entidadSelect) {
+                entidadSelect.addEventListener('change', function (e) {
+                    if (this.value === '') {
+                        this.selectedIndex = 0; // Mantener en la opción deshabilitada
+                    }
+                });
+            }
         });
 
-        // Resetear CAPTCHA al recargar
+        // Resetear CAPTCHA al recargar (si existe grecaptcha)
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof grecaptcha !== 'undefined') {
+            if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
                 grecaptcha.reset();
             }
         });
