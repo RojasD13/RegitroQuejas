@@ -6,45 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!-- Hoja de estilo de paginación (subida por ti) -->
     <link rel="stylesheet" th:href="@{/css/pagination.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Fallback / variable CSS usada por pagination.css -->
-    <style>
-        :root {
-            /* si tu style.css ya define --secondary-color, este valor no sobrescribe.
-               Es solo un fallback por si no existe, así la paginación tendrá color coherente */
-            --secondary-color: #2c7be5;
-        }
-
-        /* pequeño ajuste para la clase .hidden usada en filas */
-        .hidden {
-            display: none !important;
-        }
-    </style>
-
-    <!-- Script de reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body>
     <div class="container-fluid">
-        <!-- Sidebar Component -->
         <div th:replace="fragments/sidebar :: sidebar('buscar')"></div>
-
-        <!-- Main Content -->
         <main class="main-content">
             <div class="content-header">
                 <h1>Buscar Quejas</h1>
             </div>
-
             <!-- Mensaje de error para CAPTCHA -->
             <div th:if="${captchaError}" class="alert alert-error">
                 <i class="fas fa-exclamation-circle"></i>
                 <span th:text="${captchaError}">Error en la verificación CAPTCHA</span>
                 <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
-
             <!-- Mensajes de éxito/error -->
             <div th:if="${mensaje}" class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
@@ -87,8 +67,7 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Resultados de Búsqueda - Solo mostrar si se ha seleccionado una entidad -->
+            <!-- Resultados de Búsqueda -->
             <div class="results-section"
                 th:if="${entidadSeleccionada != null and entidadSeleccionada != '' and entidadSeleccionada != 'Seleccione una entidad'}">
                 <div class="results-header">
@@ -98,10 +77,13 @@
                 <div class="results-container">
                     <div th:if="${quejas != null and !quejas.empty}" class="results-table-container"
                         id="tableContainer">
+
                         <table class="results-table" id="resultsTable">
                             <thead>
                                 <tr>
                                     <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Comentarios</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -110,23 +92,46 @@
                                     th:attr="data-queja-id=${queja.id}, data-descripcion=${queja.descripcion}"
                                     class="table-row">
                                     <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
+                                    <td class="estado-cell">
+                                        <span th:text="${queja.estado}"
+                                            th:class="'status-badge status-' + ${#strings.toLowerCase(queja.estado)}">
+                                            Estado
+                                        </span>
+                                    </td>
+                                    <td class="comentarios-cell">
+                                        <div class="comentarios-info">
+                                            <span class="comentarios-count"
+                                                th:text="${#lists.size(queja.comentarios)} + ' comentario(s)'">
+                                                0 comentario(s)
+                                            </span>
+                                        </div>
+                                    </td>
                                     <td class="actions-cell">
                                         <button type="button" class="btn-delete"
                                             th:onclick="'confirmarBorrado(' + ${queja.id} + ')'" title="Borrar queja">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        <button type="button" class="btn-status"
+                                            th:onclick="'cambiarEstado(' + ${queja.id} + ')'" title="Cambiar estado">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <button type="button" class="btn-comment"
+                                            th:onclick="'agregarComentario(' + ${queja.id} + ')'"
+                                            title="Agregar comentario">
+                                            <i class="fas fa-comment-plus"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-
-                        <!-- Controles de paginación: lo mostramos siempre (si hay quejas) y el JS se encargará de ocultarlo si no hace falta -->
+                        <!-- Controles de Paginación -->
                         <div id="paginationContainer" class="pagination-container"
                             th:if="${quejas != null and !quejas.empty}" style="display: none;">
                             <div class="pagination-info">
                                 <span id="paginationInfo">Mostrando 1-10 de <span
                                         th:text="${#lists.size(quejas)}"></span> resultados</span>
                             </div>
+
                             <div class="pagination-controls" role="navigation" aria-label="Paginación">
                                 <button id="prevBtn" class="pagination-btn" disabled aria-label="Anterior">
                                     <i class="fas fa-chevron-left"></i>
@@ -134,17 +139,16 @@
                                 </button>
                                 <div class="pagination-pages" id="paginationPages" aria-live="polite"
                                     aria-atomic="true">
-                                    <!-- Pages will be generated by JavaScript -->
                                 </div>
                                 <button id="nextBtn" class="pagination-btn" aria-label="Siguiente">
                                     Siguiente
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
+
                         </div>
                     </div>
 
-                    <!-- Estado vacío - solo cuando no hay quejas para la entidad seleccionada -->
                     <div th:if="${quejas == null or quejas.empty}" class="empty-state">
                         <div class="empty-icon">
                             <i class="fas fa-search"></i>
@@ -154,6 +158,7 @@
                             No hay quejas registradas para "<span th:text="${entidadSeleccionada}"></span>"
                         </p>
                     </div>
+
                 </div>
             </div>
 

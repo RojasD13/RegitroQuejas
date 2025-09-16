@@ -1,0 +1,68 @@
+/* =============================
+   Tabla de resultados
+============================= */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.results-table th {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.results-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.results-table tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: var(--transition);
+}
+
+.table-row {
+    transition: opacity 0.2s;
+}
+
+.table-row.hidden {
+    display: none;
+}
+
+.entidad-cell {
+    font-weight: 500;
+}
+
+.actions-cell {
+    text-align: center;
+    width: 100px;
+}
+
+/* =============================
+   Botones de acción
+============================= */
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-delete:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}

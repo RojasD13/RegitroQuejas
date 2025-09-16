@@ -77,3 +77,8 @@
     color: white;
     border-color: var(--secondary-color);
 }
+
+.pagination-container {
+    flex-direction: column;
+    gap: 15px;
+}
