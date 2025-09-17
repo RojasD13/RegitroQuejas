@@ -29,17 +29,17 @@ public class Comment {
 
     public Comment() { }
 
-    public Comment(String contenido, Queja queja) {
+    public Comment(String content, Queja complaint) {
         this.date = LocalDateTime.now();
-        this.content = contenido;
-        this.complaint = queja;
+        this.content = content;
+        this.complaint = complaint;
     }
 
     public Queja getComplaint() {
         return complaint;
     }
 
-    public void setComplaint(Queja queja) {
-        this.complaint = queja;
+    public void setComplaint(Queja complaint) {
+        this.complaint = complaint;
     }
 }
