@@ -11,11 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Entity
 @Table(name = "empresas")
-
+@Getter
+@Setter 
 public class Empresa {
 
     @Id
@@ -29,21 +32,8 @@ public class Empresa {
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Queja> quejas;
-
     
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getNombreEmpresa() {
-        return nombreEmpresa;
-    }   
-    public void setNombreEmpresa(String nombreEmpresa) {
-        this.nombreEmpresa = nombreEmpresa;
-    }
     public List<Queja> getQuejas() {
         return quejas;
     }
