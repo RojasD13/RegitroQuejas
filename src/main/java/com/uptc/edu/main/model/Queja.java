@@ -37,16 +37,16 @@ public class Queja {
     private Estado estado = Estado.PROCESO;
 
     @OneToMany(mappedBy = "queja", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Comentario> comentarios = new ArrayList<>();
+    private List<Comment> comentarios = new ArrayList<>();
 
-    public void addComentario(Comentario comentario) {
+    public void addComentario(Comment comentario) {
         comentarios.add(comentario);
-        comentario.setQueja(this);
+        comentario.setComplaint(this);
     }
 
-    public void removeComentario(Comentario comentario) {
+    public void removeComentario(Comment comentario) {
         comentarios.remove(comentario);
-        comentario.setQueja(null);
+        comentario.setComplaint(null);
     }
 
     public void setDescripcion(String descripcion) {

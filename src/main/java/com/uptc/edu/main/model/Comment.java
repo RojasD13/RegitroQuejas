@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "comentarios")
 @Getter
 @Setter
-public class Comentario {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,28 +18,28 @@ public class Comentario {
     private Long id;
 
     @Column(name = "fecha", nullable = false)
-    private LocalDateTime fecha;
+    private LocalDateTime date;
 
     @Column(name = "contenido", nullable = false, length = 2000)
-    private String contenido;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_queja", nullable = false)
-    private Queja queja;
+    private Queja complaint;
 
-    public Comentario() { }
+    public Comment() { }
 
-    public Comentario(String contenido, Queja queja) {
-        this.fecha = LocalDateTime.now();
-        this.contenido = contenido;
-        this.queja = queja;
+    public Comment(String contenido, Queja queja) {
+        this.date = LocalDateTime.now();
+        this.content = contenido;
+        this.complaint = queja;
     }
 
-    public Queja getQueja() {
-        return queja;
+    public Queja getComplaint() {
+        return complaint;
     }
 
-    public void setQueja(Queja queja) {
-        this.queja = queja;
+    public void setComplaint(Queja queja) {
+        this.complaint = queja;
     }
 }
