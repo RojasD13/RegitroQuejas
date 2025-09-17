@@ -57,6 +57,16 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 4. Accede a la interfaz web en tu navegador en `http://localhost:8080/registro`. (Local)
 5. Para acceder al despliegue de la appi acceder desde el navegador a `https://springboot-complains.onrender.com/registro`.
 
+## SCRIPTS
+1. Creación de empresas:
+   ```SQL
+   INSERT INTO empresas (id_empresa, nombre_empresa) values (1,'Ministerio de Salud');
+   INSERT INTO empresas (id_empresa, nombre_empresa) values (2,'Ministerio de Educación');
+   INSERT INTO empresas (id_empresa, nombre_empresa) values (3,'Empresa Metropolitana');
+   INSERT INTO empresas (id_empresa, nombre_empresa) values (4,'Defensoría del Pueblo');
+   INSERT INTO empresas (id_empresa, nombre_empresa) values (5,'Ministerio de Transporte');
+   ```
+
 
 ## Licencia
 
