@@ -34,7 +34,7 @@ public class Complaint {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 20)
-    private Estado state = Estado.PROCESO;
+    private State state = State.PROCESO;
 
     @OneToMany(mappedBy = "queja", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();

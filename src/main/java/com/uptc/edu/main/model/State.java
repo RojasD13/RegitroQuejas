@@ -1,6 +1,6 @@
 package com.uptc.edu.main.model;
 
-public enum Estado {
+public enum State {
     PROCESO,
     REVISION,
     CERRADO
