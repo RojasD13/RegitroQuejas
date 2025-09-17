@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.model.Empresa;
-import com.uptc.edu.main.model.Queja;
+import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.EmpresaRepo;
 import com.uptc.edu.main.repository.QuejaRepo;
 import com.uptc.edu.main.service.EmailService;
@@ -51,9 +51,9 @@ public class QuejaController {
             Model model) {
 
         empresaRepo.findByNombreEmpresa(nombreEmpresa).ifPresentOrElse(empresa -> {
-            Queja queja = new Queja();
-            queja.setDescripcion(descripcion);
-            queja.setEmpresa(empresa);
+            Complaint queja = new Complaint();
+            queja.setDescription(descripcion);
+            queja.setCompany(empresa);
             quejaRepo.save(queja);
 
             model.addAttribute("mensaje", "La queja fue registrada exitosamente.");
@@ -75,7 +75,7 @@ public class QuejaController {
     public String mostrarQuejasporEmpresa(@RequestParam(required = false) Long empresaId, Model model) {
         model.addAttribute("entidades", empresaRepo.findAll());
 
-        List<Queja> quejas = (empresaId == null)
+        List<Complaint> quejas = (empresaId == null)
                 ? quejaRepo.findByIsVisibleTrue()
                 : quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresaId);
 
@@ -94,7 +94,7 @@ public class QuejaController {
             quejaRepo.save(queja);
 
             redirectAttributes.addFlashAttribute("mensaje", "Queja eliminada exitosamente");
-            session.setAttribute("ultimaEmpresaBuscada", queja.getEmpresa().getId());
+            session.setAttribute("ultimaEmpresaBuscada", queja.getCompany().getId());
         }, () -> {
             redirectAttributes.addFlashAttribute("error", "La queja no existe");
         });
@@ -112,7 +112,7 @@ public class QuejaController {
         model.addAttribute("entidades", empresaRepo.findAll());
 
         empresaRepo.findById(empresaId).ifPresentOrElse(empresa -> {
-            List<Queja> quejas = quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId());
+            List<Complaint> quejas = quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId());
             model.addAttribute("quejas", quejas);
             model.addAttribute("entidadSeleccionada", empresa.getNombreEmpresa());
 

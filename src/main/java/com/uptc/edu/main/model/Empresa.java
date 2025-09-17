@@ -31,10 +31,10 @@ public class Empresa {
     private String nombreEmpresa;
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Queja> quejas;
+    private List<Complaint> quejas;
     
 
-    public List<Queja> getQuejas() {
+    public List<Complaint> getQuejas() {
         return quejas;
     }
 

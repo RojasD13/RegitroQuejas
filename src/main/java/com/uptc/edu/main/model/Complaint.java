@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "quejas")
 @Getter
 @Setter 
-public class Queja {
+public class Complaint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,31 +22,31 @@ public class Queja {
 
     @Column(name = "descripcion", nullable = false, length = 1000)
     @NotNull
-    private String descripcion;
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_empresa", nullable = false)
     @JsonIgnore
-    private Empresa empresa;
+    private Empresa company;
 
     @Column(name = "visible", nullable = false)
     private boolean isVisible = true;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false, length = 20)
-    private Estado estado = Estado.PROCESO;
+    private Estado state = Estado.PROCESO;
 
     @OneToMany(mappedBy = "queja", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Comment> comentarios = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
-    public void addComentario(Comment comentario) {
-        comentarios.add(comentario);
-        comentario.setComplaint(this);
+    public void addComentario(Comment comment) {
+        comments.add(comment);
+        comment.setComplaint(this);
     }
 
-    public void removeComentario(Comment comentario) {
-        comentarios.remove(comentario);
-        comentario.setComplaint(null);
+    public void removeComentario(Comment comment) {
+        comments.remove(comment);
+        comment.setComplaint(null);
     }
 
 }

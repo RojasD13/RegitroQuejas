@@ -25,21 +25,21 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_queja", nullable = false)
-    private Queja complaint;
+    private Complaint complaint;
 
     public Comment() { }
 
-    public Comment(String content, Queja complaint) {
+    public Comment(String content, Complaint complaint) {
         this.date = LocalDateTime.now();
         this.content = content;
         this.complaint = complaint;
     }
 
-    public Queja getComplaint() {
+    public Complaint getComplaint() {
         return complaint;
     }
 
-    public void setComplaint(Queja complaint) {
+    public void setComplaint(Complaint complaint) {
         this.complaint = complaint;
     }
 }
