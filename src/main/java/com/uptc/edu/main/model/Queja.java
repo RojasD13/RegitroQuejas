@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "quejas")
 @Getter
-@Setter
+@Setter 
 public class Queja {
 
     @Id
@@ -49,19 +49,4 @@ public class Queja {
         comentario.setQueja(null);
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
-    }
-
-    public void setIsVisible(boolean isVisible) {
-        this.isVisible = isVisible;
-    }
-
-    public Empresa getEmpresa() {
-        return empresa;
-    }
 }

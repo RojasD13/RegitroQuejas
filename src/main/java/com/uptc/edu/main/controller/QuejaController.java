@@ -42,7 +42,7 @@ public class QuejaController {
                 .toList());
 
         return "registro";
-    }
+    } 
 
     @PostMapping("/enviar-queja")
     public String registrarQueja(
@@ -90,7 +90,7 @@ public class QuejaController {
             HttpSession session) {
 
         quejaRepo.findById(id).ifPresentOrElse(queja -> {
-            queja.setIsVisible(false);
+            queja.setVisible(false);
             quejaRepo.save(queja);
 
             redirectAttributes.addFlashAttribute("mensaje", "Queja eliminada exitosamente");
