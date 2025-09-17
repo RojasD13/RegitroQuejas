@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Company;
 
 
-public interface EmpresaRepo extends JpaRepository<Empresa, Long> {
+public interface EmpresaRepo extends JpaRepository<Company, Long> {
     
         
-    List<Empresa> findAllByOrderByNombreEmpresaAsc();
+    List<Company> findAllByOrderByNombreEmpresaAsc();
     
     boolean existsByNombreEmpresa(String nombreEmpresa);
     
@@ -21,7 +21,7 @@ public interface EmpresaRepo extends JpaRepository<Empresa, Long> {
     Long countQuejasByEmpresaId(@Param("empresaId") Long empresaId);
 
 
-        Optional<Empresa> findByNombreEmpresa(String nombreEmpresa);
+        Optional<Company> findByNombreEmpresa(String nombreEmpresa);
 
 
     //     @Query("SELECT e.nombreEmpresa FROM Empresa e ORDER BY e.nombreEmpresa ASC")

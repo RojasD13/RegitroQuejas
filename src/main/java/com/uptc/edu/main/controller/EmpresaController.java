@@ -28,7 +28,7 @@ public class EmpresaController {
             .map(empresa -> {
                 EmpresaResumenDTO dto = new EmpresaResumenDTO();
                 dto.setId(empresa.getId());
-                dto.setNombreEmpresa(empresa.getNombreEmpresa());
+                dto.setNombreEmpresa(empresa.getName());
                 dto.setTotalQuejas((long) quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId()).size());
                 return dto;
             })

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.QuejaRepo;
 
@@ -27,7 +27,7 @@ public class QuejaService {
     }
 
     // Buscar quejas por empresa
-    public List<Complaint> obtenerQuejasPorEmpresa(Empresa empresa) {
+    public List<Complaint> obtenerQuejasPorEmpresa(Company empresa) {
         return quejaRepo.findByEmpresa(empresa);
     }
 

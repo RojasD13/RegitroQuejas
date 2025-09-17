@@ -6,12 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 
 public interface QuejaRepo extends JpaRepository<Complaint, Long> {
 
-    List<Complaint> findByEmpresa(Empresa empresa);
+    List<Complaint> findByEmpresa(Company empresa);
 
     @Query("SELECT q FROM Queja q WHERE q.empresa.id = :empresaId AND q.isVisible = true")
     List<Complaint> findByEmpresaId(@Param("empresaId") Long empresaId);

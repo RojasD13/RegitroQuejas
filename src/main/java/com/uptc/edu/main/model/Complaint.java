@@ -27,7 +27,7 @@ public class Complaint {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_empresa", nullable = false)
     @JsonIgnore
-    private Empresa company;
+    private Company company;
 
     @Column(name = "visible", nullable = false)
     private boolean isVisible = true;

@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name = "empresas")
 @Getter
 @Setter 
-public class Empresa {
+public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +28,14 @@ public class Empresa {
 
     @Column(name = "nombre_empresa", nullable = false, length = 100)
     @NotNull
-    private String nombreEmpresa;
+    private String name;
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Complaint> quejas;
+    private List<Complaint> complaints;
     
 
-    public List<Complaint> getQuejas() {
-        return quejas;
+    public List<Complaint> getComplaints() {
+        return complaints;
     }
 
 }

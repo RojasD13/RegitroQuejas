@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.EmpresaRepo;
 import com.uptc.edu.main.repository.QuejaRepo;
@@ -35,10 +35,10 @@ public class QuejaController {
 
     @GetMapping("/registro")
     public String mostrarFormulario(Model model) {
-        List<Empresa> empresas = empresaRepo.findAll();
+        List<Company> empresas = empresaRepo.findAll();
 
         model.addAttribute("entidades", empresas.stream()
-                .map(Empresa::getNombreEmpresa)
+                .map(Company::getName)
                 .toList());
 
         return "registro";
@@ -65,7 +65,7 @@ public class QuejaController {
 
         model.addAttribute("entidades",
                 empresaRepo.findAll().stream()
-                        .map(Empresa::getNombreEmpresa)
+                        .map(Company::getName)
                         .toList());
 
         return "registro";
@@ -114,10 +114,10 @@ public class QuejaController {
         empresaRepo.findById(empresaId).ifPresentOrElse(empresa -> {
             List<Complaint> quejas = quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId());
             model.addAttribute("quejas", quejas);
-            model.addAttribute("entidadSeleccionada", empresa.getNombreEmpresa());
+            model.addAttribute("entidadSeleccionada", empresa.getName());
 
             emailService.enviarNotificacionBusquedaRealizada(
-                    empresa.getNombreEmpresa(),
+                    empresa.getName(),
                     obtenerIpCliente(request),
                     request.getMethod(),
                     request.getRequestURI());

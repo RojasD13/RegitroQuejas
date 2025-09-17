@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.uptc.edu.main.model.Empresa;
+import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.repository.EmpresaRepo;
 
 @Service
@@ -15,19 +15,19 @@ public class EmpresaService {
     @Autowired
     private EmpresaRepo empresaRepo;
 
-    public List<Empresa> listarEmpresas() {
+    public List<Company> listarEmpresas() {
         return empresaRepo.findAll();
     }
 
-    public Optional<Empresa> buscarPorNombre(String nombre) {
+    public Optional<Company> buscarPorNombre(String nombre) {
         return empresaRepo.findByNombreEmpresa(nombre);
     }
 
-    public Empresa guardar(Empresa empresa) {
+    public Company guardar(Company empresa) {
         return empresaRepo.save(empresa);
     }
 
-    public Optional<Empresa> buscarPorId(Long id) {
+    public Optional<Company> buscarPorId(Long id) {
         return empresaRepo.findById(id);
     }
 }
