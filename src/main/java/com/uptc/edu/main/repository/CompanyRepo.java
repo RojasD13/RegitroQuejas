@@ -11,11 +11,11 @@ import com.uptc.edu.main.model.Company;
 
 public interface CompanyRepo extends JpaRepository<Company, Long> {
 
-    List<Company> findAllCompaniesOrderByNameAsc();
+    List<Company> findAllByOrderByNameAsc();
 
-    boolean existsByCompanyName(String nombreEmpresa);
+    boolean existsByName(String companyName);
 
-    @Query("SELECT COUNT(q) FROM Company c JOIN c.quejas q WHERE c.id = :empresaId")
+    @Query("SELECT COUNT(q) FROM Company c JOIN c.complaints q WHERE c.id = :empresaId")
     Long countComplaintsByCompanyId(@Param("empresaId") Long companyId);
 
     Optional<Company> findByCompanyName(String companyName);

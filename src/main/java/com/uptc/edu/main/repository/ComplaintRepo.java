@@ -13,7 +13,7 @@ public interface ComplaintRepo extends JpaRepository<Complaint, Long> {
 
     List<Complaint> findByCompany(Company company);
 
-    @Query("SELECT c FROM Complaint c WHERE c.empresa.id = :empresaId AND c.isVisible = true")
+    @Query("SELECT c FROM Complaint c WHERE c.company.id = :empresaId AND c.isVisible = true")
     List<Complaint> findByCompanyId(@Param("empresaId") Long companyId);
 
     List<Complaint> findByCompanyIdAndIsVisibleTrue(Long companyId);

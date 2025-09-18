@@ -29,7 +29,7 @@ public class CompanyController {
     }
 
     private List<CompanySummaryDTO> getTotalComplaintsByCompanies() {
-        List<CompanySummaryDTO> summary = companyRepo.findAllCompaniesOrderByNameAsc()
+        List<CompanySummaryDTO> summary = companyRepo.findAllByOrderByNameAsc()
                 .stream()
                 .map(company -> {
                     CompanySummaryDTO dto = new CompanySummaryDTO();

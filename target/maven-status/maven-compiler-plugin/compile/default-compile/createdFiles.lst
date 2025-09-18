@@ -5,6 +5,7 @@ com\uptc\edu\main\model\Comment.class
 com\uptc\edu\main\model\Company.class
 com\uptc\edu\main\dto\CompanySummaryDTO.class
 com\uptc\edu\main\dto\ComplaintRegistryDTO.class
+com\uptc\edu\main\service\CompanyService.class
 com\uptc\edu\main\filter\RateLimitFilter.class
 com\uptc\edu\main\controller\ComplaintController.class
 com\uptc\edu\main\service\EmailService.class
@@ -13,6 +14,5 @@ com\uptc\edu\main\repository\CompanyRepo.class
 com\uptc\edu\main\controller\CompanyController.class
 com\uptc\edu\main\model\Complaint.class
 com\uptc\edu\main\model\State.class
+com\uptc\edu\main\service\ComplaintService.class
 com\uptc\edu\main\controller\IndexController.class
-com\uptc\edu\main\service\EmpresaService.class
-com\uptc\edu\main\service\QuejaService.class

@@ -10,9 +10,9 @@ C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\mod
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\model\Company.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\dto\CompanySummaryDTO.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\dto\ComplaintRegistryDTO.java
+C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\CompanyService.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\controller\ComplaintController.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\controller\CompanyController.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\model\State.java
-C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\EmpresaService.java
-C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\QuejaService.java
+C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\ComplaintService.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\repository\ComplaintRepo.java
