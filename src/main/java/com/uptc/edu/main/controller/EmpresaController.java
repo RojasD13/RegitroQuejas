@@ -9,21 +9,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.uptc.edu.main.dto.EmpresaResumenDTO;
-import com.uptc.edu.main.repository.EmpresaRepo;
+import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.QuejaRepo;
 
 @Controller
 public class EmpresaController {
     
     @Autowired
-    private EmpresaRepo empresaRepo;
+    private CompanyRepo empresaRepo;
 
     @Autowired
     private QuejaRepo quejaRepo;
 
     @GetMapping("/analisis")
     public String obtenerTotalQuejasPorEmpresas(Model model) {
-        List<EmpresaResumenDTO> resumen = empresaRepo.findAllByOrderByNombreEmpresaAsc()
+        List<EmpresaResumenDTO> resumen = empresaRepo.findAllCompaniesOrderByNameAsc()
             .stream()
             .map(empresa -> {
                 EmpresaResumenDTO dto = new EmpresaResumenDTO();

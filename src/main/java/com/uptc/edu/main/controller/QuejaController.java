@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
-import com.uptc.edu.main.repository.EmpresaRepo;
+import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.QuejaRepo;
 import com.uptc.edu.main.service.EmailService;
 
@@ -28,7 +28,7 @@ public class QuejaController {
     private QuejaRepo quejaRepo;
 
     @Autowired
-    private EmpresaRepo empresaRepo;
+    private CompanyRepo empresaRepo;
 
     @Autowired
     private EmailService emailService;
@@ -50,7 +50,7 @@ public class QuejaController {
             @RequestParam String descripcion,
             Model model) {
 
-        empresaRepo.findByNombreEmpresa(nombreEmpresa).ifPresentOrElse(empresa -> {
+        empresaRepo.findByCompanyName(nombreEmpresa).ifPresentOrElse(empresa -> {
             Complaint queja = new Complaint();
             queja.setDescription(descripcion);
             queja.setCompany(empresa);

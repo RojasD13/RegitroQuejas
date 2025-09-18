@@ -1,7 +1,7 @@
 package com.uptc.edu.main;
 
 import com.uptc.edu.main.model.Company;
-import com.uptc.edu.main.repository.EmpresaRepo;
+import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.service.EmpresaService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class RegistroQuejasApplicationTests {
 
     @Mock
-    private EmpresaRepo empresaRepo;
+    private CompanyRepo empresaRepo;
 
     @InjectMocks
     private EmpresaService service; // Ejemplo de servicio que usaría EmpresaRepo
@@ -54,14 +54,14 @@ class RegistroQuejasApplicationTests {
         empresa.setId(2L);
         empresa.setName("Empresa Unica2");
 
-        when(empresaRepo.findByNombreEmpresa("Empresa Unica2"))
+        when(empresaRepo.findByCompanyName("Empresa Unica2"))
                 .thenReturn(Optional.of(empresa));
 
-        Company encontrada = empresaRepo.findByNombreEmpresa("Empresa Unica2").orElse(null);
+        Company encontrada = empresaRepo.findByCompanyName("Empresa Unica2").orElse(null);
         assertThat(encontrada).isNotNull();
         assertThat(encontrada.getName()).isEqualTo("Empresa Unica2");
 
-        verify(empresaRepo, times(1)).findByNombreEmpresa("Empresa Unica2");
+        verify(empresaRepo, times(1)).findByCompanyName("Empresa Unica2");
     }
 
     @Test
