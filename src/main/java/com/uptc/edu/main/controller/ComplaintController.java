@@ -107,21 +107,20 @@ public class ComplaintController {
 
     @PostMapping("/buscar-quejas")
     public String buscarQuejas(
-            @RequestParam("entidad") Long companyId,
+            @RequestParam("entidad") Long entidadId,
             Model model,
             HttpServletRequest request) {
 
         model.addAttribute("entidades", companyRepo.findAll());
 
-        companyRepo.findById(companyId).ifPresentOrElse(company -> {
+        companyRepo.findById(entidadId).ifPresentOrElse(company -> {
             List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
-
             sendSearchNotification(company.getName(), request);
         }, () -> {
             model.addAttribute("quejas", List.of());
-            model.addAttribute("entidadSeleccionada", null);
+            model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
         });
 
         return "buscar";
