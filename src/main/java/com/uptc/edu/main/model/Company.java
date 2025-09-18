@@ -14,11 +14,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Entity
 @Table(name = "companies")
 @Getter
-@Setter 
+@Setter
 public class Company {
 
     @Id
@@ -32,10 +31,5 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complaint> complaints;
-    
-
-    public List<Complaint> getComplaints() {
-        return complaints;
-    }
 
 }
