@@ -25,7 +25,7 @@ public class EmailTest implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Envía un email de prueba (de forma asíncrona). No bloqueará el arranque.
-        emailService.enviarNotificacionBusquedaRealizada("EntidadPrueba", "127.0.0.1", "GET", "/");
+        emailService.sendNotificationSearchCompleted("EntidadPrueba", "127.0.0.1", "GET", "/");
         logger.info("Email de prueba disparado (profile=dev). Revisa logs y la bandeja del admin configurado en app.admin.email.");
     }
 }

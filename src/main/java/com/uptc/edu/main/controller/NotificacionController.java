@@ -35,7 +35,7 @@ public class NotificacionController {
         String requestUri = request.getRequestURI();
 
         // Llamada asíncrona al servicio de email
-        emailService.enviarNotificacionBusquedaRealizada(entidad, ipUsuario, httpMethod, requestUri);
+        emailService.sendNotificationSearchCompleted(entidad, ipUsuario, httpMethod, requestUri);
 
         Map<String, String> response = new HashMap<>();
         response.put("status", "success");

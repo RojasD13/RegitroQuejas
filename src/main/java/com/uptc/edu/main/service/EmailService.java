@@ -41,7 +41,7 @@ public class EmailService {
      *  - URI solicitada
      */
     @Async
-    public void enviarNotificacionBusquedaRealizada(
+    public void sendNotificationSearchCompleted(
             String entidadSeleccionada,
             String ipUsuario,
             String httpMethod,
