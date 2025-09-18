@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.uptc.edu.main.dto.EmpresaResumenDTO;
 import com.uptc.edu.main.repository.CompanyRepo;
-import com.uptc.edu.main.repository.QuejaRepo;
+import com.uptc.edu.main.repository.ComplaintRepo;
 
 @Controller
 public class EmpresaController {
@@ -19,7 +19,7 @@ public class EmpresaController {
     private CompanyRepo empresaRepo;
 
     @Autowired
-    private QuejaRepo quejaRepo;
+    private ComplaintRepo quejaRepo;
 
     @GetMapping("/analisis")
     public String obtenerTotalQuejasPorEmpresas(Model model) {
@@ -29,7 +29,7 @@ public class EmpresaController {
                 EmpresaResumenDTO dto = new EmpresaResumenDTO();
                 dto.setId(empresa.getId());
                 dto.setNombreEmpresa(empresa.getName());
-                dto.setTotalQuejas((long) quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId()).size());
+                dto.setTotalQuejas((long) quejaRepo.findByCompanyIdAndIsVisibleTrue(empresa.getId()).size());
                 return dto;
             })
             .collect(Collectors.toList());

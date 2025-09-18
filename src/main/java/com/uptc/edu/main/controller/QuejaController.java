@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
-import com.uptc.edu.main.repository.QuejaRepo;
+import com.uptc.edu.main.repository.ComplaintRepo;
 import com.uptc.edu.main.service.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpSession;
 public class QuejaController {
 
     @Autowired
-    private QuejaRepo quejaRepo;
+    private ComplaintRepo quejaRepo;
 
     @Autowired
     private CompanyRepo empresaRepo;
@@ -77,7 +77,7 @@ public class QuejaController {
 
         List<Complaint> quejas = (empresaId == null)
                 ? quejaRepo.findByIsVisibleTrue()
-                : quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresaId);
+                : quejaRepo.findByCompanyIdAndIsVisibleTrue(empresaId);
 
         model.addAttribute("quejas", quejas);
         return "buscar";
@@ -112,7 +112,7 @@ public class QuejaController {
         model.addAttribute("entidades", empresaRepo.findAll());
 
         empresaRepo.findById(empresaId).ifPresentOrElse(empresa -> {
-            List<Complaint> quejas = quejaRepo.findByEmpresaIdAndIsVisibleTrue(empresa.getId());
+            List<Complaint> quejas = quejaRepo.findByCompanyIdAndIsVisibleTrue(empresa.getId());
             model.addAttribute("quejas", quejas);
             model.addAttribute("entidadSeleccionada", empresa.getName());
 

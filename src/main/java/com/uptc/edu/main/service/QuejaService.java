@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
-import com.uptc.edu.main.repository.QuejaRepo;
+import com.uptc.edu.main.repository.ComplaintRepo;
 
 @Service
 public class QuejaService {
 
     @Autowired
-    private QuejaRepo quejaRepo;
+    private ComplaintRepo quejaRepo;
 
     // Guardar una queja
     public Complaint guardarQueja(Complaint queja) {
@@ -28,7 +28,7 @@ public class QuejaService {
 
     // Buscar quejas por empresa
     public List<Complaint> obtenerQuejasPorEmpresa(Company empresa) {
-        return quejaRepo.findByEmpresa(empresa);
+        return quejaRepo.findByCompany(empresa);
     }
 
     // Buscar queja por id
