@@ -3,7 +3,6 @@ package com.uptc.edu.main.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,26 +15,25 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
-public class NotificacionController {
+public class NotificationController {
 
     private final EmailService emailService;
 
-    @Autowired
-    public NotificacionController(EmailService emailService) {
+    public NotificationController(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @PostMapping("/notificar-captcha-completado")
-    public ResponseEntity<Map<String, String>> notificarCaptchaCompletado(
+    public ResponseEntity<Map<String, String>> notifyCaptchaCompleted(
             HttpServletRequest request,
-            @RequestParam(name = "entidad", required = false, defaultValue = "CaptchaService") String entidad) {
+            @RequestParam(name = "entidad", required = false, defaultValue = "CaptchaService") String entity) {
 
-        String ipUsuario = obtenerIpCliente(request);
+        String userIp = getClientIp(request);
         String httpMethod = request.getMethod();
         String requestUri = request.getRequestURI();
 
         // Llamada asíncrona al servicio de email
-        emailService.sendNotificationSearchCompleted(entidad, ipUsuario, httpMethod, requestUri);
+        emailService.sendNotificationSearchCompleted(entity, userIp, httpMethod, requestUri);
 
         Map<String, String> response = new HashMap<>();
         response.put("status", "success");
@@ -43,17 +41,13 @@ public class NotificacionController {
         return ResponseEntity.ok(response);
     }
 
-    private String obtenerIpCliente(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isBlank())
+            return ip.split(",")[0].trim();
 
-        String xRealIP = request.getHeader("X-Real-IP");
-        if (xRealIP != null && !xRealIP.isEmpty()) {
-            return xRealIP;
-        }
-
-        return request.getRemoteAddr();
+        ip = request.getHeader("X-Real-IP");
+        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
+
 }
