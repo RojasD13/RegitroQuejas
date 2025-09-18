@@ -45,9 +45,8 @@
                         <label for="entidad" class="form-label">Entidad Pública</label>
                         <select id="entidad" name="entidad" class="form-select" required>
                             <option value="">Seleccione una entidad</option>
-                            <option th:each="entidad : ${entidades}" th:value="${entidad.id}"
-                                th:text="${entidad.nombreEmpresa}"
-                                th:selected="${entidad.nombreEmpresa == entidadSeleccionada}">
+                            <option th:each="entidad : ${entidades}" th:value="${entidad.id}" th:text="${entidad.name}"
+                                th:selected="${entidad.name == entidadSeleccionada}">
                             </option>
                         </select>
                         <small class="form-help">Elija la entidad para ver sus quejas registradas.</small>
@@ -91,17 +90,17 @@
                                 <tr th:each="queja : ${quejas}"
                                     th:attr="data-queja-id=${queja.id}, data-descripcion=${queja.descripcion}"
                                     class="table-row">
-                                    <td class="entidad-cell" th:text="${queja.descripcion}">Descripcion</td>
+                                    <td class="entidad-cell" th:text="${queja.description}">Descripcion</td>
                                     <td class="estado-cell">
-                                        <span th:text="${queja.estado}"
-                                            th:class="'status-badge status-' + ${#strings.toLowerCase(queja.estado)}">
+                                        <span th:text="${queja.state}"
+                                            th:class="'status-badge status-' + ${#strings.toLowerCase(queja.state)}">
                                             Estado
                                         </span>
                                     </td>
                                     <td class="comentarios-cell">
                                         <div class="comentarios-info">
                                             <span class="comentarios-count"
-                                                th:text="${#lists.size(queja.comentarios)} + ' comentario(s)'">
+                                                th:text="${#lists.size(queja.comments)} + ' comentario(s)'">
                                                 0 comentario(s)
                                             </span>
                                         </div>

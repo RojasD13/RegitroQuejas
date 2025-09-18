@@ -102,7 +102,7 @@ public class ComplaintController {
         });
 
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
-        return "redirect:/quejas" + (companyId != null ? "?empresaId=" + companyId : "");
+        return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
     }
 
     @PostMapping("/buscar-quejas")
