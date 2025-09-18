@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "quejas")
+@Table(name = "complaints")
 @Getter
 @Setter 
 public class Complaint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "complaints")
+    @Column(name = "complaint_id")
     private Long id;
 
     @Column(name = "description", nullable = false, length = 1000)
