@@ -33,17 +33,10 @@ public class EmailService {
         this.appName = (appName == null || appName.isBlank()) ? "RegistroQuejas" : appName;
     }
 
-    /**
-     * Envía una notificación de búsqueda con información de:
-     *  - Entidad consultada
-     *  - IP del cliente
-     *  - Método HTTP
-     *  - URI solicitada
-     */
     @Async
     public void sendNotificationSearchCompleted(
-            String entidadSeleccionada,
-            String ipUsuario,
+            String selectedEntity,
+            String userIp,
             String httpMethod,
             String requestUri) {
 
@@ -53,8 +46,8 @@ public class EmailService {
         if (requestUri == null || requestUri.isBlank()) {
             requestUri = "No disponible";
         }
-        if (entidadSeleccionada == null || entidadSeleccionada.isBlank()) {
-            entidadSeleccionada = "No especificada";
+        if (selectedEntity == null || selectedEntity.isBlank()) {
+            selectedEntity = "No especificada";
         }
 
         try {
@@ -79,8 +72,8 @@ public class EmailService {
                     fechaHora,
                     httpMethod,
                     requestUri,
-                    entidadSeleccionada,
-                    (ipUsuario != null && !ipUsuario.isBlank()) ? ipUsuario : "No disponible"
+                    selectedEntity,
+                    (userIp != null && !userIp.isBlank()) ? userIp : "No disponible"
             );
 
             message.setText(contenido);
