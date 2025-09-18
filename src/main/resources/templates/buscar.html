@@ -45,9 +45,8 @@
                         <label for="entidad" class="form-label">Entidad Pública</label>
                         <select id="entidad" name="entidad" class="form-select" required>
                             <option value="">Seleccione una entidad</option>
-                            <option th:each="entidad : ${entidades}"
-                                    th:value="${entidad.id}"th:text="${entidad.name}"
-                                    th:selected="${entidad.name == entidadSeleccionada}">
+                            <option th:each="entidad : ${entidades}" th:value="${entidad.id}" th:text="${entidad.name}"
+                                th:selected="${entidad.name == entidadSeleccionada}">
                             </option>
                         </select>
                         <small class="form-help">Elija la entidad para ver sus quejas registradas.</small>
@@ -353,7 +352,6 @@
             pageButtons.forEach(btn => {
                 btn.classList.toggle('active', parseInt(btn.textContent, 10) === currentPage);
             });
-            // No recreamos botones aquí para evitar duplicados; createPageButtons se encarga al iniciar
         }
 
         // Función para scroll automático a la tabla
