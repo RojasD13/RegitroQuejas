@@ -7,24 +7,24 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comentarios")
+@Table(name = "comments")
 @Getter
 @Setter
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_comentario")
+    @Column(name = "comment_id")
     private Long id;
 
-    @Column(name = "fecha", nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @Column(name = "contenido", nullable = false, length = 2000)
+    @Column(name = "content", nullable = false, length = 2000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_queja", nullable = false)
+    @JoinColumn(name = "complaint_id", nullable = false)
     private Complaint complaint;
 
     public Comment() { }

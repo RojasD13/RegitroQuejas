@@ -16,21 +16,21 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "empresas")
+@Table(name = "companies")
 @Getter
 @Setter 
 public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_empresa")
+    @Column(name = "company_id")
     private Long id;
 
-    @Column(name = "nombre_empresa", nullable = false, length = 100)
+    @Column(name = "company_name", nullable = false, length = 100)
     @NotNull
     private String name;
 
-    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complaint> complaints;
     
 

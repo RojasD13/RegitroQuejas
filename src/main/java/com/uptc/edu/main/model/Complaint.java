@@ -17,15 +17,15 @@ public class Complaint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_queja")
+    @Column(name = "complaints")
     private Long id;
 
-    @Column(name = "descripcion", nullable = false, length = 1000)
+    @Column(name = "description", nullable = false, length = 1000)
     @NotNull
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_empresa", nullable = false)
+    @JoinColumn(name = "company_id", nullable = false)
     @JsonIgnore
     private Company company;
 
@@ -33,10 +33,10 @@ public class Complaint {
     private boolean isVisible = true;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, length = 20)
+    @Column(name = "state", nullable = false, length = 20)
     private State state = State.PROCESO;
 
-    @OneToMany(mappedBy = "queja", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     public void addComentario(Comment comment) {
