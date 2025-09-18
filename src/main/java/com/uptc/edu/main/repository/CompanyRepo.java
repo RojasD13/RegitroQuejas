@@ -15,9 +15,9 @@ public interface CompanyRepo extends JpaRepository<Company, Long> {
 
     boolean existsByName(String companyName);
 
-    @Query("SELECT COUNT(q) FROM Company c JOIN c.complaints q WHERE c.id = :empresaId")
-    Long countComplaintsByCompanyId(@Param("empresaId") Long companyId);
+    @Query("SELECT COUNT(q) FROM Company c JOIN c.complaints q WHERE c.id = :companyId")
+    Long countComplaintsByCompanyId(@Param("companyId") Long companyId);
 
-    Optional<Company> findByCompanyName(String companyName);
+    Optional<Company> findByName(String companyName);
 
 }

@@ -20,7 +20,7 @@ public class CompanyService {
     }
 
     public Optional<Company> searchByName(String name) {
-        return companyRepo.findByCompanyName(name);
+        return companyRepo.findByName(name);
     }
 
     public Company save(Company company) {

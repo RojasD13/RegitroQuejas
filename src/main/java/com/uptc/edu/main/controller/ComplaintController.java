@@ -45,7 +45,7 @@ public class ComplaintController {
             @RequestParam String descripcion,
             Model model) {
 
-        companyRepo.findByCompanyName(companyName).ifPresentOrElse(company -> {
+        companyRepo.findByName(companyName).ifPresentOrElse(company -> {
             Complaint complaint = new Complaint();
             complaint.setDescription(descripcion);
             complaint.setCompany(company);

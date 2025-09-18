@@ -54,14 +54,14 @@ class RegistroQuejasApplicationTests {
         empresa.setId(2L);
         empresa.setName("Empresa Unica2");
 
-        when(empresaRepo.findByCompanyName("Empresa Unica2"))
+        when(empresaRepo.findByName("Empresa Unica2"))
                 .thenReturn(Optional.of(empresa));
 
-        Company encontrada = empresaRepo.findByCompanyName("Empresa Unica2").orElse(null);
+        Company encontrada = empresaRepo.findByName("Empresa Unica2").orElse(null);
         assertThat(encontrada).isNotNull();
         assertThat(encontrada.getName()).isEqualTo("Empresa Unica2");
 
-        verify(empresaRepo, times(1)).findByCompanyName("Empresa Unica2");
+        verify(empresaRepo, times(1)).findByName("Empresa Unica2");
     }
 
     @Test
