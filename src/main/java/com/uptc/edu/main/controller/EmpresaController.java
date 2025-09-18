@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.uptc.edu.main.dto.EmpresaResumenDTO;
+import com.uptc.edu.main.dto.CompanySummaryDTO;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
 
@@ -23,13 +23,13 @@ public class EmpresaController {
 
     @GetMapping("/analisis")
     public String obtenerTotalQuejasPorEmpresas(Model model) {
-        List<EmpresaResumenDTO> resumen = empresaRepo.findAllCompaniesOrderByNameAsc()
+        List<CompanySummaryDTO> resumen = empresaRepo.findAllCompaniesOrderByNameAsc()
             .stream()
             .map(empresa -> {
-                EmpresaResumenDTO dto = new EmpresaResumenDTO();
+                CompanySummaryDTO dto = new CompanySummaryDTO();
                 dto.setId(empresa.getId());
-                dto.setNombreEmpresa(empresa.getName());
-                dto.setTotalQuejas((long) quejaRepo.findByCompanyIdAndIsVisibleTrue(empresa.getId()).size());
+                dto.setCompanyName(empresa.getName());
+                dto.setTotalComplaints((long) quejaRepo.findByCompanyIdAndIsVisibleTrue(empresa.getId()).size());
                 return dto;
             })
             .collect(Collectors.toList());
