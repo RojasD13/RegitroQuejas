@@ -60,11 +60,11 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 ## SCRIPTS
 1. Creación de empresas:
    ```SQL
-   INSERT INTO empresas (id_empresa, nombre_empresa) values (1,'Ministerio de Salud');
-   INSERT INTO empresas (id_empresa, nombre_empresa) values (2,'Ministerio de Educación');
-   INSERT INTO empresas (id_empresa, nombre_empresa) values (3,'Empresa Metropolitana');
-   INSERT INTO empresas (id_empresa, nombre_empresa) values (4,'Defensoría del Pueblo');
-   INSERT INTO empresas (id_empresa, nombre_empresa) values (5,'Ministerio de Transporte');
+   INSERT INTO companies (company_id, company_name) values (1,'Ministerio de Salud');
+   INSERT INTO companies (company_id, company_name) values (2,'Ministerio de Educación');
+   INSERT INTO companies (company_id, company_name) values (3,'Empresa Metropolitana');
+   INSERT INTO companies (company_id, company_name) values (4,'Defensoría del Pueblo');
+   INSERT INTO companies (company_id, company_name) values (5,'Ministerio de Transporte');
    ```
 
 

@@ -20,8 +20,8 @@
                 <h1>Análisis de Quejas</h1>
             </div>
 
-            <!-- Analysis Section -->             
-            <div class="form-container"> 
+            <!-- Analysis Section -->
+            <div class="form-container">
                 <h2 class="section-title">Número de Quejas por Entidad</h2>
 
                 <table class="results-table">
@@ -33,32 +33,12 @@
                     </thead>
                     <tbody>
                         <tr th:each="empresa : ${resumen}">
-                            <td th:text="${empresa.nombreEmpresa}">Entidad</td>
-                            <td th:text="${empresa.totalQuejas}">0</td>
+                            <td th:text="${empresa.companyName}">Entidad</td>
+                            <td th:text="${empresa.totalComplaints}">0</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- Additional Analysis Section -->
-             
-            <!-- <div class="form-container"> Cambiado a form-container
-                <h2 class="section-title">Resumen General</h2>
-                <div class="stats-grid">
-                    <div class="stat-card bg-blue">
-                        <div class="stat-number" th:text="${totalQuejas}">0</div>
-                        <div class="stat-label">Total de Quejas</div>
-                    </div>
-                    <div class="stat-card bg-green">
-                        <div class="stat-number" th:text="${totalEntidades}">0</div>
-                        <div class="stat-label">Entidades</div>
-                    </div>
-                    <div class="stat-card bg-orange">
-                        <div class="stat-number" th:text="${promedio}">0</div>
-                        <div class="stat-label">Promedio por Entidad</div>
-                    </div>
-                </div>
-            </div> -->
         </main>
     </div>
 

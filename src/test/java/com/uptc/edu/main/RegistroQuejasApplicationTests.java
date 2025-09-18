@@ -1,8 +1,8 @@
 package com.uptc.edu.main;
 
-import com.uptc.edu.main.model.Empresa;
-import com.uptc.edu.main.repository.EmpresaRepo;
-import com.uptc.edu.main.service.EmpresaService;
+import com.uptc.edu.main.model.Company;
+import com.uptc.edu.main.repository.CompanyRepo;
+import com.uptc.edu.main.service.CompanyService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +23,10 @@ import static org.mockito.Mockito.*;
 class RegistroQuejasApplicationTests {
 
     @Mock
-    private EmpresaRepo empresaRepo;
+    private CompanyRepo empresaRepo;
 
     @InjectMocks
-    private EmpresaService service; // Ejemplo de servicio que usaría EmpresaRepo
+    private CompanyService service; // Ejemplo de servicio que usaría EmpresaRepo
 
     @BeforeEach
     void setUp() {
@@ -35,33 +35,33 @@ class RegistroQuejasApplicationTests {
 
     @Test
     void testGuardarEmpresa() {
-        Empresa empresa = new Empresa();
+        Company empresa = new Company();
         empresa.setId(1L);
-        empresa.setNombreEmpresa("Empresa Test");
+        empresa.setName("Empresa Test");
 
-        when(empresaRepo.save(any(Empresa.class))).thenReturn(empresa);
+        when(empresaRepo.save(any(Company.class))).thenReturn(empresa);
 
-        Empresa saved = empresaRepo.save(new Empresa());
+        Company saved = empresaRepo.save(new Company());
         assertThat(saved.getId()).isEqualTo(1L);
-        assertThat(saved.getNombreEmpresa()).isEqualTo("Empresa Test");
+        assertThat(saved.getName()).isEqualTo("Empresa Test");
 
-        verify(empresaRepo, times(1)).save(any(Empresa.class));
+        verify(empresaRepo, times(1)).save(any(Company.class));
     }
 
     @Test
     void testBuscarEmpresaPorNombre() {
-        Empresa empresa = new Empresa();
+        Company empresa = new Company();
         empresa.setId(2L);
-        empresa.setNombreEmpresa("Empresa Unica2");
+        empresa.setName("Empresa Unica2");
 
-        when(empresaRepo.findByNombreEmpresa("Empresa Unica2"))
+        when(empresaRepo.findByName("Empresa Unica2"))
                 .thenReturn(Optional.of(empresa));
 
-        Empresa encontrada = empresaRepo.findByNombreEmpresa("Empresa Unica2").orElse(null);
+        Company encontrada = empresaRepo.findByName("Empresa Unica2").orElse(null);
         assertThat(encontrada).isNotNull();
-        assertThat(encontrada.getNombreEmpresa()).isEqualTo("Empresa Unica2");
+        assertThat(encontrada.getName()).isEqualTo("Empresa Unica2");
 
-        verify(empresaRepo, times(1)).findByNombreEmpresa("Empresa Unica2");
+        verify(empresaRepo, times(1)).findByName("Empresa Unica2");
     }
 
     @Test
@@ -72,7 +72,7 @@ class RegistroQuejasApplicationTests {
         when(empresaRepo.findById(id)).thenReturn(Optional.empty());
 
         empresaRepo.deleteById(id);
-        Empresa eliminada = empresaRepo.findById(id).orElse(null);
+        Company eliminada = empresaRepo.findById(id).orElse(null);
 
         assertThat(eliminada).isNull();
         verify(empresaRepo, times(1)).deleteById(id);
