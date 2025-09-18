@@ -2,7 +2,7 @@ package com.uptc.edu.main;
 
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.repository.CompanyRepo;
-import com.uptc.edu.main.service.EmpresaService;
+import com.uptc.edu.main.service.CompanyService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class RegistroQuejasApplicationTests {
     private CompanyRepo empresaRepo;
 
     @InjectMocks
-    private EmpresaService service; // Ejemplo de servicio que usaría EmpresaRepo
+    private CompanyService service; // Ejemplo de servicio que usaría EmpresaRepo
 
     @BeforeEach
     void setUp() {
