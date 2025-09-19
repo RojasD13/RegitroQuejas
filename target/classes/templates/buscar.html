@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/pagination.css}">
-    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/buscar.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -19,26 +18,21 @@
             <div class="content-header">
                 <h1>Buscar Quejas</h1>
             </div>
-            <!-- Mensaje de error para CAPTCHA -->
             <div th:if="${captchaError}" class="alert alert-error">
                 <i class="fas fa-exclamation-circle"></i>
                 <span th:text="${captchaError}">Error en la verificación CAPTCHA</span>
                 <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
-            <!-- Mensajes de éxito/error -->
             <div th:if="${mensaje}" class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
                 <span th:text="${mensaje}">Mensaje de éxito</span>
                 <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
-
             <div th:if="${error}" class="alert alert-error">
                 <i class="fas fa-exclamation-circle"></i>
                 <span th:text="${error}">Mensaje de error</span>
                 <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
-
-            <!-- Formulario de Búsqueda -->
             <div class="search-container">
                 <form th:action="@{/buscar-quejas}" method="post" class="search-form" id="searchForm">
                     <div class="search-group">
@@ -51,13 +45,10 @@
                         </select>
                         <small class="form-help">Elija la entidad para ver sus quejas registradas.</small>
                     </div>
-
-                    <!-- Widget de reCAPTCHA -->
                     <div class="captcha-container">
                         <div id="recaptcha" class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
                             data-callback="captchaSuccess" data-expired-callback="captchaExpired"></div>
                     </div>
-
                     <div class="search-actions">
                         <button type="submit" class="btn-primary" id="btn-buscar" disabled>
                             <i class="fas fa-search"></i>
@@ -66,17 +57,14 @@
                     </div>
                 </form>
             </div>
-            <!-- Resultados de Búsqueda -->
             <div class="results-section"
                 th:if="${entidadSeleccionada != null and entidadSeleccionada != '' and entidadSeleccionada != 'Seleccione una entidad'}">
                 <div class="results-header">
                     <h2>Resultados de Búsqueda</h2>
                 </div>
-
                 <div class="results-container">
                     <div th:if="${quejas != null and !quejas.empty}" class="results-table-container"
                         id="tableContainer">
-
                         <table class="results-table" id="resultsTable">
                             <thead>
                                 <tr>
@@ -123,14 +111,12 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <!-- Controles de Paginación -->
                         <div id="paginationContainer" class="pagination-container"
                             th:if="${quejas != null and !quejas.empty}" style="display: none;">
                             <div class="pagination-info">
                                 <span id="paginationInfo">Mostrando 1-10 de <span
                                         th:text="${#lists.size(quejas)}"></span> resultados</span>
                             </div>
-
                             <div class="pagination-controls" role="navigation" aria-label="Paginación">
                                 <button id="prevBtn" class="pagination-btn" disabled aria-label="Anterior">
                                     <i class="fas fa-chevron-left"></i>
@@ -144,10 +130,8 @@
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
-
                         </div>
                     </div>
-
                     <div th:if="${quejas == null or quejas.empty}" class="empty-state">
                         <div class="empty-icon">
                             <i class="fas fa-search"></i>
@@ -157,11 +141,8 @@
                             No hay quejas registradas para "<span th:text="${entidadSeleccionada}"></span>"
                         </p>
                     </div>
-
                 </div>
             </div>
-
-            <!-- Información adicional -->
             <div class="info-section">
                 <div class="info-card">
                     <div class="info-icon">
@@ -177,293 +158,8 @@
             </div>
         </main>
     </div>
-
-    <!-- Modal de confirmación -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <h3>Confirmar acción</h3>
-            <p>¿Está seguro de que desea borrar esta queja?</p>
-            <div class="modal-buttons">
-                <button id="btnConfirmar" class="btn-confirm">Confirmar</button>
-                <button id="btnCancelar" class="btn-cancel">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Formulario oculto para el PATCH -->
-    <form id="deleteForm" method="post" style="display: none;">
-        <input type="hidden" name="_method" value="PATCH">
-    </form>
-
-    <script>
-        // Función al completar CAPTCHA exitosamente
-        function captchaSuccess() {
-            document.getElementById('btn-buscar').disabled = false;
-
-            // Enviar notificación por email cuando se habilite el botón
-            enviarNotificacionCaptcha();
-        }
-
-        // Función cuando el CAPTCHA expira
-        function captchaExpired() {
-            document.getElementById('btn-buscar').disabled = true;
-            if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-                grecaptcha.reset();
-            }
-        }
-
-        // Función para enviar notificación por email
-        async function enviarNotificacionCaptcha() {
-            try {
-                const response = await fetch('/api/notificar-captcha-completado', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (response.ok) {
-                    console.log('Notificación enviada correctamente');
-                } else {
-                    console.warn('Error al enviar notificación:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error de red al enviar notificación:', error);
-            }
-        }
-
-        // Variables globales para el modal y paginación
-        let quejaIdABorrar = null;
-        let currentPage = 1;
-        let itemsPerPage = 10;
-        let totalItems = 0;
-        let allRows = [];
-
-        // Función de paginación
-        function initializePagination() {
-            allRows = Array.from(document.querySelectorAll('.table-row'));
-            totalItems = allRows.length;
-            const paginationContainer = document.getElementById('paginationContainer');
-
-            // Mostrar u ocultar contenedor de paginación según cantidad de filas
-            if (paginationContainer) {
-                if (totalItems <= itemsPerPage) {
-                    paginationContainer.style.display = 'none';
-                    // Asegurarse de que todas las filas estén visibles si no hay paginación
-                    allRows.forEach(r => r.classList.remove('hidden'));
-                    return;
-                } else {
-                    paginationContainer.style.display = 'flex';
-                }
-            }
-
-            // Inicializar controles
-            createPageButtons();
-            updatePagination();
-
-            // Event listeners para botones de navegación
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        updatePagination();
-                    }
-                });
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    if (currentPage < Math.ceil(totalItems / itemsPerPage)) {
-                        currentPage++;
-                        updatePagination();
-                    }
-                });
-            }
-        }
-
-        function updatePagination() {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            // Mostrar/ocultar filas
-            allRows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // Actualizar información de paginación
-            const paginationInfo = document.getElementById('paginationInfo');
-            if (paginationInfo) {
-                const start = startIndex + 1;
-                const end = Math.min(endIndex, totalItems);
-                paginationInfo.innerHTML = `Mostrando ${start}-${end} de ${totalItems} resultados`;
-            }
-
-            // Actualizar botones de navegación
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            if (prevBtn) prevBtn.disabled = currentPage === 1;
-            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-
-            // Actualizar botones de página (solo cambia la clase active)
-            updatePageButtons();
-        }
-
-        function createPageButtons() {
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            const pagesContainer = document.getElementById('paginationPages');
-            if (!pagesContainer) return;
-            pagesContainer.innerHTML = ''; // aseguramos limpieza antes de crear
-
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-            // Ajustar el rango si hay pocas páginas al final
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.className = 'page-btn';
-                pageBtn.textContent = i;
-                pageBtn.setAttribute('aria-label', `Página ${i}`);
-                if (i === currentPage) pageBtn.classList.add('active');
-
-                pageBtn.addEventListener('click', () => {
-                    if (currentPage === i) return;
-                    currentPage = i;
-                    updatePagination();
-                });
-                pagesContainer.appendChild(pageBtn);
-            }
-        }
-
-        function updatePageButtons() {
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.textContent, 10) === currentPage);
-            });
-        }
-
-        // Función para scroll automático a la tabla
-        function scrollToTable() {
-            const tableContainer = document.getElementById('tableContainer');
-            if (tableContainer) {
-                setTimeout(() => {
-                    tableContainer.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 100);
-            }
-        }
-
-        // Función para mostrar modal de confirmación
-        function confirmarBorrado(quejaId) {
-            quejaIdABorrar = quejaId;
-            document.getElementById('confirmModal').style.display = 'block';
-        }
-
-        // Función para ocultar queja
-        function ocultarQueja(quejaId) {
-            const form = document.getElementById('deleteForm');
-            form.action = `/quejas/${quejaId}/ocultar`;
-            form.submit();
-        }
-
-        // JavaScript específico para la página de búsqueda
-        document.addEventListener('DOMContentLoaded', function () {
-            // Inicializar paginación si hay tabla
-            if (document.getElementById('tableContainer')) {
-                initializePagination();
-                scrollToTable(); // Scroll automático cuando hay resultados
-            }
-
-            // Configurar botones del modal
-            const btnConfirmar = document.getElementById('btnConfirmar');
-            const btnCancelar = document.getElementById('btnCancelar');
-
-            if (btnConfirmar) {
-                btnConfirmar.addEventListener('click', function () {
-                    if (quejaIdABorrar) {
-                        ocultarQueja(quejaIdABorrar);
-                    }
-                    document.getElementById('confirmModal').style.display = 'none';
-                });
-            }
-
-            if (btnCancelar) {
-                btnCancelar.addEventListener('click', function () {
-                    document.getElementById('confirmModal').style.display = 'none';
-                    quejaIdABorrar = null;
-                });
-            }
-
-            // Cerrar modal al hacer clic fuera de él
-            const confirmModal = document.getElementById('confirmModal');
-            if (confirmModal) {
-                confirmModal.addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        this.style.display = 'none';
-                        quejaIdABorrar = null;
-                    }
-                });
-            }
-
-            // Funcionalidad para los botones de acción (código existente)
-            const actionButtons = document.querySelectorAll('.btn-action');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const action = this.querySelector('i').classList.contains('fa-eye') ? 'ver' : 'descargar';
-                    const row = this.closest('tr');
-                    const resumen = row ? row.querySelector('.resumen-cell')?.textContent : '';
-                    if (action === 'ver') {
-                        alert(`Ver detalles de: ${resumen}`);
-                    } else {
-                        alert(`Descargando: ${resumen}`);
-                    }
-                });
-            });
-
-            // Validación básica del formulario
-            const searchForm = document.getElementById('searchForm');
-            if (searchForm) {
-                searchForm.addEventListener('submit', function (e) {
-                    const entidad = document.getElementById('entidad').value;
-                    if (!entidad) {
-                        alert('Por favor seleccione una entidad');
-                        e.preventDefault();
-                    }
-                });
-            }
-
-            // Prevenir selección de la opción deshabilitada 
-            const entidadSelect = document.getElementById('entidad');
-            if (entidadSelect) {
-                entidadSelect.addEventListener('change', function (e) {
-                    if (this.value === '') {
-                        this.selectedIndex = 0; // Mantener en la opción deshabilitada
-                    }
-                });
-            }
-        });
-
-        // Resetear CAPTCHA al recargar (si existe grecaptcha)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-                grecaptcha.reset();
-            }
-        });
-    </script>
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/buscar.js}"></script>
 </body>
 
 </html>

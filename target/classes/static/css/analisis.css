@@ -1,0 +1,24 @@
+/* Mostrar/ocultar contenedor de tabla (controlado por JS) */
+#tabla-container {
+    display: none;
+    /* se muestra desde JS cuando haya datos */
+}
+
+/* ajustes puntuales de la tabla específicos a esta vista */
+.results-table {
+    margin-top: 20px;
+}
+
+.captcha-container {
+    margin-bottom: 12px;
+}
+
+.search-actions {
+    margin-top: 8px;
+}
+
+/* botón primary deshabilitado estilo local */
+.btn-primary[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

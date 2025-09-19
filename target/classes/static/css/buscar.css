@@ -1,0 +1,21 @@
+/* ocultar paginación por defecto (JS la mostrará cuando corresponda) */
+#paginationContainer {
+    display: none;
+}
+
+/* ocultar el formulario de borrado (antes estaba inline) */
+#deleteForm {
+    display: none;
+}
+
+/* contenedor de resultados - ajustes puntuales */
+.results-table-container {
+    padding: 1.5rem;
+}
+
+/* estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+}

@@ -1,100 +1,127 @@
-// JavaScript para Centro de Quejas
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('🏛️ Centro de Quejas cargado correctamente');
-
-    // Inicializar componentes
+    console.log('Centro de Quejas cargado correctamente');
     initializeCharacterCounter();
     initializeFormValidation();
     initializeSidebarInteractions();
     initializeFormAnimations();
-
-    // Auto-cerrar alertas después de 5 segundos
+    initializeCaptchaHandlers();
     autoCloseAlerts();
 });
+// Función al completar CAPTCHA exitosamente
+function captchaSuccess() {
+    const btnBuscar = document.getElementById('btn-buscar');
+    if (btnBuscar) {
+        btnBuscar.disabled = false;
+    }
+    if (window.location.pathname.includes('buscar') || document.getElementById('tableContainer')) {
+        enviarNotificacionCaptcha();
+    }
+}
+// Función cuando el CAPTCHA expira
+function captchaExpired() {
+    const btnBuscar = document.getElementById('btn-buscar');
+    if (btnBuscar) {
+        btnBuscar.disabled = true;
+    }
 
+    if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+        grecaptcha.reset();
+    }
+}
+// Función para inicializar manejadores de CAPTCHA
+function initializeCaptchaHandlers() {
+    if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+        grecaptcha.reset();
+    }
+    window.captchaSuccess = captchaSuccess;
+    window.captchaExpired = captchaExpired;
+}
+// Función para enviar notificación por email
+async function enviarNotificacionCaptcha() {
+    try {
+        const response = await fetch('/api/notificar-captcha-completado', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (response.ok) {
+            console.log('Notificación enviada correctamente');
+        } else {
+            console.warn('Error al enviar notificación:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error de red al enviar notificación:', error);
+    }
+}
 // Función para el contador de caracteres
 function initializeCharacterCounter() {
     const textarea = document.getElementById('descripcion');
     const charCount = document.getElementById('charCount');
-
     if (textarea && charCount) {
-        // Actualizar contador al escribir
         textarea.addEventListener('input', function () {
             const currentLength = this.value.length;
             const maxLength = this.getAttribute('maxlength');
-
             charCount.textContent = currentLength;
-
-            // Cambiar color según proximidad al límite
             if (currentLength > maxLength * 0.9) {
-                charCount.style.color = '#e74c3c'; // Rojo
+                charCount.style.color = '#e74c3c';
             } else if (currentLength > maxLength * 0.7) {
-                charCount.style.color = '#f39c12'; // Amarillo
+                charCount.style.color = '#f39c12';
             } else {
-                charCount.style.color = '#7f8c8d'; // Gris normal
+                charCount.style.color = '#7f8c8d';
             }
         });
-
-        // Inicializar contador
         charCount.textContent = textarea.value.length;
     }
 }
-
 // Función para validación del formulario
 function initializeFormValidation() {
     const form = document.querySelector('.queja-form');
     const selectEntidad = document.getElementById('entidad');
     const textareaDescripcion = document.getElementById('descripcion');
-    const submitButton = form.querySelector('.btn-primary');
-
     if (form) {
-        // Validación en tiempo real
+        const submitButton = form.querySelector('.btn-primary');
         function validateForm() {
-            const entidadValida = selectEntidad.value !== 'Seleccione una entidad';
-            const descripcionValida = textareaDescripcion.value.trim().length >= 10;
-
-            // Actualizar estilos de validación
-            updateFieldValidation(selectEntidad, entidadValida);
-            updateFieldValidation(textareaDescripcion, descripcionValida);
-
-            // Habilitar/deshabilitar botón de envío
-            submitButton.disabled = !(entidadValida && descripcionValida);
-
+            const entidadValida = selectEntidad && selectEntidad.value !== '' && selectEntidad.value !== 'Seleccione una entidad';
+            const descripcionValida = textareaDescripcion ? textareaDescripcion.value.trim().length >= 10 : true;
+            if (selectEntidad) updateFieldValidation(selectEntidad, entidadValida);
+            if (textareaDescripcion) updateFieldValidation(textareaDescripcion, descripcionValida);
+            if (submitButton) {
+                submitButton.disabled = !(entidadValida && descripcionValida);
+            }
             return entidadValida && descripcionValida;
         }
-
-        // Eventos de validación
-        selectEntidad.addEventListener('change', validateForm);
-        textareaDescripcion.addEventListener('input', validateForm);
-
-        // Validación inicial
+        if (selectEntidad) selectEntidad.addEventListener('change', validateForm);
+        if (textareaDescripcion) textareaDescripcion.addEventListener('input', validateForm);
         validateForm();
-
-        // Validación al enviar
         form.addEventListener('submit', function (e) {
             if (!validateForm()) {
                 e.preventDefault();
                 showValidationMessage('Por favor, complete todos los campos requeridos correctamente.');
-            } else {
-                // Mostrar loading en el botón
+            } else if (submitButton) {
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
                 submitButton.disabled = true;
             }
         });
-
-        // Limpiar formulario
         const resetButton = form.querySelector('.btn-secondary');
         if (resetButton) {
             resetButton.addEventListener('click', function () {
                 setTimeout(() => {
                     validateForm();
-                    document.getElementById('charCount').textContent = '0';
+                    const charCount = document.getElementById('charCount');
+                    if (charCount) charCount.textContent = '0';
                 }, 50);
+            });
+        }
+        if (selectEntidad) {
+            selectEntidad.addEventListener('change', function (e) {
+                if (this.value === '') {
+                    this.selectedIndex = 0;
+                }
             });
         }
     }
 }
-
 // Función para actualizar estilos de validación
 function updateFieldValidation(field, isValid) {
     if (field.value.length > 0) {
@@ -112,16 +139,12 @@ function updateFieldValidation(field, isValid) {
         field.classList.remove('valid', 'invalid');
     }
 }
-
 // Función para mostrar mensajes de validación
 function showValidationMessage(message) {
-    // Remover mensajes existentes
     const existingMessage = document.querySelector('.validation-message');
     if (existingMessage) {
         existingMessage.remove();
     }
-
-    // Crear nuevo mensaje
     const messageElement = document.createElement('div');
     messageElement.className = 'alert alert-error validation-message';
     messageElement.innerHTML = `
@@ -131,41 +154,33 @@ function showValidationMessage(message) {
             <i class="fas fa-times"></i>
         </button>
     `;
-
-    // Insertar antes del formulario
-    const formContainer = document.querySelector('.form-container');
-    formContainer.insertBefore(messageElement, formContainer.firstChild);
-
-    // Auto-remover después de 5 segundos
+    const formContainer = document.querySelector('.form-container') || document.querySelector('.search-container');
+    if (formContainer) {
+        formContainer.insertBefore(messageElement, formContainer.firstChild);
+    }
     setTimeout(() => {
         if (messageElement.parentNode) {
             messageElement.remove();
         }
     }, 5000);
 }
-
 // Función para interacciones del sidebar
 function initializeSidebarInteractions() {
     const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
 
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function (e) {
-            // Efecto visual
             this.style.transform = 'scale(0.98)';
             setTimeout(() => {
                 this.style.transform = 'scale(1)';
             }, 150);
         });
     });
-
-    // Responsive sidebar toggle (para móviles)
     createMobileToggle();
 }
-
 // Función para crear toggle móvil
 function createMobileToggle() {
     if (window.innerWidth <= 768) {
-        // Crear botón de toggle si no existe
         let toggleButton = document.querySelector('.sidebar-toggle');
         if (!toggleButton) {
             toggleButton = document.createElement('button');
@@ -185,56 +200,48 @@ function createMobileToggle() {
                 cursor: pointer;
                 display: block;
             `;
-
             document.body.appendChild(toggleButton);
-
-            // Funcionalidad del toggle
             toggleButton.addEventListener('click', function () {
                 const sidebar = document.querySelector('.sidebar');
-                sidebar.classList.toggle('active');
+                if (sidebar) {
+                    sidebar.classList.toggle('active');
+                }
             });
         }
     }
 }
-
 // Función para animaciones del formulario
 function initializeFormAnimations() {
-    // Animación al enfocar campos
     const formFields = document.querySelectorAll('.form-select, .form-textarea');
-
     formFields.forEach(field => {
         field.addEventListener('focus', function () {
-            this.parentNode.style.transform = 'scale(1.02)';
-            this.parentNode.style.transition = 'transform 0.2s ease';
+            if (this.parentNode) {
+                this.parentNode.style.transform = 'scale(1.02)';
+                this.parentNode.style.transition = 'transform 0.2s ease';
+            }
         });
-
         field.addEventListener('blur', function () {
-            this.parentNode.style.transform = 'scale(1)';
+            if (this.parentNode) {
+                this.parentNode.style.transform = 'scale(1)';
+            }
         });
     });
-
-    // Animación para los botones
     const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
-
     buttons.forEach(button => {
         button.addEventListener('mousedown', function () {
             this.style.transform = 'scale(0.95)';
         });
-
         button.addEventListener('mouseup', function () {
             this.style.transform = 'scale(1)';
         });
-
         button.addEventListener('mouseleave', function () {
             this.style.transform = 'scale(1)';
         });
     });
 }
-
 // Función para auto-cerrar alertas
 function autoCloseAlerts() {
     const alerts = document.querySelectorAll('.alert');
-
     alerts.forEach(alert => {
         setTimeout(() => {
             if (alert.parentNode) {
@@ -247,5 +254,3 @@ function autoCloseAlerts() {
         }, 5000);
     });
 }
-
-// Función para m
