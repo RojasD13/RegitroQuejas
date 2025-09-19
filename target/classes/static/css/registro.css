@@ -1,0 +1,14 @@
+/* ejemplo: contador de caracteres */
+.character-count {
+    text-align: right;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+/* margen específico para los botones del formulario */
+.form-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: .5rem;
+}
