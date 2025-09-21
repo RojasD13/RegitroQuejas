@@ -10,6 +10,98 @@
     <link rel="stylesheet" th:href="@{/css/table.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        /* Estilos para el sistema modular de contraseña */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .password-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .password-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .password-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .password-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .password-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-confirm, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-confirm:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #545b62;
+        }
+    </style>
 </head>
 
 <body>
@@ -178,14 +270,24 @@
         </main>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div id="confirmModal" class="modal">
+    <!-- Modal de confirmación con contraseña (SISTEMA MODULAR) -->
+    <div id="passwordModal" class="modal">
         <div class="modal-content">
-            <h3>Confirmar acción</h3>
-            <p>¿Está seguro de que desea borrar esta queja?</p>
+            <h3 id="modalTitle">Confirmar acción</h3>
+            <p id="modalMessage">¿Está seguro de que desea realizar esta acción?</p>
+            <div class="password-group">
+                <label for="adminPassword">Contraseña de administrador:</label>
+                <input type="password" 
+                       id="adminPassword" 
+                       placeholder="Ingrese la contraseña ADMIN"
+                       autocomplete="off">
+                <div id="passwordError" class="password-error">
+                    Contraseña incorrecta
+                </div>
+            </div>
             <div class="modal-buttons">
-                <button id="btnConfirmar" class="btn-confirm">Confirmar</button>
-                <button id="btnCancelar" class="btn-cancel">Cancelar</button>
+                <button id="btnModalConfirmar" class="btn-confirm">Confirmar</button>
+                <button id="btnModalCancelar" class="btn-cancel">Cancelar</button>
             </div>
         </div>
     </div>
@@ -196,10 +298,66 @@
     </form>
 
     <script>
+        // ========================================
+        // SISTEMA MODULAR DE AUTENTICACIÓN CON CONTRASEÑA
+        // ========================================
+        
+        const PasswordAuth = {
+            ADMIN_PASSWORD: 'ADMIN',
+            currentCallback: null,
+            
+            // Función principal para mostrar modal con contraseña
+            showModal: function(title, message, onSuccess) {
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalMessage').textContent = message;
+                this.currentCallback = onSuccess;
+                document.getElementById('passwordModal').style.display = 'block';
+                
+                // Limpiar campos
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('passwordError').style.display = 'none';
+                
+                // Enfocar campo de contraseña
+                setTimeout(() => {
+                    document.getElementById('adminPassword').focus();
+                }, 100);
+            },
+            
+            // Validar contraseña
+            validatePassword: function() {
+                const password = document.getElementById('adminPassword').value;
+                const errorDiv = document.getElementById('passwordError');
+                
+                if (password === this.ADMIN_PASSWORD) {
+                    errorDiv.style.display = 'none';
+                    return true;
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.textContent = 'Contraseña incorrecta. Ingrese "ADMIN"';
+                    return false;
+                }
+            },
+            
+            // Ejecutar callback si la contraseña es válida
+            confirm: function() {
+                if (this.validatePassword() && this.currentCallback) {
+                    this.currentCallback();
+                    this.closeModal();
+                }
+            },
+            
+            // Cerrar modal y limpiar
+            closeModal: function() {
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('passwordError').style.display = 'none';
+                this.currentCallback = null;
+            }
+        };
+
         // Función al completar CAPTCHA exitosamente
         function captchaSuccess() {
             document.getElementById('btn-buscar').disabled = false;
-
             // Enviar notificación por email cuando se habilite el botón
             enviarNotificacionCaptcha();
         }
@@ -232,12 +390,51 @@
             }
         }
 
-        // Variables globales para el modal y paginación
+        // Variables globales para paginación y funcionalidad
         let quejaIdABorrar = null;
         let currentPage = 1;
         let itemsPerPage = 10;
         let totalItems = 0;
         let allRows = [];
+
+        // ========================================
+        // FUNCIONES ESPECÍFICAS PARA QUEJAS (USANDO SISTEMA MODULAR)
+        // ========================================
+        
+        // Función para mostrar confirmación de borrado (USANDO SISTEMA MODULAR)
+        function confirmarBorrado(quejaId) {
+            quejaIdABorrar = quejaId;
+            PasswordAuth.showModal(
+                'Confirmar eliminación de queja',
+                '¿Está seguro de que desea ocultar esta queja? Esta acción requiere autorización administrativa.',
+                function() {
+                    ocultarQueja(quejaIdABorrar);
+                }
+            );
+        }
+
+        // Función para ocultar queja
+        function ocultarQueja(quejaId) {
+            const form = document.getElementById('deleteForm');
+            form.action = `/quejas/${quejaId}/ocultar`;
+            form.submit();
+        }
+
+        // Ejemplos de otras funciones que pueden usar el sistema modular:
+        function cambiarEstado(quejaId) {
+            PasswordAuth.showModal(
+                'Confirmar cambio de estado',
+                '¿Desea cambiar el estado de esta queja? Esta acción requiere permisos administrativos.',
+                function() {
+                    console.log('Cambiar estado de queja:', quejaId);
+                    alert('Estado cambiado (funcionalidad pendiente de implementar)');
+                }
+            );
+        }
+
+        // ========================================
+        // FUNCIONES DE PAGINACIÓN
+        // ========================================
 
         // Función de paginación
         function initializePagination() {
@@ -312,7 +509,6 @@
             if (prevBtn) prevBtn.disabled = currentPage === 1;
             if (nextBtn) nextBtn.disabled = currentPage === totalPages;
 
-            // Actualizar botones de página (solo cambia la clase active)
             updatePageButtons();
         }
 
@@ -320,7 +516,7 @@
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             const pagesContainer = document.getElementById('paginationPages');
             if (!pagesContainer) return;
-            pagesContainer.innerHTML = ''; // aseguramos limpieza antes de crear
+            pagesContainer.innerHTML = '';
 
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -367,18 +563,9 @@
             }
         }
 
-        // Función para mostrar modal de confirmación
-        function confirmarBorrado(quejaId) {
-            quejaIdABorrar = quejaId;
-            document.getElementById('confirmModal').style.display = 'block';
-        }
-
-        // Función para ocultar queja
-        function ocultarQueja(quejaId) {
-            const form = document.getElementById('deleteForm');
-            form.action = `/quejas/${quejaId}/ocultar`;
-            form.submit();
-        }
+        // ========================================
+        // INICIALIZACIÓN Y EVENT LISTENERS
+        // ========================================
 
         // JavaScript específico para la página de búsqueda
         document.addEventListener('DOMContentLoaded', function () {
@@ -388,36 +575,38 @@
                 scrollToTable(); // Scroll automático cuando hay resultados
             }
 
-            // Configurar botones del modal
-            const btnConfirmar = document.getElementById('btnConfirmar');
-            const btnCancelar = document.getElementById('btnCancelar');
+            // ========================================
+            // CONFIGURACIÓN DEL SISTEMA MODULAR DE CONTRASEÑA
+            // ========================================
+            
+            // Botón confirmar del modal
+            document.getElementById('btnModalConfirmar').addEventListener('click', function() {
+                PasswordAuth.confirm();
+            });
 
-            if (btnConfirmar) {
-                btnConfirmar.addEventListener('click', function () {
-                    if (quejaIdABorrar) {
-                        ocultarQueja(quejaIdABorrar);
-                    }
-                    document.getElementById('confirmModal').style.display = 'none';
-                });
-            }
+            // Botón cancelar del modal
+            document.getElementById('btnModalCancelar').addEventListener('click', function() {
+                PasswordAuth.closeModal();
+            });
 
-            if (btnCancelar) {
-                btnCancelar.addEventListener('click', function () {
-                    document.getElementById('confirmModal').style.display = 'none';
-                    quejaIdABorrar = null;
-                });
-            }
+            // Enter para confirmar en el campo de contraseña
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    PasswordAuth.confirm();
+                }
+            });
 
-            // Cerrar modal al hacer clic fuera de él
-            const confirmModal = document.getElementById('confirmModal');
-            if (confirmModal) {
-                confirmModal.addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        this.style.display = 'none';
-                        quejaIdABorrar = null;
-                    }
-                });
-            }
+            // Ocultar error al escribir
+            document.getElementById('adminPassword').addEventListener('input', function() {
+                document.getElementById('passwordError').style.display = 'none';
+            });
+
+            // Cerrar modal al hacer clic fuera
+            document.getElementById('passwordModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    PasswordAuth.closeModal();
+                }
+            });
 
             // Funcionalidad para los botones de acción (código existente)
             const actionButtons = document.querySelectorAll('.btn-action');
