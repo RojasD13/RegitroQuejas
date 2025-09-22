@@ -108,7 +108,7 @@
                                     </td>
                                     <td class="actions-cell">
                                         <button type="button" class="btn-delete"
-                                            th:onclick="'confirmarBorrado(' + ${queja.id} + ')'" title="Borrar queja">
+                                            th:onclick="'confirmDeleted(' + ${queja.id} + ')'" title="Borrar queja">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <button type="button" class="btn-status"
@@ -186,10 +186,7 @@
             <p id="modalMessage">¿Está seguro de que desea realizar esta acción?</p>
             <div class="password-group">
                 <label for="adminPassword">Contraseña de administrador:</label>
-                <input type="password" 
-                       id="adminPassword" 
-                       placeholder="Ingrese la contraseña ADMIN"
-                       autocomplete="off">
+                <input type="password" id="adminPassword" placeholder="Ingrese la contraseña ADMIN" autocomplete="off">
                 <div id="passwordError" class="password-error">
                     Contraseña incorrecta
                 </div>
@@ -207,63 +204,6 @@
     </form>
 
     <script>
-        // ========================================
-        // SISTEMA MODULAR DE AUTENTICACIÓN CON CONTRASEÑA
-        // ========================================
-        
-        const PasswordAuth = {
-            ADMIN_PASSWORD: 'ADMIN',
-            currentCallback: null,
-            
-            // Función principal para mostrar modal con contraseña
-            showModal: function(title, message, onSuccess) {
-                document.getElementById('modalTitle').textContent = title;
-                document.getElementById('modalMessage').textContent = message;
-                this.currentCallback = onSuccess;
-                document.getElementById('passwordModal').style.display = 'block';
-                
-                // Limpiar campos
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('passwordError').style.display = 'none';
-                
-                // Enfocar campo de contraseña
-                setTimeout(() => {
-                    document.getElementById('adminPassword').focus();
-                }, 100);
-            },
-            
-            // Validar contraseña
-            validatePassword: function() {
-                const password = document.getElementById('adminPassword').value;
-                const errorDiv = document.getElementById('passwordError');
-                
-                if (password === this.ADMIN_PASSWORD) {
-                    errorDiv.style.display = 'none';
-                    return true;
-                } else {
-                    errorDiv.style.display = 'block';
-                    errorDiv.textContent = 'Contraseña incorrecta. Ingrese "ADMIN"';
-                    return false;
-                }
-            },
-            
-            // Ejecutar callback si la contraseña es válida
-            confirm: function() {
-                if (this.validatePassword() && this.currentCallback) {
-                    this.currentCallback();
-                    this.closeModal();
-                }
-            },
-            
-            // Cerrar modal y limpiar
-            closeModal: function() {
-                document.getElementById('passwordModal').style.display = 'none';
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('passwordError').style.display = 'none';
-                this.currentCallback = null;
-            }
-        };
-
         // Función al completar CAPTCHA exitosamente
         function captchaSuccess() {
             document.getElementById('btn-buscar').disabled = false;
@@ -300,52 +240,38 @@
         }
 
         // Variables globales para paginación y funcionalidad
-        let quejaIdABorrar = null;
+        let complaintIdToDelete = null;
         let currentPage = 1;
         let itemsPerPage = 10;
         let totalItems = 0;
         let allRows = [];
 
         // ========================================
-        // FUNCIONES ESPECÍFICAS PARA QUEJAS (USANDO SISTEMA MODULAR)
+        // FUNCIONES ESPECÍFICAS PARA QUEJAS
         // ========================================
-        
-        // Función para mostrar confirmación de borrado (USANDO SISTEMA MODULAR)
-        function confirmarBorrado(quejaId) {
-            quejaIdABorrar = quejaId;
+
+        // (USANDO SISTEMA MODULAR)
+        function confirmDeleted(complaintId) {
+            complaintIdToDelete = complaintId;
             PasswordAuth.showModal(
                 'Confirmar eliminación de queja',
                 '¿Está seguro de que desea ocultar esta queja? Esta acción requiere autorización administrativa.',
-                function() {
-                    ocultarQueja(quejaIdABorrar);
+                function () {
+                    hideComplaint(complaintIdToDelete);
                 }
             );
         }
 
-        // Función para ocultar queja
-        function ocultarQueja(quejaId) {
+        function hideComplaint(quejaId) {
             const form = document.getElementById('deleteForm');
             form.action = `/quejas/${quejaId}/ocultar`;
             form.submit();
-        }
-
-        // Ejemplos de otras funciones que pueden usar el sistema modular:
-        function cambiarEstado(quejaId) {
-            PasswordAuth.showModal(
-                'Confirmar cambio de estado',
-                '¿Desea cambiar el estado de esta queja? Esta acción requiere permisos administrativos.',
-                function() {
-                    console.log('Cambiar estado de queja:', quejaId);
-                    alert('Estado cambiado (funcionalidad pendiente de implementar)');
-                }
-            );
         }
 
         // ========================================
         // FUNCIONES DE PAGINACIÓN
         // ========================================
 
-        // Función de paginación
         function initializePagination() {
             allRows = Array.from(document.querySelectorAll('.table-row'));
             totalItems = allRows.length;
@@ -484,40 +410,7 @@
                 scrollToTable(); // Scroll automático cuando hay resultados
             }
 
-            // ========================================
-            // CONFIGURACIÓN DEL SISTEMA MODULAR DE CONTRASEÑA
-            // ========================================
-            
-            // Botón confirmar del modal
-            document.getElementById('btnModalConfirmar').addEventListener('click', function() {
-                PasswordAuth.confirm();
-            });
-
-            // Botón cancelar del modal
-            document.getElementById('btnModalCancelar').addEventListener('click', function() {
-                PasswordAuth.closeModal();
-            });
-
-            // Enter para confirmar en el campo de contraseña
-            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    PasswordAuth.confirm();
-                }
-            });
-
-            // Ocultar error al escribir
-            document.getElementById('adminPassword').addEventListener('input', function() {
-                document.getElementById('passwordError').style.display = 'none';
-            });
-
-            // Cerrar modal al hacer clic fuera
-            document.getElementById('passwordModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    PasswordAuth.closeModal();
-                }
-            });
-
-            // Funcionalidad para los botones de acción (código existente)
+            // Funcionalidad para los botones de acción
             const actionButtons = document.querySelectorAll('.btn-action');
             actionButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -562,6 +455,7 @@
             }
         });
     </script>
+    <script th:src="@{/js/passwordAuth.js}"></script>
 </body>
 
 </html>
