@@ -7,57 +7,22 @@
     <title>Análisis de Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <!-- reCAPTCHA API -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <style>
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .results-table th,
-        .results-table td {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .captcha-container {
-            margin-bottom: 12px;
-        }
-
-        .search-actions {
-            margin-top: 8px;
-        }
-
-        .btn-primary[disabled] {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-    </style>
 </head>
 
 <body>
     <div class="container-fluid">
-        <!-- Sidebar -->
         <div th:replace="fragments/sidebar :: sidebar('analisis')"></div>
-
-        <!-- Main Content -->
         <main class="main-content">
             <div class="content-header">
                 <h1>Análisis de Quejas</h1>
             </div>
-
-            <!-- Formulario con CAPTCHA -->
             <div class="search-container">
                 <form class="search-form" id="searchForm">
-                    <!-- reCAPTCHA -->
                     <div class="captcha-container">
                         <div id="recaptcha" class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
                             data-callback="captchaSuccess" data-expired-callback="captchaExpired"></div>
                     </div>
-
                     <div class="search-actions">
                         <button type="submit" class="btn-primary" id="btn-buscar" disabled>
                             <i class="fas fa-search"></i>
@@ -66,11 +31,8 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Tabla oculta inicialmente -->
             <div class="form-container" id="tabla-container" style="display:none;">
                 <h2 class="section-title">Número de Quejas por Entidad</h2>
-
                 <table class="results-table" id="resultsTable">
                     <thead>
                         <tr>
@@ -88,34 +50,8 @@
             </div>
         </main>
     </div>
-
-    <script>
-        // Habilitar botón tras el CAPTCHA
-        function captchaSuccess() {
-            document.getElementById('btn-buscar').disabled = false;
-        }
-
-        // Deshabilitar botón si expira el CAPTCHA
-        function captchaExpired() {
-            document.getElementById('btn-buscar').disabled = true;
-            if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-                grecaptcha.reset();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('searchForm');
-            const tabla = document.getElementById('tabla-container');
-
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault(); // evitar recarga
-                    tabla.style.display = 'block'; // mostrar la tabla
-                    tabla.scrollIntoView({ behavior: 'smooth' });
-                });
-            }
-        });
-    </script>
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/analysis.js}"></script>
 </body>
 
 </html>
