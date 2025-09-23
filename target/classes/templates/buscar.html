@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/pagination.css}">
     <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/passwordAuth.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -107,7 +108,7 @@
                                     </td>
                                     <td class="actions-cell">
                                         <button type="button" class="btn-delete"
-                                            th:onclick="'confirmarBorrado(' + ${queja.id} + ')'" title="Borrar queja">
+                                            th:onclick="'confirmDeleted(' + ${queja.id} + ')'" title="Borrar queja">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <button type="button" class="btn-status"
@@ -178,14 +179,21 @@
         </main>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div id="confirmModal" class="modal">
+    <!-- Modal de confirmación con contraseña (SISTEMA MODULAR) -->
+    <div id="passwordModal" class="modal">
         <div class="modal-content">
-            <h3>Confirmar acción</h3>
-            <p>¿Está seguro de que desea borrar esta queja?</p>
+            <h3 id="modalTitle">Confirmar acción</h3>
+            <p id="modalMessage">¿Está seguro de que desea realizar esta acción?</p>
+            <div class="password-group">
+                <label for="adminPassword">Contraseña de administrador:</label>
+                <input type="password" id="adminPassword" placeholder="Ingrese la contraseña ADMIN" autocomplete="off">
+                <div id="passwordError" class="password-error">
+                    Contraseña incorrecta
+                </div>
+            </div>
             <div class="modal-buttons">
-                <button id="btnConfirmar" class="btn-confirm">Confirmar</button>
-                <button id="btnCancelar" class="btn-cancel">Cancelar</button>
+                <button id="btnModalConfirmar" class="btn-confirm">Confirmar</button>
+                <button id="btnModalCancelar" class="btn-cancel">Cancelar</button>
             </div>
         </div>
     </div>
@@ -199,7 +207,6 @@
         // Función al completar CAPTCHA exitosamente
         function captchaSuccess() {
             document.getElementById('btn-buscar').disabled = false;
-
             // Enviar notificación por email cuando se habilite el botón
             enviarNotificacionCaptcha();
         }
@@ -232,14 +239,39 @@
             }
         }
 
-        // Variables globales para el modal y paginación
-        let quejaIdABorrar = null;
+        // Variables globales para paginación y funcionalidad
+        let complaintIdToDelete = null;
         let currentPage = 1;
         let itemsPerPage = 10;
         let totalItems = 0;
         let allRows = [];
 
-        // Función de paginación
+        // ========================================
+        // FUNCIONES ESPECÍFICAS PARA QUEJAS
+        // ========================================
+
+        // (USANDO SISTEMA MODULAR)
+        function confirmDeleted(complaintId) {
+            complaintIdToDelete = complaintId;
+            PasswordAuth.showModal(
+                'Confirmar eliminación de queja',
+                '¿Está seguro de que desea eliminar esta queja? Esta acción requiere autorización administrativa.',
+                function () {
+                    hideComplaint(complaintIdToDelete);
+                }
+            );
+        }
+
+        function hideComplaint(quejaId) {
+            const form = document.getElementById('deleteForm');
+            form.action = `/quejas/${quejaId}/ocultar`;
+            form.submit();
+        }
+
+        // ========================================
+        // FUNCIONES DE PAGINACIÓN
+        // ========================================
+
         function initializePagination() {
             allRows = Array.from(document.querySelectorAll('.table-row'));
             totalItems = allRows.length;
@@ -312,7 +344,6 @@
             if (prevBtn) prevBtn.disabled = currentPage === 1;
             if (nextBtn) nextBtn.disabled = currentPage === totalPages;
 
-            // Actualizar botones de página (solo cambia la clase active)
             updatePageButtons();
         }
 
@@ -320,7 +351,7 @@
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             const pagesContainer = document.getElementById('paginationPages');
             if (!pagesContainer) return;
-            pagesContainer.innerHTML = ''; // aseguramos limpieza antes de crear
+            pagesContainer.innerHTML = '';
 
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -367,18 +398,9 @@
             }
         }
 
-        // Función para mostrar modal de confirmación
-        function confirmarBorrado(quejaId) {
-            quejaIdABorrar = quejaId;
-            document.getElementById('confirmModal').style.display = 'block';
-        }
-
-        // Función para ocultar queja
-        function ocultarQueja(quejaId) {
-            const form = document.getElementById('deleteForm');
-            form.action = `/quejas/${quejaId}/ocultar`;
-            form.submit();
-        }
+        // ========================================
+        // INICIALIZACIÓN Y EVENT LISTENERS
+        // ========================================
 
         // JavaScript específico para la página de búsqueda
         document.addEventListener('DOMContentLoaded', function () {
@@ -388,38 +410,7 @@
                 scrollToTable(); // Scroll automático cuando hay resultados
             }
 
-            // Configurar botones del modal
-            const btnConfirmar = document.getElementById('btnConfirmar');
-            const btnCancelar = document.getElementById('btnCancelar');
-
-            if (btnConfirmar) {
-                btnConfirmar.addEventListener('click', function () {
-                    if (quejaIdABorrar) {
-                        ocultarQueja(quejaIdABorrar);
-                    }
-                    document.getElementById('confirmModal').style.display = 'none';
-                });
-            }
-
-            if (btnCancelar) {
-                btnCancelar.addEventListener('click', function () {
-                    document.getElementById('confirmModal').style.display = 'none';
-                    quejaIdABorrar = null;
-                });
-            }
-
-            // Cerrar modal al hacer clic fuera de él
-            const confirmModal = document.getElementById('confirmModal');
-            if (confirmModal) {
-                confirmModal.addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        this.style.display = 'none';
-                        quejaIdABorrar = null;
-                    }
-                });
-            }
-
-            // Funcionalidad para los botones de acción (código existente)
+            // Funcionalidad para los botones de acción
             const actionButtons = document.querySelectorAll('.btn-action');
             actionButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -464,6 +455,7 @@
             }
         });
     </script>
+    <script th:src="@{/js/passwordAuth.js}"></script>
 </body>
 
 </html>
