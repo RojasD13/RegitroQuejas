@@ -17,6 +17,7 @@ import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
 import com.uptc.edu.main.service.EmailService;
+import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +33,13 @@ public class ComplaintController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private final SendEmail sendEmail;
+
+    public ComplaintController(SendEmail sendEmail) {
+        this.sendEmail = sendEmail;
+    }
 
     @GetMapping("/registro")
     public String showForm(Model model) {
@@ -118,6 +126,7 @@ public class ComplaintController {
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
             sendSearchNotification(company.getName(), request);
+            sendEmailUsingResend(request);
         }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
@@ -134,6 +143,17 @@ public class ComplaintController {
                 request.getRequestURI());
     }
 
+    private void sendEmailUsingResend(HttpServletRequest request) {
+        try {
+            sendEmail.sendEmail(
+                    obtenerIpCliente(request),
+                    request.getMethod(),
+                    request.getRequestURI());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private String obtenerIpCliente(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip != null && !ip.isBlank()) {
@@ -142,4 +162,5 @@ public class ComplaintController {
         ip = request.getHeader("X-Real-IP");
         return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
+
 }

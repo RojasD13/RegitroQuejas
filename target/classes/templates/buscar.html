@@ -208,7 +208,7 @@
         function captchaSuccess() {
             document.getElementById('btn-buscar').disabled = false;
             // Enviar notificación por email cuando se habilite el botón
-            enviarNotificacionCaptcha();
+            // sendCaptchaNotification();
         }
 
         // Función cuando el CAPTCHA expira
@@ -220,7 +220,7 @@
         }
 
         // Función para enviar notificación por email
-        async function enviarNotificacionCaptcha() {
+        async function sendCaptchaNotification() {
             try {
                 const response = await fetch('/api/notificar-captcha-completado', {
                     method: 'POST',

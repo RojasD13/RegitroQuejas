@@ -89,6 +89,12 @@
             <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Dependencia para api de envío de correo -->
+        <dependency>
+            <groupId>com.resend</groupId>
+            <artifactId>resend-java</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

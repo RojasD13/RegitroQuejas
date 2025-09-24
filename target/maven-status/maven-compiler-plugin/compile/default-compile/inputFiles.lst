@@ -3,9 +3,11 @@ C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\ser
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\model\Comment.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\controller\NotificationController.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\Main.java
+C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\ResendEmailService.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\controller\IndexController.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\dto\ComplaintCompanyDTO.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\filter\RateLimitFilter.java
+C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\service\SendEmail.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\model\Complaint.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\model\Company.java
 C:\Users\User\Documents\GitHub\RegitroQuejas\src\main\java\com\uptc\edu\main\dto\CompanySummaryDTO.java
