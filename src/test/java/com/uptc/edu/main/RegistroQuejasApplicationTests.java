@@ -52,7 +52,7 @@ class RegistroQuejasApplicationTests {
     void testBuscarEmpresaPorNombre() {
         Company empresa = new Company();
         empresa.setId(2L);
-        empresa.setName("Empresa Unica2");
+        empresa.setName("");
 
         when(empresaRepo.findByName("Empresa Unica2"))
                 .thenReturn(Optional.of(empresa));
