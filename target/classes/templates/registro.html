@@ -11,12 +11,8 @@
 
 <body>
     <div class="container-fluid">
-        <!-- Sidebar Component -->
         <div th:replace="fragments/sidebar :: sidebar('registro')"></div>
-
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Mensaje de confirmación -->
             <div th:if="${mensaje}" class="alert"
                 th:classappend="${tipoMensaje == 'success'} ? 'alert-success' : 'alert-error'">
                 <i class="fas fa-check-circle" th:if="${tipoMensaje == 'success'}"></i>
@@ -26,11 +22,9 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-
             <div class="content-header">
                 <h1>Registrar Nueva Queja</h1>
             </div>
-
             <div class="form-container">
                 <form th:action="@{/enviar-queja}" method="post" class="queja-form">
                     <div class="form-group">
@@ -43,21 +37,17 @@
                             </option>
                         </select>
                     </div>
-
-                    <!-- Campo Descripción -->
                     <div class="form-group">
                         <label for="descripcion" class="form-label">
                             Descripción de la Queja <span class="required">*</span>
                         </label>
                         <textarea id="descripcion" name="descripcion" class="form-textarea"
-                            placeholder="Describa su queja en detalle (min. 10 caracteres, máx. 1000 caracteres)" maxlength="1000"
-                            required></textarea>
+                            placeholder="Describa su queja en detalle (min. 10 caracteres, máx. 1000 caracteres)"
+                            maxlength="1000" required></textarea>
                         <div class="character-count">
                             <span id="charCount">0</span> / 1000 caracteres
                         </div>
                     </div>
-
-                    <!-- Botón Enviar -->
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-paper-plane"></i>
@@ -70,8 +60,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Información adicional -->
             <div class="info-section">
                 <div class="info-card">
                     <div class="info-icon">
@@ -83,7 +71,6 @@
                             proporcione una descripción detallada del problema.</p>
                     </div>
                 </div>
-
                 <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-clock"></i>
@@ -94,7 +81,6 @@
                             con el número de seguimiento.</p>
                     </div>
                 </div>
-
                 <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-shield-alt"></i>
@@ -105,11 +91,12 @@
                             seguridad.</p>
                     </div>
                 </div>
-            </div> 
+            </div>
         </main>
     </div>
-
     <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/record.js}"></script>
+    
 </body>
 
-</html> 
+</html>
