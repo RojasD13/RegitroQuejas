@@ -126,7 +126,7 @@ public class ComplaintController {
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
             // sendSearchNotification(company.getName(), request);
-            sendEmailUsingResend(request);
+            sendEmail.sendEmail(request);
         }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
@@ -145,13 +145,5 @@ public class ComplaintController {
      * request.getRequestURI());
      * }
      */
-
-    private void sendEmailUsingResend(HttpServletRequest request) {
-        try {
-            sendEmail.sendEmail(request);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 }

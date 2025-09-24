@@ -1,6 +1,5 @@
 package com.uptc.edu.main.service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,26 +18,28 @@ public class ResendEmailService implements SendEmail {
 
     /* @Value("${RESEND_API_KEY}")
     private String apiKey; */
+
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
+
     @Value("${API_EMAIL}")
     private String fromEmail;
 
     private final Resend resend;
 
-    public ResendEmailService() throws IOException {
+    public ResendEmailService()  {
         this.resend = new Resend("re_jYhnfmNz_Vrhf4hVxp8nPwKUxhZ7WKFdA");
     }
 
     @Override
-    public void sendEmail(HttpServletRequest request) throws IOException {
+    public void sendEmail(HttpServletRequest request) {
+        try {
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from(fromEmail)
                 .to(adminEmail)
                 .subject("Info Registro Quejas")
                 .html(generateHtml(request))
                 .build();
-        try {
             CreateEmailResponse data = resend.emails().send(params);
             System.out.println(data.getId());
         } catch (ResendException e) {
