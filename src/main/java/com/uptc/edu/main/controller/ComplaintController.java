@@ -16,7 +16,7 @@ import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
-import com.uptc.edu.main.service.EmailService;
+// import com.uptc.edu.main.service.EmailService;
 import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +31,8 @@ public class ComplaintController {
     @Autowired
     private CompanyRepo companyRepo;
 
-    @Autowired
-    private EmailService emailService;
+    // @Autowired
+    // private EmailService emailService;
 
     @Autowired
     private final SendEmail sendEmail;
@@ -125,7 +125,7 @@ public class ComplaintController {
             List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
-            sendSearchNotification(company.getName(), request);
+            // sendSearchNotification(company.getName(), request);
             sendEmailUsingResend(request);
         }, () -> {
             model.addAttribute("quejas", List.of());
@@ -135,13 +135,16 @@ public class ComplaintController {
         return "buscar";
     }
 
-    private void sendSearchNotification(String companyName, HttpServletRequest request) {
-        emailService.sendNotificationSearchCompleted(
-                companyName,
-                obtenerIpCliente(request),
-                request.getMethod(),
-                request.getRequestURI());
-    }
+    /*
+     * private void sendSearchNotification(String companyName, HttpServletRequest
+     * request) {
+     * emailService.sendNotificationSearchCompleted(
+     * companyName,
+     * obtenerIpCliente(request),
+     * request.getMethod(),
+     * request.getRequestURI());
+     * }
+     */
 
     private void sendEmailUsingResend(HttpServletRequest request) {
         try {

@@ -2,6 +2,7 @@ package com.uptc.edu.main.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,8 @@ import com.resend.services.emails.model.CreateEmailResponse;
 @Service
 public class ResendEmailService implements SendEmail {
 
-    @Value("${RESEND_API_KEY}")
-    private String apiKey;
+    /* @Value("${RESEND_API_KEY}")
+    private String apiKey; */
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
     @Value("${API_EMAIL}")
@@ -24,7 +25,7 @@ public class ResendEmailService implements SendEmail {
     private final Resend resend;
 
     public ResendEmailService() throws IOException {
-        this.resend = new Resend(apiKey);
+        this.resend = new Resend("re_jYhnfmNz_Vrhf4hVxp8nPwKUxhZ7WKFdA");
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ResendEmailService implements SendEmail {
                 "        <p><strong>IP:</strong> " + ip + "</p>\n" +
                 "        <p><strong>Método HTTP:</strong> " + httpMethod + "</p>\n" +
                 "        <p><strong>URI de la petición:</strong> " + requestUri + "</p>\n" +
-                "        <p><strong>Fecha:</strong> " + LocalDateTime.now() + "</p>\n" +
+                "        <p><strong>Fecha:</strong> " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "</p>\n" +
                 "    </div>\n" +
                 "</body>\n" +
                 "</html>";
