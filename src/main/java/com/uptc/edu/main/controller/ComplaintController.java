@@ -16,7 +16,8 @@ import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
-import com.uptc.edu.main.service.EmailService;
+// import com.uptc.edu.main.service.EmailService;
+import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -30,8 +31,15 @@ public class ComplaintController {
     @Autowired
     private CompanyRepo companyRepo;
 
+    // @Autowired
+    // private EmailService emailService;
+
     @Autowired
-    private EmailService emailService;
+    private final SendEmail sendEmail;
+
+    public ComplaintController(SendEmail sendEmail) {
+        this.sendEmail = sendEmail;
+    }
 
     @GetMapping("/registro")
     public String showForm(Model model) {
@@ -117,7 +125,8 @@ public class ComplaintController {
             List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
-            sendSearchNotification(company.getName(), request);
+            // sendSearchNotification(company.getName(), request);
+            sendEmail.sendEmail(request);
         }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
@@ -126,20 +135,15 @@ public class ComplaintController {
         return "buscar";
     }
 
-    private void sendSearchNotification(String companyName, HttpServletRequest request) {
-        emailService.sendNotificationSearchCompleted(
-                companyName,
-                obtenerIpCliente(request),
-                request.getMethod(),
-                request.getRequestURI());
-    }
+    /*
+     * private void sendSearchNotification(String companyName, HttpServletRequest
+     * request) {
+     * emailService.sendNotificationSearchCompleted(
+     * companyName,
+     * obtenerIpCliente(request),
+     * request.getMethod(),
+     * request.getRequestURI());
+     * }
+     */
 
-    private String obtenerIpCliente(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.isBlank()) {
-            return ip.split(",")[0].trim();
-        }
-        ip = request.getHeader("X-Real-IP");
-        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
-    }
 }

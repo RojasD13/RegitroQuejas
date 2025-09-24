@@ -1,4 +1,5 @@
 com\uptc\edu\main\controller\NotificationController.class
+com\uptc\edu\main\service\SendEmail.class
 com\uptc\edu\main\dto\ComplaintCompanyDTO.class
 com\uptc\edu\main\Main.class
 com\uptc\edu\main\model\Comment.class
@@ -9,6 +10,7 @@ com\uptc\edu\main\service\CompanyService.class
 com\uptc\edu\main\filter\RateLimitFilter.class
 com\uptc\edu\main\controller\ComplaintController.class
 com\uptc\edu\main\service\EmailService.class
+com\uptc\edu\main\service\ResendEmailService.class
 com\uptc\edu\main\repository\ComplaintRepo.class
 com\uptc\edu\main\repository\CompanyRepo.class
 com\uptc\edu\main\controller\CompanyController.class
