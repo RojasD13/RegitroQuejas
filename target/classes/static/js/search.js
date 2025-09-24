@@ -199,3 +199,86 @@ document.addEventListener('DOMContentLoaded', () => {
         grecaptcha.reset();
     }
 });
+//----------------------
+// --- Cambiar estado con confirmación por contraseña ---
+function cambiarEstado(complaintId) {
+    // guarda temporalmente el id
+    const id = complaintId;
+    PasswordAuth.showModal(
+        'Confirmar cambio de estado',
+        '¿Está seguro de que desea cambiar el estado de esta queja? Esta acción requiere autorización administrativa.',
+        function () {
+            submitChangeStateForm(id);
+        }
+    );
+}
+
+function submitChangeStateForm(quejaId) {
+    const form = document.getElementById('deleteForm'); // reutilizamos el form oculto
+    // Ajusta esta URL si tu controlador usa otro endpoint
+    form.action = `/quejas/${quejaId}/cambiar-estado`;
+    form.submit();
+}
+
+/* ---------- Cambio de estado: selección + confirmación por contraseña ---------- */
+
+let _pendingStateChange = { id: null, newState: null };
+
+function cambiarEstado(quejaId) {
+    // Guardamos el id y abrimos el modal de selección
+    _pendingStateChange.id = quejaId;
+    _pendingStateChange.newState = null;
+    openStateModal();
+}
+
+function openStateModal() {
+    const modal = document.getElementById('stateModal');
+    if (!modal) {
+        alert('No se encontró el modal de selección de estado.');
+        return;
+    }
+    modal.style.display = 'block';
+}
+
+function closeStateModal() {
+    const modal = document.getElementById('stateModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Llamada cuando el usuario selecciona una opción (PROCESO/REVISION/CERRADO)
+function selectState(state) {
+    _pendingStateChange.newState = state;
+    closeStateModal();
+    const title = 'Confirmar cambio de estado';
+    const message = 'Ingresar contraseña para autorizar el cambio a: ' + state;
+    PasswordAuth.showModal(title, message, function () {
+        submitChangeStateForm(_pendingStateChange.id, _pendingStateChange.newState);
+    });
+}
+
+function submitChangeStateForm(quejaId, estado) {
+    const form = document.getElementById('deleteForm');
+    if (!form) {
+        alert('No se encontró el formulario oculto.');
+        return;
+    }
+    form.action = '/quejas/' + quejaId + '/cambiar-estado';
+    let input = form.querySelector('input[name="state"]');
+    if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'state';
+        form.appendChild(input);
+    }
+    input.value = estado;
+    form.submit();
+}
+document.addEventListener('click', function (e) {
+    const stateModal = document.getElementById('stateModal');
+    if (!stateModal) return;
+    if (stateModal.style.display === 'block' && e.target === stateModal) {
+        closeStateModal();
+    }
+});
+
+

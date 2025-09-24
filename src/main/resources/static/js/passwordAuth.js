@@ -1,6 +1,6 @@
 // ========================================
 // SISTEMA MODULAR DE AUTENTICACIÓN CON CONTRASEÑA
-// ========================================
+// ======================================== 
 
 const PasswordAuth = {
     ADMIN_PASSWORD: 'ADMIN',
