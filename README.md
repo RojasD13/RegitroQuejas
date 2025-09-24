@@ -17,6 +17,16 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 - **Gestor de dependencias:** Maven
 - **Servidor:** Tomcat embebido
 
+## Version 1.2
+## Cambios agregados
+- Agregar estado de la queja
+- Eliminar queja ingresando una clave
+- Agregar paginación a las tablas y listas
+- Parametrizar credenciales del correo
+- Refactorizción puerto del servidor
+- Parametrizción properties
+- Cambiar idioma del back a inglés
+
 ### Frontend
 
 - **Thymeleaf:** Motor de plantillas para la generación dinámica de HTML ([src/main/resources/templates/](src/main/resources/templates/)).
@@ -37,10 +47,8 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
       + **url:** `jdbc:postgresql://localhost:5432/RegistroDB}`
       + **username:** `${DB_USERNAME:nombre_de_usuario_configurado_en_su_postgreSQL}`
       + **password:** `${DB_PASSWORD:contraseña_configurada_en_su_postgreSQL}`
-   + 2.2. Para configuración del servidor en despliegue
-      + **url:** `jdbc:postgresql://ep-aged-dream-aepj5xhv-pooler.c-2.us-east-2.aws.neon.tech/neondb`
-      + **username:** `neondb_owner`
-      + **password:** `npg_dmwC9Obx1ESB` 
+   + 2.2. Para configuración del servidor en despliegue consultar el confluence
+      
 
 ## Uso
 
@@ -67,6 +75,70 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    INSERT INTO companies (company_id, company_name) values (5,'Ministerio de Transporte');
    ```
 
+## Esctructura del proyecto
+   ```bash
+   RegistroQuejas/
+   ├── .gitattributes
+   ├── .gitignore
+   ├── Dockerfile
+   ├── mvnw
+   ├── mvnw.cmd
+   ├── pom.xml
+   ├── README.md
+   ├── .github/
+   │   └── workflows/
+   │       └── flow.yml
+   ├── .mvn/
+   │   └── wrapper/
+   │       └── maven-wrapper.properties
+   ├── src/
+   │   ├── main/
+   │   │   ├── java/
+   │   │   │   └── com/
+   │   │   │       └── uptc/
+   │   │   │           └── edu/
+   │   │   │               └── main/
+   │   │   │                   ├── controller/
+   │   │   │                   ├── dto/
+   │   │   │                   ├── model/
+   │   │   │                   ├── repository/
+   │   │   │                   └── service/
+   │   │   └── resources/
+   │   │       ├── static/
+   │   │       │   ├── css/
+   │   │       │   ├── js/
+   │   │       │   └── ...
+   │   │       ├── templates/
+   │   │       │   ├── fragments/
+   │   │       │   ├── registro.html
+   │   │       │   ├── buscar.html
+   │   │       │   └── analisis.html
+   │   │       ├── .env.properties
+   │   │       └── application.properties
+   │   └── test/
+   │       └── java/
+   │           └── com/
+   │               └── uptc/
+   │                   └── edu/
+   │                       └── main/
+   │                           ├── EmailTest.java
+   │                           └── RegistroQuejasApplicationTests.java
+   ├── target/
+   │   ├── RegistroQuejas-0.0.1-SNAPSHOT.jar
+   │   ├── classes/
+   │   │   ├── .env.properties
+   │   │   ├── application.properties
+   │   │   ├── com/
+   │   │   ├── static/
+   │   │   └── templates/
+   │   ├── generated-sources/
+   │   ├── generated-test-sources/
+   │   ├── maven-archiver/
+   │   ├── maven-status/
+   │   ├── surefire-reports/
+   │   └── test-classes/
+   └── ...
+```
 
 ## Licencia
 
