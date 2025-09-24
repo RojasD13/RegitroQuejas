@@ -1,5 +1,4 @@
 package com.uptc.edu.main.service;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -12,21 +11,15 @@ import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 @Service
 public class ResendEmailService implements SendEmail {
-
     /* @Value("${RESEND_API_KEY}")
     private String apiKey; */
-
     @Value("${APP_ADMIN_EMAIL}")
     private String adminEmail;
-
     @Value("${API_EMAIL}")
     private String fromEmail;
-
     private final Resend resend;
-
     public ResendEmailService()  {
         this.resend = new Resend("re_jYhnfmNz_Vrhf4hVxp8nPwKUxhZ7WKFdA");
     }
@@ -60,8 +53,8 @@ public class ResendEmailService implements SendEmail {
                 "    </div>\n" +
                 "</body>\n" +
                 "</html>";
-    }
-
+    }  
+    
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip != null && !ip.isBlank()) {
@@ -70,5 +63,4 @@ public class ResendEmailService implements SendEmail {
         ip = request.getHeader("X-Real-IP");
         return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
-
 }
