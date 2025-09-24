@@ -206,9 +206,7 @@
     <script>
         // Función al completar CAPTCHA exitosamente
         function captchaSuccess() {
-            document.getElementById('btn-buscar').disabled = false;
-            // Enviar notificación por email cuando se habilite el botón
-            // sendCaptchaNotification();
+            document.getElementById('btn-buscar').disabled = false;            
         }
 
         // Función cuando el CAPTCHA expira
@@ -217,27 +215,7 @@
             if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
                 grecaptcha.reset();
             }
-        }
-
-        // Función para enviar notificación por email
-        async function sendCaptchaNotification() {
-            try {
-                const response = await fetch('/api/notificar-captcha-completado', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (response.ok) {
-                    console.log('Notificación enviada correctamente');
-                } else {
-                    console.warn('Error al enviar notificación:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error de red al enviar notificación:', error);
-            }
-        }
+        }    
 
         // Variables globales para paginación y funcionalidad
         let complaintIdToDelete = null;
