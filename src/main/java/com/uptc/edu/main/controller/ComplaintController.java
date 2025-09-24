@@ -148,22 +148,10 @@ public class ComplaintController {
 
     private void sendEmailUsingResend(HttpServletRequest request) {
         try {
-            sendEmail.sendEmail(
-                    obtenerIpCliente(request),
-                    request.getMethod(),
-                    request.getRequestURI());
+            sendEmail.sendEmail(request);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private String obtenerIpCliente(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.isBlank()) {
-            return ip.split(",")[0].trim();
-        }
-        ip = request.getHeader("X-Real-IP");
-        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
 
 }

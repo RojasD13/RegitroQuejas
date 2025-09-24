@@ -2,8 +2,10 @@ package com.uptc.edu.main.service;
 
 import java.io.IOException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface SendEmail {
 
-    void sendEmail(String ip, String httpMethod, String requestUri) throws IOException;
+    void sendEmail(HttpServletRequest request) throws IOException;
 
 }

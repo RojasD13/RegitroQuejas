@@ -12,6 +12,8 @@ import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Service
 public class ResendEmailService implements SendEmail {
 
@@ -29,12 +31,12 @@ public class ResendEmailService implements SendEmail {
     }
 
     @Override
-    public void sendEmail(String ip, String httpMethod, String requestUri) {
+    public void sendEmail(HttpServletRequest request) throws IOException {
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from(fromEmail)
                 .to(adminEmail)
                 .subject("Info Registro Quejas")
-                .html(generateHtml(ip, httpMethod, requestUri))
+                .html(generateHtml(request))
                 .build();
         try {
             CreateEmailResponse data = resend.emails().send(params);
@@ -44,19 +46,28 @@ public class ResendEmailService implements SendEmail {
         }
     }
 
-    private String generateHtml(String ip, String httpMethod, String requestUri) {
+    private String generateHtml(HttpServletRequest request) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"es\">\n" +
                 "<body>\n" +
                 "    <div class=\"container\">\n" +
                 "        <h1>Detalles de la Petición</h1>\n" +
-                "        <p><strong>IP:</strong> " + ip + "</p>\n" +
-                "        <p><strong>Método HTTP:</strong> " + httpMethod + "</p>\n" +
-                "        <p><strong>URI de la petición:</strong> " + requestUri + "</p>\n" +
+                "        <p><strong>IP:</strong> " + getClientIp(request) + "</p>\n" +
+                "        <p><strong>Método HTTP:</strong> " + request.getMethod() + "</p>\n" +
+                "        <p><strong>URI de la petición:</strong> " + request.getRequestURI() + "</p>\n" +
                 "        <p><strong>Fecha:</strong> " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "</p>\n" +
                 "    </div>\n" +
                 "</body>\n" +
                 "</html>";
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isBlank()) {
+            return ip.split(",")[0].trim();
+        }
+        ip = request.getHeader("X-Real-IP");
+        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
 
 }
