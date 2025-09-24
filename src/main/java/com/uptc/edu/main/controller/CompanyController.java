@@ -1,5 +1,6 @@
 package com.uptc.edu.main.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.uptc.edu.main.dto.CompanySummaryDTO;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
+import com.uptc.edu.main.service.SendEmail;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class CompanyController {
@@ -21,10 +25,18 @@ public class CompanyController {
     @Autowired
     private ComplaintRepo complaintRepo;
 
+    @Autowired
+    private final SendEmail sendEmail;
+
+    public CompanyController(SendEmail sendEmail) {
+        this.sendEmail = sendEmail;
+    }
+
     @GetMapping("/analisis")
-    public String showAnalisisSummary(Model model) {
+    public String showAnalisisSummary(Model model, HttpServletRequest request) throws IOException {
         List<CompanySummaryDTO> summary = getTotalComplaintsByCompanies();
         model.addAttribute("resumen", summary);
+        sendEmail.sendEmail(request);
         return "analisis";
     }
 
