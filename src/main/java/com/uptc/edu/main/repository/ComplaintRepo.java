@@ -10,6 +10,7 @@ import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 
 public interface ComplaintRepo extends JpaRepository<Complaint, Long> {
+    Long countByCompanyIdAndIsVisibleTrue(Long companyId);
 
     List<Complaint> findByCompany(Company company);
 
