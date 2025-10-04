@@ -73,7 +73,7 @@ public class ComplaintController {
     }
 
     private List<String> getCompanyNames() {
-        return companyRepo.findAll()
+        return companyService.listCompanies()
                 .stream()
                 .map(Company::getName)
                 .toList();
