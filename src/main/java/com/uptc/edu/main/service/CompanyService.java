@@ -6,6 +6,7 @@ import com.uptc.edu.main.repository.ComplaintRepo;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -18,8 +19,10 @@ public class CompanyService {
 
     private final ComplaintRepo complaintRepo;
 
-    private  CompanyRepo companyRepo;
-
+    @Autowired
+    private CompanyRepo companyRepo;
+    
+    @Autowired
     private final SendEmail sendEmail;
 
     CompanyService(ComplaintRepo complaintRepo, SendEmail sendEmail) {
