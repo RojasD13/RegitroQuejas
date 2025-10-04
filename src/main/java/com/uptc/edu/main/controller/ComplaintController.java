@@ -14,8 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
-import com.uptc.edu.main.repository.CompanyRepo;
-import com.uptc.edu.main.repository.ComplaintRepo;
 import com.uptc.edu.main.service.CompanyService;
 import com.uptc.edu.main.service.ComplaintService;
 import com.uptc.edu.main.service.SendEmail;
@@ -27,13 +25,7 @@ import jakarta.servlet.http.HttpSession;
 public class ComplaintController {
 
     @Autowired
-    private ComplaintRepo complaintRepo;
-    
-    @Autowired
     private ComplaintService complaintService;
-
-    @Autowired
-    private CompanyRepo companyRepo;
 
     @Autowired
     private CompanyService companyService;
@@ -62,7 +54,6 @@ public class ComplaintController {
             complaint.setDescription(descripcion);
             complaint.setCompany(company);
             complaintService.saveComplaint(complaint);
-
             addMessage(model, "La queja fue registrada exitosamente.", "success");
         }, () -> {
             addMessage(model, "Error: empresa no encontrada.", "error");
@@ -106,7 +97,6 @@ public class ComplaintController {
         complaintService.searchById(id).ifPresentOrElse(complaint -> {
             complaint.setVisible(false);
             complaintService.saveComplaint(complaint);
-
             redirectAttributes.addFlashAttribute("mensaje", "Queja eliminada exitosamente");
             session.setAttribute("ultimaEmpresaBuscada", complaint.getCompany().getId());
         }, () -> {
@@ -128,8 +118,7 @@ public class ComplaintController {
         companyService.searchById(entidadId).ifPresentOrElse(company -> {
             List<Complaint> complaint = complaintService.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
-            model.addAttribute("entidadSeleccionada", company.getName());
-            // sendSearchNotification(company.getName(), request);
+            model.addAttribute("entidadSeleccionada", company.getName());            
             sendEmail.sendEmail(request);
         }, () -> {
             model.addAttribute("quejas", List.of());
@@ -138,16 +127,5 @@ public class ComplaintController {
 
         return "buscar";
     }
-
-    /*
-     * private void sendSearchNotification(String companyName, HttpServletRequest
-     * request) {
-     * emailService.sendNotificationSearchCompleted(
-     * companyName,
-     * obtenerIpCliente(request),
-     * request.getMethod(),
-     * request.getRequestURI());
-     * }
-     */
 
 }
