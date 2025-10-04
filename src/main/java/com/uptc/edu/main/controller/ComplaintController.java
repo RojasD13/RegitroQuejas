@@ -86,7 +86,7 @@ public class ComplaintController {
 
     @GetMapping("/quejas")
     public String showComplaintsByCompany(@RequestParam(required = false) Long companyId, Model model) {
-        model.addAttribute("entidades", companyRepo.findAll());
+        model.addAttribute("entidades", companyService.listCompanies());
         model.addAttribute("quejas", obtainVisibleComplaints(companyId));
         return "buscar";
     }
