@@ -123,10 +123,10 @@ public class ComplaintController {
             Model model,
             HttpServletRequest request) {
 
-        model.addAttribute("entidades", companyRepo.findAll());
+        model.addAttribute("entidades", companyService.findAll());
 
-        companyRepo.findById(entidadId).ifPresentOrElse(company -> {
-            List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
+        companyService.searchById(entidadId).ifPresentOrElse(company -> {
+            List<Complaint> complaint = complaintService.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
             // sendSearchNotification(company.getName(), request);

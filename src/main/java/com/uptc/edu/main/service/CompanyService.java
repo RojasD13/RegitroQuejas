@@ -30,4 +30,12 @@ public class CompanyService {
     public Optional<Company> searchById(Long id) {
         return companyRepo.findById(id);
     }
+
+    public List<Company> findAllByOrderByNameAsc() {
+        return companyRepo.findAllByOrderByNameAsc();
+    }   
+
+    public List<Company> findAll() {
+        return companyRepo.findAll();
+    }   
 }
