@@ -103,9 +103,9 @@ public class ComplaintController {
             RedirectAttributes redirectAttributes,
             HttpSession session) {
 
-        complaintRepo.findById(id).ifPresentOrElse(complaint -> {
+        complaintService.searchById(id).ifPresentOrElse(complaint -> {
             complaint.setVisible(false);
-            complaintRepo.save(complaint);
+            complaintService.saveComplaint(complaint);
 
             redirectAttributes.addFlashAttribute("mensaje", "Queja eliminada exitosamente");
             session.setAttribute("ultimaEmpresaBuscada", complaint.getCompany().getId());
