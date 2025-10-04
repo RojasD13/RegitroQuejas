@@ -17,6 +17,7 @@ import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
 import com.uptc.edu.main.service.CompanyService;
+import com.uptc.edu.main.service.ComplaintService;
 import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ public class ComplaintController {
 
     @Autowired
     private ComplaintRepo complaintRepo;
+    
+    @Autowired
+    private ComplaintService complaintService;
 
     @Autowired
     private CompanyRepo companyRepo;
@@ -57,7 +61,7 @@ public class ComplaintController {
             Complaint complaint = new Complaint();
             complaint.setDescription(descripcion);
             complaint.setCompany(company);
-            complaintRepo.save(complaint);
+            complaintService.saveComplaint(complaint);
 
             addMessage(model, "La queja fue registrada exitosamente.", "success");
         }, () -> {
