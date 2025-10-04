@@ -1,4 +1,5 @@
 package com.uptc.edu.main.controller;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
 import com.uptc.edu.main.repository.CompanyRepo;
 import com.uptc.edu.main.repository.ComplaintRepo;
+import com.uptc.edu.main.service.CompanyService;
+import com.uptc.edu.main.service.ComplaintService;
 import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,12 +28,15 @@ public class ComplaintController {
 
     @Autowired
     private ComplaintRepo complaintRepo;
+    
+    @Autowired
+    private ComplaintService complaintService;
 
     @Autowired
     private CompanyRepo companyRepo;
 
-    // @Autowired
-    // private EmailService emailService;
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private final SendEmail sendEmail;
@@ -51,11 +57,11 @@ public class ComplaintController {
             @RequestParam String descripcion,
             Model model) {
 
-        companyRepo.findByName(companyName).ifPresentOrElse(company -> {
+        companyService.searchByName(companyName).ifPresentOrElse(company -> {
             Complaint complaint = new Complaint();
             complaint.setDescription(descripcion);
             complaint.setCompany(company);
-            complaintRepo.save(complaint);
+            complaintService.saveComplaint(complaint);
 
             addMessage(model, "La queja fue registrada exitosamente.", "success");
         }, () -> {
