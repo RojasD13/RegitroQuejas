@@ -93,8 +93,8 @@ public class ComplaintController {
 
     private List<Complaint> obtainVisibleComplaints(Long companyId) {
         return (companyId == null)
-                ? complaintRepo.findByIsVisibleTrue()
-                : complaintRepo.findByCompanyIdAndIsVisibleTrue(companyId);
+                ? complaintService.findByIsVisibleTrue()
+                : complaintService.findByCompanyIdAndIsVisibleTrue(companyId);
     }
 
     @PatchMapping("/quejas/{id}/ocultar")

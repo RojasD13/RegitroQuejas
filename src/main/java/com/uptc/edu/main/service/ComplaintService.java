@@ -31,4 +31,12 @@ public class ComplaintService {
     public Optional<Complaint> searchById(Long id) {
         return complaintRepo.findById(id);
     }
+
+    public List<Complaint> findByIsVisibleTrue() {
+        return complaintRepo.findByIsVisibleTrue();
+    }
+
+    public List<Complaint> findByCompanyIdAndIsVisibleTrue(Long companyId) {
+        return complaintRepo.findByCompanyIdAndIsVisibleTrue(companyId);
+    }
 }
