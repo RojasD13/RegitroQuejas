@@ -74,7 +74,33 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    INSERT INTO companies (company_id, company_name) values (4,'Defensoría del Pueblo');
    INSERT INTO companies (company_id, company_name) values (5,'Ministerio de Transporte');
    ```
+2. Creación de tablas :
+   ```SQL
+   -- Tabla: companies
+   CREATE TABLE companies (
+    company_id SERIAL PRIMARY KEY,
+    company_name VARCHAR(100) NOT NULL
+   );
 
+   -- Tabla: complaints
+   CREATE TABLE complaints (
+    complaint_id SERIAL PRIMARY KEY,
+    description VARCHAR(1000) NOT NULL,
+    company_id INTEGER NOT NULL,
+    visible BOOLEAN NOT NULL DEFAULT TRUE,
+    state VARCHAR(20) NOT NULL DEFAULT 'PROCESO',
+    CONSTRAINT fk_company FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
+   );
+
+   -- Tabla: comments
+   CREATE TABLE comments (
+    comment_id SERIAL PRIMARY KEY,
+    date TIMESTAMP NOT NULL,
+    content VARCHAR(2000) NOT NULL,
+    complaint_id INTEGER NOT NULL,
+    CONSTRAINT fk_complaint FOREIGN KEY (complaint_id) REFERENCES complaints(complaint_id) ON DELETE CASCADE
+   );
+   ```
 ## Esctructura del proyecto
    ```bash
    RegistroQuejas/
@@ -148,6 +174,7 @@ Este proyecto está bajo la licencia MIT.
 
 - [Daniel Rojas](https://github.com/RojasD13)
 - [Andres Vargas](https://github.com/andres-Vargas02)
+
 
 
 
