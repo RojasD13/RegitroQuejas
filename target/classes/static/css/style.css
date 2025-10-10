@@ -1,6 +1,4 @@
-/* =============================
-   Reset y Variables CSS
-============================= */
+/* Reset y Variables CSS */
 * {
     margin: 0;
     padding: 0;
@@ -37,17 +35,13 @@ body {
     background-color: var(--bg-color);
 }
 
-/* =============================
-   Layout Principal
-============================= */
+/*Layout Principal*/
 .container-fluid {
     display: flex;
     min-height: 100vh;
 }
 
-/* =============================
-   Sidebar
-============================= */
+/* Sidebar*/
 .sidebar {
     width: 280px;
     background-color: var(--primary-color);
@@ -111,9 +105,7 @@ body {
     text-align: center;
 }
 
-/* =============================
-   Contenido Principal
-============================= */
+/* Contenido Principal */
 .main-content {
     flex: 1;
     margin-left: 280px;
@@ -133,9 +125,7 @@ body {
     margin: 0;
 }
 
-/* =============================
-   Alertas
-============================= */
+/* Alertas */
 .alert {
     display: flex;
     align-items: center;
@@ -179,9 +169,7 @@ body {
     opacity: 1;
 }
 
-/* =============================
-   Contenedores Comunes
-============================= */
+/* Contenedores Comunes */
 .form-container,
 .search-container {
     background-color: var(--white);
@@ -195,9 +183,7 @@ body {
     max-width: 600px;
 }
 
-/* =============================
-   Formularios
-============================= */
+/* Formularios */
 .form-group,
 .search-group {
     margin-bottom: 1.5rem;
@@ -282,12 +268,14 @@ body {
     color: var(--text-light);
 }
 
-/* =============================
-   Botones Base
-============================= */
-.btn {
+/* Botones Base - CORREGIDO */
+button.btn,
+input[type="submit"].btn,
+input[type="reset"].btn,
+a.btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     border: none;
     border-radius: var(--border-radius);
@@ -297,8 +285,11 @@ body {
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
+    padding: 0.75rem 1.5rem;
+    min-height: 44px;
 }
 
+/* Contenedor de acciones de formulario */
 .form-actions,
 .search-actions {
     display: flex;
@@ -307,47 +298,47 @@ body {
     flex-wrap: wrap;
 }
 
-.btn-primary,
-.btn-secondary {
+button.btn-primary,
+input[type="submit"].btn-primary {
+    background-color: var(--secondary-color);
+    color: var(--white);
     padding: 0.75rem 2rem;
 }
 
-.btn-primary {
-    background-color: var(--secondary-color);
-    color: var(--white);
-}
-
-.btn-primary:hover {
+button.btn-primary:hover,
+input[type="submit"].btn-primary:hover {
     background-color: var(--primary-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(41, 128, 185, 0.3);
 }
 
-.btn-primary:disabled {
+button.btn-primary:disabled,
+input[type="submit"].btn-primary:disabled {
     background-color: #bdc3c7;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-.btn-primary:disabled:hover {
+button.btn-primary:disabled:hover,
+input[type="submit"].btn-primary:disabled:hover {
     transform: none;
     box-shadow: none;
 }
 
-.btn-secondary {
+button.btn-secondary,
+input[type="reset"].btn-secondary {
     background-color: var(--border-color);
     color: var(--text-color);
     padding: 0.75rem 2rem;
 }
 
-.btn-secondary:hover {
+button.btn-secondary:hover,
+input[type="reset"].btn-secondary:hover {
     background-color: #95a5a6;
     transform: translateY(-2px);
 }
 
-/* =============================
-   Cards y Secciones
-============================= */
+/* Cards y Secciones */
 .info-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -392,9 +383,7 @@ body {
     line-height: 1.5;
 }
 
-/* =============================
-   CAPTCHA
-============================= */
+/* CAPTCHA */
 .captcha-container {
     margin: 1.5rem 0;
     padding: 10px;
@@ -423,9 +412,7 @@ body {
     display: block;
 }
 
-/* =============================
-   Modal
-============================= */
+/* Modal*/
 .modal {
     display: none;
     position: fixed;
@@ -495,9 +482,7 @@ body {
     border-color: var(--secondary-color);
 }
 
-/* =============================
-   Análisis y Estadísticas
-============================= */
+/* Análisis y Estadísticas */
 .section-title {
     font-size: 1.5rem;
     color: var(--primary-color);
@@ -550,9 +535,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* =============================
-   Colores de fondo y entidades
-============================= */
+/* Colores de fondo y entidades*/
 .bg-blue {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
@@ -598,9 +581,7 @@ body {
     font-weight: 600;
 }
 
-/* =============================
-   Animaciones
-============================= */
+/* Animaciones*/
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -632,19 +613,18 @@ body {
     animation: fadeIn 0.8s ease-out;
 }
 
-/* =============================
-   Accesibilidad
-============================= */
+/* Accesibilidad */
 .form-select:focus,
 .form-textarea:focus,
-.btn:focus {
+button.btn:focus,
+input[type="submit"].btn:focus,
+input[type="reset"].btn:focus,
+a.btn:focus {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
-/* =============================
-   Responsive
-============================= */
+/* Responsive*/
 @media (max-width: 1024px) {
     .sidebar {
         width: 250px;
@@ -674,9 +654,12 @@ body {
         flex-direction: column;
     }
 
-    .btn-primary,
-    .btn-secondary {
+    button.btn-primary,
+    button.btn-secondary,
+    input[type="submit"].btn-primary,
+    input[type="reset"].btn-secondary {
         justify-content: center;
+        width: 100%;
     }
 
     .info-section {

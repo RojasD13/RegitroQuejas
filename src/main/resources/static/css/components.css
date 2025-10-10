@@ -1,43 +1,55 @@
-/* =============================
-   Botones de Acción
-============================= */
-.btn-delete,
-.btn-confirm,
-.btn-cancel {
+/* Botones de Acción */
+button.btn-delete,
+button.btn-confirm,
+button.btn-cancel,
+input[type="button"].btn-delete,
+input[type="button"].btn-confirm,
+input[type="button"].btn-cancel {
     padding: 0.5rem 1rem;
     margin: 0 0.25rem;
     border: none;
     border-radius: var(--border-radius);
     font-size: 0.875rem;
     transition: var(--transition);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
 }
 
-.btn-delete,
-.btn-confirm {
+button.btn-delete,
+button.btn-confirm,
+input[type="button"].btn-delete,
+input[type="button"].btn-confirm {
     background-color: var(--error-color);
     color: var(--white);
 }
 
-.btn-delete:hover,
-.btn-confirm:hover {
+button.btn-delete:hover,
+button.btn-confirm:hover,
+input[type="button"].btn-delete:hover,
+input[type="button"].btn-confirm:hover {
     background-color: #c0392b;
     transform: translateY(-1px);
 }
 
-.btn-delete:disabled {
+button.btn-delete:disabled,
+button.btn-confirm:disabled,
+input[type="button"].btn-delete:disabled,
+input[type="button"].btn-confirm:disabled {
     background-color: var(--text-light);
     cursor: not-allowed;
     transform: none;
 }
 
-.btn-cancel {
+button.btn-cancel,
+input[type="button"].btn-cancel {
     background-color: var(--text-light);
     color: var(--white);
 }
 
-/* =============================
-   Resultados y Tablas
-============================= */
+/* Resultados y Tablas */
 .results-section {
     background-color: var(--white);
     border-radius: var(--border-radius);
@@ -80,9 +92,7 @@
     margin-bottom: 1rem;
 }
 
-/* =============================
-   Tabla de resultados
-============================= */
+/* Tabla de resultados */
 .results-table {
     width: 100%;
     border-collapse: collapse;
@@ -118,9 +128,7 @@
     font-weight: 500;
 }
 
-/* =============================
-   Celda de Acciones - RESPONSIVE
-============================= */
+/* Celda de Acciones */
 .actions-cell {
     text-align: center;
     width: 140px;
@@ -134,9 +142,13 @@
     gap: 0.5rem;
 }
 
-.actions-buttons .btn-status,
-.actions-buttons .btn-comment,
-.actions-buttons .btn-delete {
+/* Aumentando la especificidad para asegurar que los estilos se apliquen correctamente */
+.actions-buttons button.btn-status,
+.actions-buttons button.btn-comment,
+.actions-buttons button.btn-delete,
+.actions-buttons input[type="button"].btn-status,
+.actions-buttons input[type="button"].btn-comment,
+.actions-buttons input[type="button"].btn-delete {
     width: 2rem;
     height: 2rem;
     display: inline-flex;
@@ -150,32 +162,36 @@
     flex-shrink: 0;
 }
 
-.actions-buttons .btn-status {
+.actions-buttons button.btn-status,
+.actions-buttons input[type="button"].btn-status {
     background-color: var(--secondary-color);
     color: var(--white);
 }
 
-.actions-buttons .btn-comment {
+.actions-buttons button.btn-comment,
+.actions-buttons input[type="button"].btn-comment {
     background-color: var(--success-color);
     color: var(--white);
 }
 
-.actions-buttons .btn-delete {
+.actions-buttons button.btn-delete,
+.actions-buttons input[type="button"].btn-delete {
     background-color: var(--error-color);
     color: var(--white);
     margin-left: 0.5rem;
 }
 
-.actions-buttons .btn-status:hover,
-.actions-buttons .btn-comment:hover,
-.actions-buttons .btn-delete:hover {
+.actions-buttons button.btn-status:hover,
+.actions-buttons button.btn-comment:hover,
+.actions-buttons button.btn-delete:hover,
+.actions-buttons input[type="button"].btn-status:hover,
+.actions-buttons input[type="button"].btn-comment:hover,
+.actions-buttons input[type="button"].btn-delete:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
 
-/* =============================
-   Responsive
-============================= */
+/* Responsive*/
 @media (max-width: 768px) {
 
     .results-table th,
@@ -197,15 +213,19 @@
         gap: 0.25rem;
     }
 
-    .actions-buttons .btn-status,
-    .actions-buttons .btn-comment,
-    .actions-buttons .btn-delete {
+    .actions-buttons button.btn-status,
+    .actions-buttons button.btn-comment,
+    .actions-buttons button.btn-delete,
+    .actions-buttons input[type="button"].btn-status,
+    .actions-buttons input[type="button"].btn-comment,
+    .actions-buttons input[type="button"].btn-delete {
         width: 1.75rem;
         height: 1.75rem;
         font-size: 0.75rem;
     }
 
-    .actions-buttons .btn-delete {
+    .actions-buttons button.btn-delete,
+    .actions-buttons input[type="button"].btn-delete {
         margin-left: 0.25rem;
     }
 }
@@ -216,9 +236,12 @@
         min-width: 100px;
     }
 
-    .actions-buttons .btn-status,
-    .actions-buttons .btn-comment,
-    .actions-buttons .btn-delete {
+    .actions-buttons button.btn-status,
+    .actions-buttons button.btn-comment,
+    .actions-buttons button.btn-delete,
+    .actions-buttons input[type="button"].btn-status,
+    .actions-buttons input[type="button"].btn-comment,
+    .actions-buttons input[type="button"].btn-delete {
         width: 1.5rem;
         height: 1.5rem;
     }
