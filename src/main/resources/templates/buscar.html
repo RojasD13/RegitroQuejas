@@ -7,7 +7,7 @@
     <title>Buscar Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/pagination.css}">
-    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/passwordAuth.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -96,19 +96,23 @@
                                         </div>
                                     </td>
                                     <td class="actions-cell">
-                                        <button type="button" class="btn-delete"
-                                            th:onclick="'confirmDeleted(' + ${queja.id} + ')'" title="Borrar queja">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <button type="button" class="btn-status"
-                                            th:onclick="'cambiarEstado(' + ${queja.id} + ')'" title="Cambiar estado">
-                                            <i class="fas fa-exchange-alt"></i>
-                                        </button>
-                                        <button type="button" class="btn-comment"
-                                            th:onclick="'agregarComentario(' + ${queja.id} + ')'"
-                                            title="Agregar comentario">
-                                            <i class="fas fa-comment-plus"></i>
-                                        </button>
+                                        <div class="actions-buttons">
+                                            <button type="button" class="btn-status"
+                                                th:onclick="'cambiarEstado(' + ${queja.id} + ')'"
+                                                title="Cambiar estado">
+                                                <i class="fas fa-exchange-alt"></i>
+                                            </button>
+                                            <button type="button" class="btn-comment"
+                                                th:onclick="'agregarComentario(' + ${queja.id} + ')'"
+                                                title="Agregar comentario">
+                                                <i class="fas fa-comment"></i>
+                                            </button>
+                                            <div class="actions-separator"></div>
+                                            <button type="button" class="btn-delete"
+                                                th:onclick="'confirmDeleted(' + ${queja.id} + ')'" title="Borrar queja">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

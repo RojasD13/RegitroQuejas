@@ -1,0 +1,225 @@
+/* =============================
+   Botones de Acción
+============================= */
+.btn-delete,
+.btn-confirm,
+.btn-cancel {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.btn-delete,
+.btn-confirm {
+    background-color: var(--error-color);
+    color: var(--white);
+}
+
+.btn-delete:hover,
+.btn-confirm:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-delete:disabled {
+    background-color: var(--text-light);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-cancel {
+    background-color: var(--text-light);
+    color: var(--white);
+}
+
+/* =============================
+   Resultados y Tablas
+============================= */
+.results-section {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    animation: slideIn 0.6s ease-out;
+}
+
+.results-header {
+    background-color: #f8f9fa;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.results-header h2 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.results-table-container {
+    padding: 2rem;
+    overflow-x: auto;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-light);
+}
+
+.empty-state .empty-icon i {
+    font-size: 3rem;
+    color: var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+/* =============================
+   Tabla de resultados
+============================= */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.results-table th {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.results-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.results-table tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: var(--transition);
+}
+
+.table-row.hidden {
+    display: none;
+}
+
+.entidad-cell {
+    font-weight: 500;
+}
+
+/* =============================
+   Celda de Acciones - RESPONSIVE
+============================= */
+.actions-cell {
+    text-align: center;
+    width: 140px;
+    min-width: 140px;
+}
+
+.actions-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.actions-buttons .btn-status,
+.actions-buttons .btn-comment,
+.actions-buttons .btn-delete {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.actions-buttons .btn-status {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+.actions-buttons .btn-comment {
+    background-color: var(--success-color);
+    color: var(--white);
+}
+
+.actions-buttons .btn-delete {
+    background-color: var(--error-color);
+    color: var(--white);
+    margin-left: 0.5rem;
+}
+
+.actions-buttons .btn-status:hover,
+.actions-buttons .btn-comment:hover,
+.actions-buttons .btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* =============================
+   Responsive
+============================= */
+@media (max-width: 768px) {
+
+    .results-table th,
+    .results-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .results-table-container {
+        padding: 1rem;
+    }
+
+    .actions-cell {
+        width: 120px;
+        min-width: 120px;
+    }
+
+    .actions-buttons {
+        gap: 0.25rem;
+    }
+
+    .actions-buttons .btn-status,
+    .actions-buttons .btn-comment,
+    .actions-buttons .btn-delete {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.75rem;
+    }
+
+    .actions-buttons .btn-delete {
+        margin-left: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .actions-cell {
+        width: 100px;
+        min-width: 100px;
+    }
+
+    .actions-buttons .btn-status,
+    .actions-buttons .btn-comment,
+    .actions-buttons .btn-delete {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
