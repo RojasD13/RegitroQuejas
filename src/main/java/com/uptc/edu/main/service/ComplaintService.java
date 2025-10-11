@@ -1,5 +1,5 @@
 package com.uptc.edu.main.service;
-
+ 
 import java.util.List;
 import java.util.Optional;
 
@@ -15,40 +15,31 @@ import jakarta.servlet.http.HttpSession;
 
 @Service
 public class ComplaintService {
-
     @Autowired
     private ComplaintRepo complaintRepo;
-
     public Complaint saveComplaint(Complaint complaint) {
         return complaintRepo.save(complaint);
     }
-
     public List<Complaint> listComplaints() {
         return complaintRepo.findAll();
     }
-
     public List<Complaint> getComplaintsByCompany(Company company) {
         return complaintRepo.findByCompany(company);
     }
-
     public Optional<Complaint> searchById(Long id) {
         return complaintRepo.findById(id);
     }
-
     public List<Complaint> findByIsVisibleTrue() {
         return complaintRepo.findByIsVisibleTrue();
     }
-
     public List<Complaint> findByCompanyIdAndIsVisibleTrue(Long companyId) {
         return complaintRepo.findByCompanyIdAndIsVisibleTrue(companyId);
     }
-
     public List<Complaint> obtainVisibleComplaints(Long companyId) {
         return (companyId == null)
                 ? complaintRepo.findByIsVisibleTrue()
                 : complaintRepo.findByCompanyIdAndIsVisibleTrue(companyId);
     }
-
     public void hideComplaintIfExists(Long id, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintRepo.findById(id).ifPresentOrElse(complaint -> {
             complaint.setVisible(false);

@@ -1,6 +1,4 @@
-/* =============================
-   Paginación
-============================= */
+/* Paginación */
 .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -8,6 +6,8 @@
     padding: 20px 0;
     border-top: 1px solid #e0e0e0;
     margin-top: 20px;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .pagination-info {
@@ -78,7 +78,10 @@
     border-color: var(--secondary-color);
 }
 
-.pagination-container {
-    flex-direction: column;
-    gap: 15px;
+/* Responsive para paginación */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }

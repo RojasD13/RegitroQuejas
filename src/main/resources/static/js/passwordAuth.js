@@ -1,11 +1,7 @@
-// ========================================
 // SISTEMA MODULAR DE AUTENTICACIÓN CON CONTRASEÑA
-// ======================================== 
-
 const PasswordAuth = {
     ADMIN_PASSWORD: 'ADMIN',
     currentCallback: null,
-
     showModal: function(title, message, onSuccess) {
         document.getElementById('modalTitle').textContent = title;
         document.getElementById('modalMessage').textContent = message;
@@ -19,7 +15,6 @@ const PasswordAuth = {
             document.getElementById('adminPassword').focus();
         }, 100);
     },
-
     validatePassword: function() {
         const password = document.getElementById('adminPassword').value;
         const errorDiv = document.getElementById('passwordError');
@@ -33,14 +28,12 @@ const PasswordAuth = {
             return false;
         }
     },
-
     confirm: function() {
         if (this.validatePassword() && this.currentCallback) {
             this.currentCallback();
             this.closeModal();
         }
     },
-
     closeModal: function() {
         document.getElementById('passwordModal').style.display = 'none';
         document.getElementById('adminPassword').value = '';
@@ -48,11 +41,7 @@ const PasswordAuth = {
         this.currentCallback = null;
     }
 };
-
-// ========================================
 // EVENTOS DEL MODAL
-// ========================================
-
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnModalConfirmar').addEventListener('click', () => {
         PasswordAuth.confirm();
