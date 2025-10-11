@@ -1,52 +1,88 @@
-/* Botones de Acción */
-button.btn-delete,
-button.btn-confirm,
-button.btn-cancel,
-input[type="button"].btn-delete,
-input[type="button"].btn-confirm,
-input[type="button"].btn-cancel {
-    padding: 0.5rem 1rem;
-    margin: 0 0.25rem;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 0.875rem;
-    transition: var(--transition);
-    cursor: pointer;
-    display: inline-flex;
+/* Modal - Centrado y manejo de texto largo */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
 }
 
-button.btn-delete,
-button.btn-confirm,
-input[type="button"].btn-delete,
-input[type="button"].btn-confirm {
-    background-color: var(--error-color);
-    color: var(--white);
-}
-
-button.btn-delete:hover,
-button.btn-confirm:hover,
-input[type="button"].btn-delete:hover,
-input[type="button"].btn-confirm:hover {
-    background-color: #c0392b;
-    transform: translateY(-1px);
-}
-
-button.btn-delete:disabled,
-button.btn-confirm:disabled,
-input[type="button"].btn-delete:disabled,
-input[type="button"].btn-confirm:disabled {
-    background-color: var(--text-light);
-    cursor: not-allowed;
+.modal-content {
+    background-color: white;
+    border-radius: var(--border-radius);
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    min-height: 60vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+    margin: auto;
+    top: 0;
     transform: none;
 }
 
-button.btn-cancel,
-input[type="button"].btn-cancel {
-    background-color: var(--text-light);
-    color: var(--white);
+#commentsModal .modal-content {
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    min-height: 60vh;
+    position: relative;
+    margin: auto;
+    top: 0;
+    transform: none;
+}
+
+.modal-header,
+.modal-footer {
+    background-color: #f8f9fa;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    border-bottom: none;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-header h3 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    padding: 0;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Iconos */
+i,
+.fa,
+.fas,
+.far,
+.fab,
+.fal {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
 }
 
 /* Resultados y Tablas */
@@ -62,12 +98,6 @@ input[type="button"].btn-cancel {
     background-color: #f8f9fa;
     padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--border-color);
-}
-
-.results-header h2 {
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    margin: 0;
 }
 
 .results-table-container {
@@ -99,6 +129,7 @@ input[type="button"].btn-cancel {
     margin: 1rem 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.8s ease-out;
+    table-layout: fixed;
 }
 
 .results-table th {
@@ -113,6 +144,8 @@ input[type="button"].btn-cancel {
 .results-table td {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .results-table tbody tr:hover {
@@ -142,13 +175,8 @@ input[type="button"].btn-cancel {
     gap: 0.5rem;
 }
 
-/* Aumentando la especificidad para asegurar que los estilos se apliquen correctamente */
-.actions-buttons button.btn-status,
-.actions-buttons button.btn-comment,
-.actions-buttons button.btn-delete,
-.actions-buttons input[type="button"].btn-status,
-.actions-buttons input[type="button"].btn-comment,
-.actions-buttons input[type="button"].btn-delete {
+.actions-buttons button,
+.actions-buttons input[type="button"] {
     width: 2rem;
     height: 2rem;
     display: inline-flex;
@@ -181,18 +209,149 @@ input[type="button"].btn-cancel {
     margin-left: 0.5rem;
 }
 
-.actions-buttons button.btn-status:hover,
-.actions-buttons button.btn-comment:hover,
-.actions-buttons button.btn-delete:hover,
-.actions-buttons input[type="button"].btn-status:hover,
-.actions-buttons input[type="button"].btn-comment:hover,
-.actions-buttons input[type="button"].btn-delete:hover {
+.actions-buttons button:hover,
+.actions-buttons input[type="button"]:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
 
-/* Responsive*/
+/* Comentarios específicos */
+#commentsList {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 1rem;
+    width: 100%;
+    min-height: 0;
+    max-height: none;
+}
+
+#commentsList .results-table {
+    width: 100%;
+    min-width: 800px;
+}
+
+#commentsList .results-table td:first-child {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+#commentsList .results-table td:last-child {
+    white-space: nowrap;
+    width: 30%;
+    min-width: 200px;
+}
+
+/* Botones de Acción */
+.btn-delete,
+.btn-confirm,
+.btn-cancel,
+input[type="button"].btn-delete,
+input[type="button"].btn-confirm,
+input[type="button"].btn-cancel {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    transition: var(--transition);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+.btn-delete,
+.btn-confirm,
+input[type="button"].btn-delete,
+input[type="button"].btn-confirm {
+    background-color: var(--error-color);
+    color: var(--white);
+}
+
+.btn-delete:hover,
+.btn-confirm:hover,
+input[type="button"].btn-delete:hover,
+input[type="button"].btn-confirm:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-delete:disabled,
+.btn-confirm:disabled,
+input[type="button"].btn-delete:disabled,
+input[type="button"].btn-confirm:disabled {
+    background-color: var(--text-light);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-cancel,
+input[type="button"].btn-cancel {
+    background-color: var(--text-light);
+    color: var(--white);
+}
+
+/* State Modal específico */
+#stateModal .modal-content {
+    width: 400px;
+    max-width: 90vw;
+}
+
+.state-options {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-state-option {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--text-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 100px;
+}
+
+.btn-state-option:hover {
+    background-color: var(--accent-color);
+    color: var(--white);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+.btn-state-option:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.btn-state-option.selected {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border-color: var(--secondary-color);
+}
+
+/* Responsive para componentes */
 @media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-width: 98vw;
+        max-height: 98vh;
+        min-height: 80vh;
+    }
+
+    #commentsModal .modal-content {
+        width: 98%;
+        max-width: 98vw;
+        max-height: 95vh;
+        min-height: 70vh;
+    }
 
     .results-table th,
     .results-table td {
@@ -200,7 +359,9 @@ input[type="button"].btn-cancel {
         font-size: 0.9rem;
     }
 
-    .results-table-container {
+    .results-table-container,
+    .modal-header,
+    .modal-footer {
         padding: 1rem;
     }
 
@@ -213,12 +374,8 @@ input[type="button"].btn-cancel {
         gap: 0.25rem;
     }
 
-    .actions-buttons button.btn-status,
-    .actions-buttons button.btn-comment,
-    .actions-buttons button.btn-delete,
-    .actions-buttons input[type="button"].btn-status,
-    .actions-buttons input[type="button"].btn-comment,
-    .actions-buttons input[type="button"].btn-delete {
+    .actions-buttons button,
+    .actions-buttons input[type="button"] {
         width: 1.75rem;
         height: 1.75rem;
         font-size: 0.75rem;
@@ -236,12 +393,8 @@ input[type="button"].btn-cancel {
         min-width: 100px;
     }
 
-    .actions-buttons button.btn-status,
-    .actions-buttons button.btn-comment,
-    .actions-buttons button.btn-delete,
-    .actions-buttons input[type="button"].btn-status,
-    .actions-buttons input[type="button"].btn-comment,
-    .actions-buttons input[type="button"].btn-delete {
+    .actions-buttons button,
+    .actions-buttons input[type="button"] {
         width: 1.5rem;
         height: 1.5rem;
     }

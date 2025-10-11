@@ -1,4 +1,4 @@
-package com.uptc.edu.main.controller;
+package com.uptc.edu.main.controller; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +22,6 @@ public class CompanyController {
         this.sendEmail = sendEmail;
         this.companyService = companyService;
     }
-
     @GetMapping("/analisis")
     public String showAnalisisSummary(Model model, HttpServletRequest request) {   
         model.addAttribute("resumen", companyService.getCompanySummaries());

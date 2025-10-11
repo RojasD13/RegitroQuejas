@@ -1,284 +1,213 @@
-// Función al completar CAPTCHA exitosamente
+// VARIABLES GLOBALES
+let currentPage = 1, itemsPerPage = 10, totalItems = 0, allRows = [];
+let _pendingAction = { id: null, type: null, data: null };
+// FUNCIONES DE CAPTCHA
 function captchaSuccess() {
     document.getElementById('btn-buscar').disabled = false;
-    // Enviar notificación por email cuando se habilite el botón
     enviarNotificacionCaptcha();
 }
-// Función cuando el CAPTCHA expira
 function captchaExpired() {
     document.getElementById('btn-buscar').disabled = true;
-    if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-        grecaptcha.reset();
-    }
+    grecaptcha?.reset();
 }
-// Función para enviar notificación por email
 async function enviarNotificacionCaptcha() {
     try {
-        const response = await fetch('/api/notificar-captcha-completado', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        if (response.ok) {
-            console.log('Notificación enviada correctamente');
-        } else {
-            console.warn('Error al enviar notificación:', response.statusText);
-        }
+        const res = await fetch('/api/notificar-captcha-completado', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        if (!res.ok) console.warn('Error al enviar notificación:', res.statusText);
     } catch (error) {
         console.error('Error de red al enviar notificación:', error);
     }
 }
-// Variables globales para paginación y funcionalidad
-let complaintIdToDelete = null;
-let currentPage = 1;
-let itemsPerPage = 10;
-let totalItems = 0;
-let allRows = [];
-// ========================================
-// FUNCIONES ESPECÍFICAS PARA QUEJAS
-// ========================================
-// (USANDO SISTEMA MODULAR)
-function confirmDeleted(complaintId) {
-    complaintIdToDelete = complaintId;
-    PasswordAuth.showModal(
-        'Confirmar eliminación de queja',
-        '¿Está seguro de que desea eliminar esta queja? Esta acción requiere autorización administrativa.',
-        function () {
-            hideComplaint(complaintIdToDelete);
-        }
-    );
+// FUNCIONES DE MODALES Y UTILIDADES
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
 }
-function hideComplaint(quejaId) {
+function setupModalCloseOnOutsideClick(modalId) {
+    document.addEventListener('click', e => {
+        const modal = document.getElementById(modalId);
+        if (e.target === modal) closeModal(modalId);
+    });
+}
+// MANEJO DE ACCIONES DE QUEJAS
+function confirmDeleted(id) {
+    _pendingAction = { id, type: 'delete' };
+    PasswordAuth.showModal('Confirmar eliminación', '¿Eliminar esta queja? Requiere autorización.', executePendingAction);
+}
+function cambiarEstado(id) {
+    _pendingAction = { id, type: 'changeState' };
+    openStateModal();
+}
+function agregarComentario(id) {
+    _pendingAction = { id, type: 'addComment' };
+    openCommentModal();
+}
+function openStateModal() {
+    document.getElementById('stateModal').style.display = 'block';
+}
+function selectState(state) {
+    _pendingAction.data = state;
+    closeModal('stateModal');
+    PasswordAuth.showModal('Confirmar cambio', `Autorizar cambio a: ${state}`, executePendingAction);
+}
+function openCommentModal() {
+    const modal = document.getElementById('commentModal');
+    modal.style.display = 'block';
+    document.getElementById('commentText').value = '';
+    document.getElementById('commentError').style.display = 'none';
+}
+function executePendingAction() {
+    const { id, type, data } = _pendingAction;
+    switch (type) {
+        case 'delete': submitActionForm(id, `/quejas/${id}/ocultar`); break;
+        case 'changeState': submitActionForm(id, `/quejas/${id}/cambiar-estado`, { state: data }); break;
+        case 'addComment': submitComment(); break;
+    }
+}
+function submitActionForm(actionId, actionUrl, extraData = {}) {
     const form = document.getElementById('deleteForm');
-    form.action = `/quejas/${quejaId}/ocultar`;
+    form.action = actionUrl;
+    form.querySelectorAll('input[data-dynamic]').forEach(el => el.remove());
+    Object.entries(extraData).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden'; input.name = key; input.value = value;
+        input.setAttribute('data-dynamic', 'true');
+        form.appendChild(input);
+    });
     form.submit();
 }
-// ========================================
+// FUNCIÓN PARA AGREGAR COMENTARIOS
+function submitComment() {
+    const commentText = document.getElementById('commentText').value.trim();
+    document.getElementById('commentError').style.display = commentText ? 'none' : 'block';
+    if (!commentText) return;
+    fetch(`/api/quejas/${_pendingAction.id}/comentarios`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ text: commentText })
+    })
+        .then(res => {
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                return res.json().then(err => {
+                    throw new Error(err.message || 'Error al agregar comentario');
+                });
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Ocurrió un error al agregar el comentario: ' + error.message);
+        });
+    closeModal('commentModal');
+}
+// FUNCIÓN PARA VER COMENTARIOS
+function verComentarios(id) {
+    const modal = document.getElementById('commentsModal');
+    const commentsList = document.getElementById('commentsList');
+
+    modal.style.display = 'block';
+    commentsList.innerHTML = '<p>Cargando comentarios...</p>';
+
+    fetch(`/api/quejas/${id}/comentarios`)
+        .then(response => response.ok ? response.json() : Promise.reject('No se pudieron cargar los comentarios.'))
+        .then(comments => {
+            if (!comments.length) {
+                commentsList.innerHTML = '<div class="empty-state"><h3>No hay comentarios para esta queja.</h3></div>';
+                return;
+            }
+
+            commentsList.innerHTML = `
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Comentario</th>
+                                <th style="width: 30%;">Fecha y hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${comments.map(comment => `
+                                <tr>
+                                    <td style="word-wrap: break-word; max-width: 0;">${comment.text}</td>
+                                    <td style="white-space: nowrap;">${new Date(comment.timestamp).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error al cargar comentarios:', error);
+            commentsList.innerHTML = '<div class="empty-state"><h3>Ocurrió un error al cargar los comentarios.</h3></div>';
+        });
+}
 // FUNCIONES DE PAGINACIÓN
-// ========================================
 function initializePagination() {
     allRows = Array.from(document.querySelectorAll('.table-row'));
     totalItems = allRows.length;
-    const paginationContainer = document.getElementById('paginationContainer');
-    if (paginationContainer) {
-        if (totalItems <= itemsPerPage) {
-            paginationContainer.style.display = 'none';
-            allRows.forEach(r => r.classList.remove('hidden'));
-            return;
-        } else {
-            paginationContainer.style.display = 'flex';
-        }
-    }
-    createPageButtons();
-    updatePagination();
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePagination();
-            }
-        });
-    }
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            if (currentPage < Math.ceil(totalItems / itemsPerPage)) {
-                currentPage++;
-                updatePagination();
-            }
-        });
+    const container = document.getElementById('paginationContainer');
+    container.style.display = totalItems <= itemsPerPage ? 'none' : 'flex';
+
+    if (totalItems > itemsPerPage) {
+        createPageButtons();
+        updatePagination();
+        document.getElementById('prevBtn').onclick = () => { if (currentPage > 1) { currentPage--; updatePagination(); } };
+        document.getElementById('nextBtn').onclick = () => { if (currentPage < Math.ceil(totalItems / itemsPerPage)) { currentPage++; updatePagination(); } };
+    } else {
+        allRows.forEach(r => r.classList.remove('hidden'));
     }
 }
 function updatePagination() {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    allRows.forEach((row, index) => {
-        if (index >= startIndex && index < endIndex) {
-            row.classList.remove('hidden');
-        } else {
-            row.classList.add('hidden');
-        }
+
+    allRows.forEach((row, i) => row.classList.toggle('hidden', !(i >= start && i < end)));
+
+    document.getElementById('paginationInfo').innerHTML = `Mostrando ${start + 1}-${Math.min(end, totalItems)} de ${totalItems} resultados`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.textContent) === currentPage);
     });
-    const paginationInfo = document.getElementById('paginationInfo');
-    if (paginationInfo) {
-        const start = startIndex + 1;
-        const end = Math.min(endIndex, totalItems);
-        paginationInfo.innerHTML = `Mostrando ${start}-${end} de ${totalItems} resultados`;
-    }
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    if (prevBtn) prevBtn.disabled = currentPage === 1;
-    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-    updatePageButtons();
 }
 function createPageButtons() {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const pagesContainer = document.getElementById('paginationPages');
-    if (!pagesContainer) return;
     pagesContainer.innerHTML = '';
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
     for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = 'page-btn';
-        pageBtn.textContent = i;
-        pageBtn.setAttribute('aria-label', `Página ${i}`);
-        if (i === currentPage) pageBtn.classList.add('active');
-        pageBtn.addEventListener('click', () => {
-            if (currentPage === i) return;
-            currentPage = i;
-            updatePagination();
-        });
-        pagesContainer.appendChild(pageBtn);
+        const btn = document.createElement('button');
+        btn.className = 'page-btn';
+        btn.textContent = i;
+        btn.classList.toggle('active', i === currentPage);
+        btn.onclick = () => { currentPage = i; updatePagination(); };
+        pagesContainer.appendChild(btn);
     }
 }
-function updatePageButtons() {
-    const pageButtons = document.querySelectorAll('.page-btn');
-    pageButtons.forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.textContent, 10) === currentPage);
-    });
-}
-// Función para scroll automático a la tabla
-function scrollToTable() {
-    const tableContainer = document.getElementById('tableContainer');
-    if (tableContainer) {
-        setTimeout(() => {
-            tableContainer.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }, 100);
-    }
-}
-document.addEventListener('DOMContentLoaded', function () {
+// INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('tableContainer')) {
         initializePagination();
-        scrollToTable();
+        document.getElementById('tableContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    const actionButtons = document.querySelectorAll('.btn-action');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const action = this.querySelector('i').classList.contains('fa-eye') ? 'ver' : 'descargar';
-            const row = this.closest('tr');
-            const resumen = row ? row.querySelector('.resumen-cell')?.textContent : '';
-            if (action === 'ver') {
-                alert(`Ver detalles de: ${resumen}`);
-            } else {
-                alert(`Descargando: ${resumen}`);
-            }
-        });
-    });
-    const searchForm = document.getElementById('searchForm');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function (e) {
-            const entidad = document.getElementById('entidad').value;
-            if (!entidad) {
-                alert('Por favor seleccione una entidad');
-                e.preventDefault();
-            }
-        });
-    }
-    const entidadSelect = document.getElementById('entidad');
-    if (entidadSelect) {
-        entidadSelect.addEventListener('change', function (e) {
-            if (this.value === '') {
-                this.selectedIndex = 0;
-            }
-        });
-    }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
-        grecaptcha.reset();
-    }
-});
-//----------------------
-// --- Cambiar estado con confirmación por contraseña ---
-function cambiarEstado(complaintId) {
-    // guarda temporalmente el id
-    const id = complaintId;
-    PasswordAuth.showModal(
-        'Confirmar cambio de estado',
-        '¿Está seguro de que desea cambiar el estado de esta queja? Esta acción requiere autorización administrativa.',
-        function () {
-            submitChangeStateForm(id);
+
+    document.getElementById('searchForm')?.addEventListener('submit', e => {
+        if (!document.getElementById('entidad').value) {
+            alert('Por favor seleccione una entidad');
+            e.preventDefault();
         }
-    );
-}
-
-function submitChangeStateForm(quejaId) {
-    const form = document.getElementById('deleteForm'); // reutilizamos el form oculto
-    // Ajusta esta URL si tu controlador usa otro endpoint
-    form.action = `/quejas/${quejaId}/cambiar-estado`;
-    form.submit();
-}
-
-/* ---------- Cambio de estado: selección + confirmación por contraseña ---------- */
-
-let _pendingStateChange = { id: null, newState: null };
-
-function cambiarEstado(quejaId) {
-    // Guardamos el id y abrimos el modal de selección
-    _pendingStateChange.id = quejaId;
-    _pendingStateChange.newState = null;
-    openStateModal();
-}
-
-function openStateModal() {
-    const modal = document.getElementById('stateModal');
-    if (!modal) {
-        alert('No se encontró el modal de selección de estado.');
-        return;
-    }
-    modal.style.display = 'block';
-}
-
-function closeStateModal() {
-    const modal = document.getElementById('stateModal');
-    if (modal) modal.style.display = 'none';
-}
-
-// Llamada cuando el usuario selecciona una opción (PROCESO/REVISION/CERRADO)
-function selectState(state) {
-    _pendingStateChange.newState = state;
-    closeStateModal();
-    const title = 'Confirmar cambio de estado';
-    const message = 'Ingresar contraseña para autorizar el cambio a: ' + state;
-    PasswordAuth.showModal(title, message, function () {
-        submitChangeStateForm(_pendingStateChange.id, _pendingStateChange.newState);
     });
-}
-
-function submitChangeStateForm(quejaId, estado) {
-    const form = document.getElementById('deleteForm');
-    if (!form) {
-        alert('No se encontró el formulario oculto.');
-        return;
-    }
-    form.action = '/quejas/' + quejaId + '/cambiar-estado';
-    let input = form.querySelector('input[name="state"]');
-    if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'state';
-        form.appendChild(input);
-    }
-    input.value = estado;
-    form.submit();
-}
-document.addEventListener('click', function (e) {
-    const stateModal = document.getElementById('stateModal');
-    if (!stateModal) return;
-    if (stateModal.style.display === 'block' && e.target === stateModal) {
-        closeStateModal();
-    }
+    document.getElementById('btnCommentConfirmar').onclick = submitComment;
+    document.getElementById('btnCommentCancelar').onclick = () => closeModal('commentModal');
+    setupModalCloseOnOutsideClick('stateModal');
+    setupModalCloseOnOutsideClick('commentModal');
+    setupModalCloseOnOutsideClick('commentsModal');
+    grecaptcha?.reset();
 });
-
-
