@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Análisis de Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/components.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -24,7 +25,7 @@
                             data-callback="captchaSuccess" data-expired-callback="captchaExpired"></div>
                     </div>
                     <div class="search-actions">
-                        <button type="submit" class="btn-primary" id="btn-buscar" disabled>
+                        <button type="submit" class="btn btn-primary" id="btn-buscar" disabled>
                             <i class="fas fa-search"></i>
                             Buscar
                         </button>
@@ -36,7 +37,7 @@
                 <table class="results-table" id="resultsTable">
                     <thead>
                         <tr>
-                            <th>Entidad</th> 
+                            <th>Entidad</th>
                             <th>Total de Quejas</th>
                         </tr>
                     </thead>
