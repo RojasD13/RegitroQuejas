@@ -1,4 +1,5 @@
-package com.uptc.edu.main.controller; 
+// ComplaintController.java
+package com.uptc.edu.main.controller;
 
 import java.util.List;
 
@@ -24,39 +25,23 @@ import com.uptc.edu.main.service.ComplaintService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-
 @Controller
 @Validated
 public class ComplaintController {
-
-    @Autowired
-    private ComplaintService complaintService;
-
-    @Autowired
-    private CompanyService companyService;
-    
-    @Autowired
-    private CommentService commentService;
+    @Autowired private ComplaintService complaintService;
+    @Autowired private CompanyService companyService;
+    @Autowired private CommentService commentService;
     @GetMapping("/registro")
     public String showForm(Model model) {
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
     }
     @PostMapping("/enviar-queja")
-    public String registerComplaint(
-            @RequestParam("entidad") String companyName,
-            @RequestParam String descripcion,
-            Model model) {
-
+    public String registerComplaint(@RequestParam("entidad") String companyName,
+                                   @RequestParam String descripcion, Model model) {
         companyService.createComplaintForExistingCompany(companyName, descripcion, model);
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
-    }
-    private List<String> getCompanyNames() {
-        return companyService.listCompanies()
-                .stream()
-                .map(Company::getName)
-                .toList();
     }
     @GetMapping("/quejas")
     public String showComplaintsByCompany(@RequestParam(required = false) Long companyId, Model model) {
@@ -65,49 +50,47 @@ public class ComplaintController {
         return "buscar";
     }
     @PatchMapping("/quejas/{id}/ocultar")
-    public String hideComplaint(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes, 
-            HttpSession session) {
-
+    public String hideComplaint(@PathVariable Long id, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.hideComplaintIfExists(id, redirectAttributes, session);
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
     }
     @PostMapping("/buscar-quejas")
-    public String buscarQuejas(
-            @RequestParam("entidad") Long entidadId,
-            Model model,
-            HttpServletRequest request) {
-
+    public String buscarQuejas(@RequestParam("entidad") Long entidadId, Model model, HttpServletRequest request) {
         model.addAttribute("entidades", companyService.findAll());
         companyService.getCompanyComplaintsAndSendNotification(entidadId, model, request);
         return "buscar";
     }
-    // ENDPOINTS DE API PARA COMENTARIOS     
     @PostMapping("/api/quejas/{id}/comentarios")
-    public ResponseEntity<CommentDTO> addComment(
-            @PathVariable Long id,
-            @Valid @RequestBody CommentDTO commentDTO) { 
+    public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         try {
-           
-            var comment = commentService.addCommentToComplaint(id, commentDTO.getText());            
-            CommentDTO response = new CommentDTO();
-            response.setId(comment.getId());
-            response.setText(comment.getContent());
-            response.setTimestamp(comment.getDate());
+            var comment = commentService.addCommentToComplaint(id, commentDTO.getText());
+            CommentDTO response = new CommentDTO(comment.getId(), comment.getContent(), comment.getDate());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
-    }    
+    }
     @GetMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
         try {
-            List<CommentDTO> comments = commentService.getCommentResponsesByComplaintId(id);
-            return ResponseEntity.ok(comments);
+            return ResponseEntity.ok(commentService.getCommentResponsesByComplaintId(id));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
     }
+    private List<String> getCompanyNames() {
+        return companyService.listCompanies().stream().map(Company::getName).toList();
+    }
+    @PatchMapping("/quejas/{id}/cambiar-estado")
+    public String changeComplaintState(
+        @PathVariable Long id,
+        @RequestParam String state,
+        RedirectAttributes redirectAttributes, 
+        HttpSession session) {
+
+    complaintService.changeComplaintState(id, state, redirectAttributes, session);
+    Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
+    return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
+}
 }
