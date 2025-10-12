@@ -1,6 +1,5 @@
 package com.uptc.edu.main.dto;  
 public class ComplaintCompanyDTO {
-
     private Long id;
     private String descripcion;
     private String companyName;

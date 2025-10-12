@@ -26,12 +26,9 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "complaints")
-@Getter
-@Setter
-@NoArgsConstructor
+@Getter @Setter @NoArgsConstructor
 public class Complaint {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "complaint_id")
     private Long id;
 
@@ -59,16 +56,10 @@ public class Complaint {
         this.description = description;
         this.company = company;
     }
-    /**
-     * @param comment
-     */
     public void addComment(Comment comment) {
         comments.add(comment);
         comment.setComplaint(this);
     }
-    /**
-     * @param comment
-     */
     public void removeComment(Comment comment) {
         comments.remove(comment);
         comment.setComplaint(null);
