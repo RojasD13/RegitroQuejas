@@ -42,7 +42,7 @@
                         <select id="entidad" name="entidad" class="form-select" required>
                             <option value="">Seleccione una entidad</option>
                             <option th:each="entidad : ${entidades}" th:value="${entidad.id}" th:text="${entidad.name}"
-                                th:selected="${entidad.name == entidadSeleccionada}"></option>
+                                th:selected="${entidad.id != null and entidad.id == param.entidadId}"></option>
                         </select>
                         <small class="form-help">Elija la entidad para ver sus quejas registradas.</small>
                     </div>
@@ -57,14 +57,12 @@
                     </div>
                 </form>
             </div>
-            <div class="results-section"
-                th:if="${entidadSeleccionada != null and entidadSeleccionada != '' and entidadSeleccionada != 'Seleccione una entidad'}">
+            <div class="results-section" th:if="${param.entidadId != null and quejas != null}">
                 <div class="results-header">
                     <h2>Resultados de Búsqueda</h2>
                 </div>
                 <div class="results-container">
-                    <div th:if="${quejas != null and !quejas.empty}" class="results-table-container"
-                        id="tableContainer">
+                    <div th:if="${!quejas.empty}" class="results-table-container" id="tableContainer">
                         <table class="results-table" id="resultsTable">
                             <thead>
                                 <tr>
@@ -130,7 +128,7 @@
                     <div th:if="${quejas == null or quejas.empty}" class="empty-state">
                         <div class="empty-icon"><i class="fas fa-search"></i></div>
                         <h3>No se encontraron resultados</h3>
-                        <p>No hay quejas registradas para "<span th:text="${entidadSeleccionada}"></span>"</p>
+                        <p>No hay quejas registradas para la entidad seleccionada</p>
                     </div>
                 </div>
             </div>

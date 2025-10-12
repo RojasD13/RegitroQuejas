@@ -1,5 +1,4 @@
-package com.uptc.edu.main.controller; 
-
+package com.uptc.edu.main.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,18 +8,14 @@ import com.uptc.edu.main.service.CompanyService;
 import com.uptc.edu.main.service.SendEmail;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 @Controller
 public class CompanyController {
-
     private final CompanyService companyService;
-
-    @Autowired
     private final SendEmail sendEmail;
-
-    public CompanyController(SendEmail sendEmail, CompanyService companyService) {
-        this.sendEmail = sendEmail;
+    @Autowired
+    public CompanyController(CompanyService companyService, SendEmail sendEmail) {
         this.companyService = companyService;
+        this.sendEmail = sendEmail;
     }
     @GetMapping("/analisis")
     public String showAnalisisSummary(Model model, HttpServletRequest request) {   
