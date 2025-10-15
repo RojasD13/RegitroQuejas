@@ -1,18 +1,15 @@
 // VARIABLES GLOBALES
 let currentPage = 1, itemsPerPage = 10, totalItems = 0, allRows = [];
 let _pendingAction = { id: null, type: null, data: null };
-
 // FUNCIONES DE CAPTCHA
 function captchaSuccess() {
     document.getElementById('btn-buscar').disabled = false;
     enviarNotificacionCaptcha();
 }
-
 function captchaExpired() {
     document.getElementById('btn-buscar').disabled = true;
     grecaptcha?.reset();
 }
-
 async function enviarNotificacionCaptcha() {
     try {
         const res = await fetch('/api/notificar-captcha-completado', {
@@ -24,52 +21,49 @@ async function enviarNotificacionCaptcha() {
         console.error('Error de red al enviar notificación:', error);
     }
 }
-
 // FUNCIONES DE MODALES Y UTILIDADES
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.add('show');
 }
-
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('show');
+}
 function setupModalCloseOnOutsideClick(modalId) {
     document.addEventListener('click', e => {
         const modal = document.getElementById(modalId);
-        if (e.target === modal) closeModal(modalId);
+        if (e.target === modal && modal.classList.contains('show')) {
+            closeModal(modalId);
+        }
     });
 }
-
 // MANEJO DE ACCIONES DE QUEJAS
 function confirmDeleted(id) {
     _pendingAction = { id, type: 'delete' };
     PasswordAuth.showModal('Confirmar eliminación', '¿Eliminar esta queja? Requiere autorización.', executePendingAction);
 }
-
 function cambiarEstado(id) {
     _pendingAction = { id, type: 'changeState' };
     openStateModal();
 }
-
 function agregarComentario(id) {
     _pendingAction = { id, type: 'addComment' };
     openCommentModal();
 }
-
 function openStateModal() {
-    document.getElementById('stateModal').style.display = 'block';
+    openModal('stateModal');
 }
-
 function selectState(state) {
     _pendingAction.data = state;
     closeModal('stateModal');
     PasswordAuth.showModal('Confirmar cambio', `Autorizar cambio a: ${state}`, executePendingAction);
 }
-
 function openCommentModal() {
-    const modal = document.getElementById('commentModal');
-    modal.style.display = 'block';
+    openModal('commentModal');
     document.getElementById('commentText').value = '';
     document.getElementById('commentError').style.display = 'none';
 }
-
 function executePendingAction() {
     const { id, type, data } = _pendingAction;
     switch (type) {
@@ -78,7 +72,6 @@ function executePendingAction() {
         case 'addComment': submitComment(); break;
     }
 }
-
 function submitActionForm(actionId, actionUrl, extraData = {}) {
     const form = document.getElementById('deleteForm');
     form.action = actionUrl;
@@ -91,7 +84,6 @@ function submitActionForm(actionId, actionUrl, extraData = {}) {
     });
     form.submit();
 }
-
 // FUNCIÓN PARA AGREGAR COMENTARIOS
 function submitComment() {
     const commentText = document.getElementById('commentText').value.trim();
@@ -118,13 +110,12 @@ function submitComment() {
         });
     closeModal('commentModal');
 }
-
 // FUNCIÓN PARA VER COMENTARIOS
 function verComentarios(id) {
     const modal = document.getElementById('commentsModal');
     const commentsList = document.getElementById('commentsList');
 
-    modal.style.display = 'block';
+    openModal('commentsModal');
     commentsList.innerHTML = '<p>Cargando comentarios...</p>';
 
     fetch(`/api/quejas/${id}/comentarios`)
@@ -134,7 +125,6 @@ function verComentarios(id) {
                 commentsList.innerHTML = '<div class="empty-state"><h3>No hay comentarios para esta queja.</h3></div>';
                 return;
             }
-
             commentsList.innerHTML = `
                 <div class="results-table-container">
                     <table class="results-table">
@@ -161,7 +151,6 @@ function verComentarios(id) {
             commentsList.innerHTML = '<div class="empty-state"><h3>Ocurrió un error al cargar los comentarios.</h3></div>';
         });
 }
-
 // FUNCIONES DE PAGINACIÓN
 function initializePagination() {
     allRows = Array.from(document.querySelectorAll('.table-row'));
@@ -178,7 +167,6 @@ function initializePagination() {
         allRows.forEach(r => r.classList.remove('hidden'));
     }
 }
-
 function updatePagination() {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -194,7 +182,6 @@ function updatePagination() {
         btn.classList.toggle('active', parseInt(btn.textContent) === currentPage);
     });
 }
-
 function createPageButtons() {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const pagesContainer = document.getElementById('paginationPages');
@@ -213,7 +200,6 @@ function createPageButtons() {
         pagesContainer.appendChild(btn);
     }
 }
-
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('tableContainer')) {

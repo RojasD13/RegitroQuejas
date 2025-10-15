@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Quejas - Centro de Quejas</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/components.css}">
-    <link rel="stylesheet" th:href="@{/css/pagination.css}">
-    <link rel="stylesheet" th:href="@{/css/passwordAuth.css}">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
@@ -145,7 +143,7 @@
         </main>
     </div>
     <!-- Modal para ver comentarios -->
-    <div id="commentsModal" class="modal" style="display:none;">
+    <div id="commentsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Comentarios de la Queja</h3>
@@ -159,55 +157,69 @@
             </div>
         </div>
     </div>
+
     <!-- Modal para cambiar estado -->
-    <div id="stateModal" class="modal" style="display:none;">
+    <div id="stateModal" class="modal">
         <div class="modal-content">
-            <h3 id="stateModalTitle">Seleccionar nuevo estado</h3>
-            <p id="stateModalMessage">Elija el nuevo estado para esta queja:</p>
-            <div class="state-options" style="display:flex; gap:0.5rem; margin:1rem 0;">
-                <button type="button" class="btn btn-state-option" onclick="selectState('PROCESO')">En Proceso</button>
-                <button type="button" class="btn btn-state-option" onclick="selectState('REVISION')">En
-                    Revisión</button>
-                <button type="button" class="btn btn-state-option" onclick="selectState('CERRADO')">Cerrado</button>
+            <div class="modal-header">
+                <h3 id="stateModalTitle">Seleccionar nuevo estado</h3>
             </div>
-            <div class="modal-buttons">
-                <button type="button" class="btn btn-cancel"
-                    onclick="this.closest('.modal').style.display='none'">Cancelar</button>
-            </div>
-        </div>
-    </div>
-    <!-- Modal para agregar comentario -->
-    <div id="commentModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3 id="commentModalTitle">Agregar Comentario</h3>
-            <p id="commentModalMessage">Escriba un nuevo comentario para esta queja</p>
-            <div class="comment-group">
-                <textarea id="commentText" rows="4" placeholder="Ingrese su comentario aquí..."
-                    style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;"></textarea>
-                <div id="commentError" class="password-error" style="display: none;">El comentario no puede estar vacío
+            <div class="modal-body">
+                <p id="stateModalMessage">Elija el nuevo estado para esta queja:</p>
+                <div class="state-options">
+                    <button type="button" class="btn btn-state-option" onclick="selectState('PROCESO')">En
+                        Proceso</button>
+                    <button type="button" class="btn btn-state-option" onclick="selectState('REVISION')">En
+                        Revisión</button>
+                    <button type="button" class="btn btn-state-option" onclick="selectState('CERRADO')">Cerrado</button>
                 </div>
             </div>
-            <div class="modal-buttons">
-                <button id="btnCommentConfirmar" class="btn btn-confirm">Agregar Comentario</button>
-                <button id="btnCommentCancelar" class="btn btn-cancel"
-                    onclick="this.closest('.modal').style.display='none'">Cancelar</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeModal('stateModal')">Cancelar</button>
             </div>
         </div>
     </div>
+
+    <!-- Modal para agregar comentario -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="commentModalTitle">Agregar Comentario</h3>
+            </div>
+            <div class="modal-body">
+                <p id="commentModalMessage">Escriba un nuevo comentario para esta queja</p>
+                <div class="comment-group">
+                    <textarea id="commentText" rows="4" placeholder="Ingrese su comentario aquí..."></textarea>
+                    <div id="commentError" class="password-error">El comentario no puede estar vacío</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCommentConfirmar" class="btn btn-confirm">Agregar Comentario</button>
+                <button id="btnCommentCancelar" class="btn btn-cancel"
+                    onclick="closeModal('commentModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de contraseña -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
-            <h3 id="modalTitle">Confirmar acción</h3>
-            <p id="modalMessage">¿Está seguro de que desea realizar esta acción?</p>
-            <div class="password-group">
-                <label for="adminPassword">Contraseña de administrador:</label>
-                <input type="password" id="adminPassword" placeholder="Ingrese la contraseña ADMIN" autocomplete="off">
-                <div id="passwordError" class="password-error">Contraseña incorrecta</div>
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirmar acción</h3>
             </div>
-            <div class="modal-buttons">
+            <div class="modal-body">
+                <p id="modalMessage">¿Está seguro de que desea realizar esta acción?</p>
+                <div class="password-group">
+                    <label for="adminPassword">Contraseña de administrador:</label>
+                    <input type="password" id="adminPassword" placeholder="Ingrese la contraseña ADMIN"
+                        autocomplete="off">
+                    <div id="passwordError" class="password-error">Contraseña incorrecta</div>
+                </div>
+            </div>
+            <div class="modal-footer">
                 <button id="btnModalConfirmar" class="btn btn-confirm">Confirmar</button>
                 <button id="btnModalCancelar" class="btn btn-cancel"
-                    onclick="this.closest('.modal').style.display='none'">Cancelar</button>
+                    onclick="closeModal('passwordModal')">Cancelar</button>
             </div>
         </div>
     </div>
