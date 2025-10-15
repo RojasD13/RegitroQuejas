@@ -23,45 +23,58 @@ import com.uptc.edu.main.service.ComplaintService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+
 @Controller
 @Validated
 public class ComplaintController {
     @Autowired private ComplaintService complaintService;
     @Autowired private CompanyService companyService;
     @Autowired private CommentService commentService;
+    
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login";
+    }
+    
     @GetMapping("/registro")
     public String showForm(Model model) {
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
     }
+    
     @PostMapping("/enviar-queja")
     public String registerComplaint(@RequestParam("entidad") String companyName, @RequestParam String descripcion, Model model) {
         companyService.createComplaintForExistingCompany(companyName, descripcion, model);
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
     }
+    
     @GetMapping("/quejas") 
     public String showComplaintsByCompany(@RequestParam(required = false) Long companyId, Model model) {
         model.addAttribute("entidades", companyService.listCompanies());
         model.addAttribute("quejas", complaintService.obtainVisibleComplaints(companyId));
         return "buscar";
     }
+    
     @PatchMapping("/quejas/{id}/ocultar")
     public String hideComplaint(@PathVariable Long id, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.hideComplaintIfExists(id, redirectAttributes, session);
         return redirectToQuejas(session);
     }
+    
     @PostMapping("/buscar-quejas")
     public String buscarQuejas(@RequestParam("entidad") Long entidadId, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-    redirectAttributes.addAttribute("entidadId", entidadId);
-    return "redirect:/ver-quejas";
+        redirectAttributes.addAttribute("entidadId", entidadId);
+        return "redirect:/ver-quejas";
     }
+    
     @GetMapping("/ver-quejas")
     public String verQuejas(@RequestParam("entidadId") Long entidadId, Model model, HttpServletRequest request) {
-    model.addAttribute("entidades", companyService.findAll());
-    companyService.getCompanyComplaintsAndSendNotification(entidadId, model, request);
-    return "buscar";
+        model.addAttribute("entidades", companyService.findAll());
+        companyService.getCompanyComplaintsAndSendNotification(entidadId, model, request);
+        return "buscar";
     }
+    
     @PostMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         try {
@@ -71,6 +84,7 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
     @GetMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
         try {
@@ -79,14 +93,17 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
     @PatchMapping("/quejas/{id}/cambiar-estado")
     public String changeComplaintState(@PathVariable Long id, @RequestParam String state, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.changeComplaintState(id, state, redirectAttributes, session);
         return redirectToQuejas(session);
     }
+    
     private List<String> getCompanyNames() {
         return companyService.listCompanies().stream().map(Company::getName).toList();
     }
+    
     private String redirectToQuejas(HttpSession session) {
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");

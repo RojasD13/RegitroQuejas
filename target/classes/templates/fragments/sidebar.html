@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 
 <body>
-    <!-- Fragment del Sidebar -->
     <nav class="sidebar" th:fragment="sidebar(activeMenu)">
         <div class="sidebar-header">
             <i class="fas fa-chart-line sidebar-icon" th:if="${activeMenu == 'analisis'}"></i>
             <h2>Centro de Quejas</h2>
+            <link rel="stylesheet" th:href="@{/css/style.css}">
         </div>
         <ul class="sidebar-menu">
             <li th:class="${activeMenu == 'registro'} ? 'active' : ''">
@@ -29,6 +29,13 @@
                 </a>
             </li>
         </ul>
+        <div class="sidebar-footer">
+            <a href="/login" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Iniciar Sesión</span>
+            </a>
+        </div>
+
     </nav>
 </body>
 
