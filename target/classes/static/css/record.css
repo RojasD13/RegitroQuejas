@@ -1,9 +1,0 @@
-.queja-form {
-    max-width: 800px;
-}
-
-@media (max-width: 768px) {
-    .queja-form {
-        max-width: 100%;
-    }
-}
