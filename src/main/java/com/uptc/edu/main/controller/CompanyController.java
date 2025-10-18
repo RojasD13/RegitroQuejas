@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class CompanyController {
+    
     private final CompanyService companyService;
     private final SendEmail sendEmail;
 
