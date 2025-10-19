@@ -23,9 +23,9 @@ public class AuthInterceptor implements HandlerInterceptor {
             throws Exception {
 
         String email = (String) request.getSession().getAttribute("userEmail");
-        
+
         if (email == null || email.isBlank()) {
-            handleUnauthorizedRequest(response, "Falta el header X-User-Email");
+            handleUnauthorizedRequest(response, "Tiene que iniciar sesión para acceder a esta página");
             return false;
         }
 
@@ -38,7 +38,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private void handleUnauthorizedRequest(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write(message);
+        response.sendRedirect("/registro?error=" + java.net.URLEncoder.encode(message, java.nio.charset.StandardCharsets.UTF_8));
     }
 }

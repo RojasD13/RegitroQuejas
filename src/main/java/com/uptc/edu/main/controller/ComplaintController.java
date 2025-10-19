@@ -65,8 +65,11 @@ public class ComplaintController {
     }
 
     @GetMapping("/registro")
-    public String showForm(Model model) {
+    public String showForm(@RequestParam(required = false) String error, Model model) {
         model.addAttribute("entidades", getCompanyNames());
+        if (error != null && !error.isBlank()) {
+            model.addAttribute("error", error);
+        }
         return "registro";
     }
 
