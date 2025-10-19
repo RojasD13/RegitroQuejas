@@ -22,13 +22,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        String email = request.getHeader("X-User-Email");
+        String email = (String) request.getSession().getAttribute("userEmail");
+        
         if (email == null || email.isBlank()) {
             handleUnauthorizedRequest(response, "Falta el header X-User-Email");
             return false;
-        }        
+        }
 
-        if (!Boolean.parseBoolean(apiService.isLogin(email))) {            
+        if (!Boolean.parseBoolean(apiService.isLogin(email))) {
             handleUnauthorizedRequest(response, "Usuario no autorizado o sesión expirada");
             return false;
         }

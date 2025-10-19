@@ -22,7 +22,7 @@
         <div th:if="${message}" class="alert alert-success" role="alert">
             <span th:text="${message}"></span>
         </div>
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/auth/login}" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
@@ -39,7 +39,7 @@
             <small class="text-muted">Usuario de prueba: admin@quejas.com / admin123</small>
         </div>
     </div>
-    <script th:src="@{/js/login.js}"></script>
+    <!-- <script th:src="@{/js/login.js}"></script> -->
 </body>
 
 </html>

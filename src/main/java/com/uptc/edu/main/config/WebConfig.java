@@ -16,6 +16,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/quejas/*/ocultar", "/quejas/*/cambiar-estado");
+                .addPathPatterns("/quejas",
+                "/quejas/*/ocultar", 
+                "/quejas/*/cambiar-estado", 
+                "/api/quejas/*/comentarios");
     }
 }
