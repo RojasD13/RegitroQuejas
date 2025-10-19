@@ -14,6 +14,16 @@
     <div class="container-fluid">
         <div th:replace="fragments/sidebar :: sidebar('registro')"></div>
         <main class="main-content">
+            <!-- Alerta de error proveniente del interceptor -->
+            <div th:if="${error}" class="alert alert-error text-center" role="alert"
+                style="margin-top: 15px; font-size: 1.1rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${error}" style="margin-left: 8px;"></span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'"
+                    style="background:none; border:none; margin-left:10px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             <div th:if="${mensaje}" class="alert"
                 th:classappend="${tipoMensaje == 'success'} ? 'alert-success' : 'alert-error'">
                 <i class="fas fa-check-circle" th:if="${tipoMensaje == 'success'}"></i>

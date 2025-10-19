@@ -40,17 +40,22 @@ public class ComplaintController {
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";                    
+        return "login";
     }
 
     @PostMapping("/auth/login")
-    public String showLoginForm(String email, String password, Model model) {
+    public String showLoginForm(@RequestParam("email") String email,
+            @RequestParam("password") String password,
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
         try {
             apiService.login(email, password);
-            model.addAttribute("email", email);
-            return "/quejas";          
+            session.setAttribute("userEmail", email);
+            redirectAttributes.addFlashAttribute("message", "Inicio de sesión exitoso. ¡Bienvenido!");
+            return "redirect:/quejas";
         } catch (Exception e) {
-            return "login";
+            redirectAttributes.addFlashAttribute("error", "Correo o contraseña incorrectos");
+            return "redirect:/login";
         }
     }
 
@@ -60,8 +65,11 @@ public class ComplaintController {
     }
 
     @GetMapping("/registro")
-    public String showForm(Model model) {
+    public String showForm(@RequestParam(required = false) String error, Model model) {
         model.addAttribute("entidades", getCompanyNames());
+        if (error != null && !error.isBlank()) {
+            model.addAttribute("error", error);
+        }
         return "registro";
     }
 
@@ -135,6 +143,5 @@ public class ComplaintController {
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
     }
-
 
 }

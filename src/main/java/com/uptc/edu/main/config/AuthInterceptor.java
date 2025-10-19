@@ -22,13 +22,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        String email = request.getHeader("X-User-Email");
-        if (email == null || email.isBlank()) {
-            handleUnauthorizedRequest(response, "Falta el header X-User-Email");
-            return false;
-        }        
+        String email = (String) request.getSession().getAttribute("userEmail");
 
-        if (!Boolean.parseBoolean(apiService.isLogin(email))) {            
+        if (email == null || email.isBlank()) {
+            handleUnauthorizedRequest(response, "Tiene que iniciar sesión para acceder a esta página");
+            return false;
+        }
+
+        if (!Boolean.parseBoolean(apiService.isLogin(email))) {
             handleUnauthorizedRequest(response, "Usuario no autorizado o sesión expirada");
             return false;
         }
@@ -37,7 +38,6 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private void handleUnauthorizedRequest(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write(message);
+        response.sendRedirect("/registro?error=" + java.net.URLEncoder.encode(message, java.nio.charset.StandardCharsets.UTF_8));
     }
 }

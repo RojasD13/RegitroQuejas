@@ -14,7 +14,7 @@ public class ApiService {
 
     private final WebClient webClient;
 
-    @Value("auth.path")
+    @Value("${AUTH_PATH}")
     private String apiBaseUrl;
 
     public ApiService(WebClient webClient) {
