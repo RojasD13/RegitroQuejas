@@ -6,14 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
-- Lista de nuevas features
+### Agregado
+- Flujo de integración continua (`flow.yml`) para separar build, test y dokerización.
+- Archivo dummy `env.example`
 
-### Changed
-- Cambios importantes
+### Cambiado
+- Uso de variables de entorno desde el servidor.
+- Flujo de integración continua (`flow.yml`) separando build, test y dokerización.
 
-### Fixed
-- Correcciones de bugs
+### Corregido
+- Ajuste y limpieza para correcto funcionamiento de `.gitignore`, evitando carpeta `/target` y archivo `.env.properties`
 
 ## [2.1.0] - 2025-10-20
 ### Added
@@ -27,8 +29,3 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Cierre de sesión:
   - Desactivación de sesión del usuario al cerrar sesión.
 - Integración del servicio de autenticación con la aplicación principal (API Gateway) para consumo de endpoints de Auth.
-
-## [2.0.0] - 2025-10-20
-### Added
-- 
-
