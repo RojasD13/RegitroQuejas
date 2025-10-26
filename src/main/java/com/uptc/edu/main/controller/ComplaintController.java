@@ -1,6 +1,8 @@
 package com.uptc.edu.main.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.dto.CommentDTO;
@@ -44,7 +47,7 @@ public class ComplaintController {
     }
 
     @PostMapping("/auth/login")
-    public String showLoginForm(@RequestParam("email") String email,
+    public String login(@RequestParam("email") String email,
             @RequestParam("password") String password,
             RedirectAttributes redirectAttributes,
             HttpSession session) {
@@ -59,9 +62,42 @@ public class ComplaintController {
         }
     }
 
-    @PostMapping("/auth/logout")
-    public String showLogoutForm(String email) {
-        return "registro";
+    @GetMapping("/auth/logout")
+    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
+        String email = (String) session.getAttribute("userEmail");
+        if (email != null) {
+            try {
+                apiService.logout(email);
+            } catch (Exception e) {
+                // Ignorar errores en el logout de la API
+            }
+            session.removeAttribute("userEmail");
+        }
+        redirectAttributes.addFlashAttribute("message", "Sesión cerrada correctamente");
+        return "redirect:/login";
+    }
+
+    @GetMapping("/api/user/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getUserStatus(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        String email = (String) session.getAttribute("userEmail");
+        
+        if (email != null && !email.isBlank()) {
+            try {
+                String isLoggedIn = apiService.isLogin(email);
+                if ("true".equals(isLoggedIn)) {
+                    response.put("loggedIn", true);
+                    response.put("username", email);
+                    return ResponseEntity.ok(response);
+                }
+            } catch (Exception e) {
+                // Error al verificar el estado, consideramos que no está logueado
+            }
+        }
+        
+        response.put("loggedIn", false);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/registro")
@@ -143,5 +179,4 @@ public class ComplaintController {
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
     }
-
 }

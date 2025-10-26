@@ -7,7 +7,76 @@
         autoCloseAlerts();
         initializeCharacterCounters();
         initializeResponsiveElements();
+        initializeLoginState();
     });
+    function initializeLoginState() {
+        checkLoginStatus();
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'userLoggedIn') {
+                checkLoginStatus();
+            }
+        });
+    }
+    function checkLoginStatus() {
+        fetch('/api/user/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    updateLoginButton(true, data.username);
+                } else {
+                    updateLoginButton(false);
+                }
+            })
+            .catch(error => {
+                console.error('Error al verificar el estado de inicio de sesión:', error);
+                updateLoginButton(false);
+            });
+    }
+    function updateLoginButton(isLoggedIn, username = '') {
+        const loginButton = document.getElementById('loginButton');
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+
+        if (isLoggedIn) {
+            loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span>';
+            loginButton.onclick = function (e) {
+                e.preventDefault();
+                logout();
+            };
+            userName.textContent = username;
+            userInfo.style.display = 'block';
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('username', username);
+        } else {
+            loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Iniciar Sesión</span>';
+            loginButton.href = '/login';
+            loginButton.onclick = null;
+            userInfo.style.display = 'none';
+            localStorage.removeItem('userLoggedIn');
+            localStorage.removeItem('username');
+        }
+    }
+    function logout() {
+        fetch('/auth/logout', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    updateLoginButton(false);
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error al cerrar sesión');
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud de logout:', error);
+                updateLoginButton(false);
+                window.location.href = '/login';
+            });
+    }
     function initializeSidebarInteractions() {
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         sidebarLinks.forEach(link => {
