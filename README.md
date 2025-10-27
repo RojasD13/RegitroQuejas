@@ -17,16 +17,6 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
 - **Gestor de dependencias:** Maven
 - **Servidor:** Tomcat embebido
 
-## Version 1.2
-## Cambios agregados
-- Agregar estado de la queja
-- Eliminar queja ingresando una clave
-- Agregar paginación a las tablas y listas
-- Parametrizar credenciales del correo
-- Refactorizción puerto del servidor
-- Parametrizción properties
-- Cambiar idioma del back a inglés
-
 ### Frontend
 
 - **Thymeleaf:** Motor de plantillas para la generación dinámica de HTML ([src/main/resources/templates/](src/main/resources/templates/)).
@@ -86,8 +76,10 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ├── pom.xml
    ├── README.md
    ├── .github/
+   │   ├── release-drafter.yml
    │   └── workflows/
-   │       └── flow.yml
+   │      ├── release-drafter.yml
+   │      └── update-changelog.yml
    ├── .mvn/
    │   └── wrapper/
    │       └── maven-wrapper.properties
