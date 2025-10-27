@@ -78,8 +78,9 @@ RegistroQuejas es una aplicación para registrar y dar seguimiento a quejas de u
    ├── .github/
    │   ├── release-drafter.yml
    │   └── workflows/
-   │      ├── release-drafter.yml
-   │      └── update-changelog.yml
+   │       ├── flow.yml
+   │       ├── release-drafter.yml
+   │       └── update-changelog.yml
    ├── .mvn/
    │   └── wrapper/
    │       └── maven-wrapper.properties
