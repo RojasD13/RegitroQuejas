@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,32 +31,42 @@ import jakarta.validation.Valid;
 @Controller
 @Validated
 public class ComplaintController {
-    @Autowired
-    private ComplaintService complaintService;
-    @Autowired
-    private CompanyService companyService;
-    @Autowired
-    private CommentService commentService;
-    @Autowired
-    private ApiService apiService;
+    private final ComplaintService complaintService;
+    private final CompanyService companyService;
+    private final CommentService commentService;
+    private final ApiService apiService;
 
-    @GetMapping("/login")
+    public ComplaintController(ComplaintService complaintService, CompanyService companyService, 
+                              CommentService commentService, ApiService apiService) {
+        this.complaintService = complaintService;
+        this.companyService = companyService;
+        this.commentService = commentService;
+        this.apiService = apiService;
+    }
+
+    @GetMapping({"/login", "/error"})
     public String showLoginForm() {
         return "login";
     }
-
     @PostMapping("/auth/login")
-    public String login(@RequestParam("email") String email,
-            @RequestParam("password") String password,
-            RedirectAttributes redirectAttributes,
-            HttpSession session) {
+    public String login(@RequestParam String email, @RequestParam String password, 
+                       RedirectAttributes redirectAttributes, HttpSession session) {
         try {
-            apiService.login(email, password);
-            session.setAttribute("userEmail", email);
-            redirectAttributes.addFlashAttribute("message", "Inicio de sesión exitoso. ¡Bienvenido!");
-            return "redirect:/quejas";
+            String response = apiService.login(email, password);
+            if (response != null && !response.contains("error")) {
+                session.setAttribute("userEmail", email);
+                redirectAttributes.addFlashAttribute("message", ApiService.LOGIN_SUCCESS);
+                return "redirect:/quejas";
+            }
+            redirectAttributes.addFlashAttribute("error", ApiService.INVALID_CREDENTIALS);
+            return "redirect:/login";
+
+        } catch (ApiService.AuthServiceException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage()); 
+            return "redirect:/login";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Correo o contraseña incorrectos");
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error inesperado. Intente de nuevo.");
             return "redirect:/login";
         }
     }
@@ -66,14 +75,11 @@ public class ComplaintController {
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
         String email = (String) session.getAttribute("userEmail");
         if (email != null) {
-            try {
-                apiService.logout(email);
-            } catch (Exception e) {
-                // Ignorar errores en el logout de la API
+            try { apiService.logout(email); } catch (Exception e) {
             }
             session.removeAttribute("userEmail");
         }
-        redirectAttributes.addFlashAttribute("message", "Sesión cerrada correctamente");
+        redirectAttributes.addFlashAttribute("message", ApiService.LOGOUT_SUCCESS);
         return "redirect:/login";
     }
 
@@ -85,65 +91,54 @@ public class ComplaintController {
         
         if (email != null && !email.isBlank()) {
             try {
-                String isLoggedIn = apiService.isLogin(email);
-                if ("true".equals(isLoggedIn)) {
+                if ("true".equals(apiService.isLogin(email))) {
                     response.put("loggedIn", true);
                     response.put("username", email);
                     return ResponseEntity.ok(response);
                 }
             } catch (Exception e) {
-                // Error al verificar el estado, consideramos que no está logueado
             }
         }
         
         response.put("loggedIn", false);
         return ResponseEntity.ok(response);
     }
-
     @GetMapping("/registro")
-    public String showForm(@RequestParam(required = false) String error, Model model) {
+    public String showRegistroForm(@RequestParam(required = false) String error, Model model) {
         model.addAttribute("entidades", getCompanyNames());
         if (error != null && !error.isBlank()) {
             model.addAttribute("error", error);
         }
         return "registro";
     }
-
     @PostMapping("/enviar-queja")
-    public String registerComplaint(@RequestParam("entidad") String companyName, @RequestParam String descripcion,
-            Model model) {
-        companyService.createComplaintForExistingCompany(companyName, descripcion, model);
+    public String registerComplaint(@RequestParam String entidad, @RequestParam String descripcion, Model model) {
+        companyService.createComplaintForExistingCompany(entidad, descripcion, model);
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
     }
-
     @GetMapping("/quejas")
     public String showComplaintsByCompany(@RequestParam(required = false) Long companyId, Model model) {
         model.addAttribute("entidades", companyService.listCompanies());
         model.addAttribute("quejas", complaintService.obtainVisibleComplaints(companyId));
         return "buscar";
     }
-
     @PatchMapping("/quejas/{id}/ocultar")
     public String hideComplaint(@PathVariable Long id, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.hideComplaintIfExists(id, redirectAttributes, session);
         return redirectToComplaints(session);
     }
-
     @PostMapping("/buscar-quejas")
-    public String searchComplaints(@RequestParam("entidad") Long entidadId, Model model, HttpServletRequest request,
-            RedirectAttributes redirectAttributes) {
+    public String searchComplaints(@RequestParam("entidad") Long entidadId, RedirectAttributes redirectAttributes) {
         redirectAttributes.addAttribute("entidadId", entidadId);
         return "redirect:/ver-quejas";
     }
-
     @GetMapping("/ver-quejas")
-    public String getComplaints(@RequestParam("entidadId") Long entidadId, Model model, HttpServletRequest request) {
+    public String getComplaints(@RequestParam Long entidadId, Model model, HttpServletRequest request) {
         model.addAttribute("entidades", companyService.findAll());
         companyService.getCompanyComplaintsAndSendNotification(entidadId, model, request);
         return "buscar";
     }
-
     @PostMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         try {
@@ -153,7 +148,6 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @GetMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
         try {
@@ -162,19 +156,20 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @PatchMapping("/quejas/{id}/cambiar-estado")
     public String changeComplaintState(@PathVariable Long id, @RequestParam String state,
-            RedirectAttributes redirectAttributes, HttpSession session) {
+                                     RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.changeComplaintState(id, state, redirectAttributes, session);
-
         return redirectToComplaints(session);
     }
-
+    @PostMapping("/api/notificar-captcha-completado")
+    @ResponseBody
+    public ResponseEntity<String> notificarCaptchaCompletado() {
+        return ResponseEntity.ok("Notificación recibida correctamente");
+    }
     private List<String> getCompanyNames() {
         return companyService.listCompanies().stream().map(Company::getName).toList();
     }
-
     private String redirectToComplaints(HttpSession session) {
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");

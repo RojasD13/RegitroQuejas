@@ -3,10 +3,10 @@ package com.uptc.edu.main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-// import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-// @PropertySource("classpath:.env.properties")
+@PropertySource("classpath:.env.properties")
 public class Main {
 
 	public static void main(String[] args) {
