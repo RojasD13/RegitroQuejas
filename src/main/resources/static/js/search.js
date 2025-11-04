@@ -1,26 +1,6 @@
 // VARIABLES GLOBALES
 let currentPage = 1, itemsPerPage = 10, totalItems = 0, allRows = [];
 let _pendingAction = { id: null, type: null, data: null };
-// FUNCIONES DE CAPTCHA
-function captchaSuccess() {
-    document.getElementById('btn-buscar').disabled = false;
-    enviarNotificacionCaptcha();
-}
-function captchaExpired() {
-    document.getElementById('btn-buscar').disabled = true;
-    grecaptcha?.reset();
-}
-async function enviarNotificacionCaptcha() {
-    try {
-        const res = await fetch('/api/notificar-captcha-completado', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (!res.ok) console.warn('Error al enviar notificación:', res.statusText);
-    } catch (error) {
-        console.error('Error de red al enviar notificación:', error);
-    }
-}
 // FUNCIONES DE MODALES Y UTILIDADES
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -218,5 +198,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnCommentCancelar').onclick = () => closeModal('commentModal');
 
     ['stateModal', 'commentModal', 'commentsModal'].forEach(setupModalCloseOnOutsideClick);
-    grecaptcha?.reset();
 });
