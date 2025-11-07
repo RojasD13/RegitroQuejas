@@ -1,5 +1,6 @@
 package com.uptc.edu.main.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,8 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.uptc.edu.main.dto.CompanySummaryDTO;
+import com.uptc.edu.main.dto.EmailNotificationEvent;
+
+import com.uptc.edu.main.kafka.EmailProducer;
+
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
+
 import com.uptc.edu.main.repository.CompanyRepo;
 
 @Service
@@ -26,11 +32,13 @@ public class CompanyService {
     private CompanyRepo companyRepo;
 
     @Autowired
-    private final SendEmail sendEmail;
+    private EmailNotificationEvent event;
 
-    CompanyService(ComplaintRepo complaintRepo, SendEmail sendEmail) {
+    @Autowired
+    private EmailProducer emailProducer;
+
+    CompanyService(ComplaintRepo complaintRepo) {
         this.complaintRepo = complaintRepo;
-        this.sendEmail = sendEmail;
     }
 
     public List<Company> listCompanies() {
@@ -79,11 +87,36 @@ public class CompanyService {
             List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
             model.addAttribute("entidadSeleccionada", company.getName());
-            sendEmail.sendEmail(request);
+            emailProducer.sendEmailEvent(initEvent(request));
         }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
         });
+    }
+
+    private EmailNotificationEvent initEvent(HttpServletRequest request) {
+        event.setUserEmail(getUserEmail(request));
+        event.setClientIp(getClientIp(request));
+        event.setHttpMethod(request.getMethod());
+        event.setRequestUri(request.getRequestURI());
+        event.setTimestamp(LocalDateTime.now());
+        return event;
+    }
+
+    private String getUserEmail(HttpServletRequest request) {
+        if (request.getSession().getAttribute("userEmail")==null) {
+            return "Usuario público";        
+        }
+        return (String) request.getSession().getAttribute("userEmail");
+    }
+
+     private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isBlank()) {
+            return ip.split(",")[0].trim();
+        }
+        ip = request.getHeader("X-Real-IP");
+        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
     }
 
     public List<CompanySummaryDTO> getCompanySummaries() {
@@ -94,7 +127,7 @@ public class CompanyService {
                     dto.setId(company.getId());
                     dto.setCompanyName(company.getName());
                     dto.setTotalComplaints(
-                        (long) complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId()).size());
+                            (long) complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId()).size());
                     return dto;
                 }).collect(Collectors.toList());
     }
