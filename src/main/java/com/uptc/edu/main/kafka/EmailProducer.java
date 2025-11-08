@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.uptc.edu.main.dto.EmailNotificationEvent;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EmailProducer {
 
     private final KafkaTemplate<String, EmailNotificationEvent> kafkaTemplate;
@@ -16,6 +19,6 @@ public class EmailProducer {
 
     public void sendEmailEvent(EmailNotificationEvent event) {
         kafkaTemplate.send("email-notifications", event);
-        System.out.println("Evento enviado a Kafka: " + event.getRequestUri());
+        log.info("Evento de notificación de correo electrónico enviado a Kafka: {}", event.getRequestUri());        
     }
 }

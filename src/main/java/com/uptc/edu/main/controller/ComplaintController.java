@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import com.uptc.edu.main.service.ApiService;
 import com.uptc.edu.main.service.CommentService;
 import com.uptc.edu.main.service.CompanyService;
 import com.uptc.edu.main.service.ComplaintService;
+import com.uptc.edu.main.service.EmailProducerService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +37,9 @@ public class ComplaintController {
     private final CompanyService companyService;
     private final CommentService commentService;
     private final ApiService apiService;
+
+    @Autowired
+    private EmailProducerService producerService;
 
     public ComplaintController(ComplaintService complaintService, CompanyService companyService, 
                               CommentService commentService, ApiService apiService) {
@@ -136,7 +141,8 @@ public class ComplaintController {
     @GetMapping("/ver-quejas")
     public String getComplaints(@RequestParam Long entidadId, Model model, HttpServletRequest request) {
         model.addAttribute("entidades", companyService.findAll());
-        companyService.getCompanyComplaintsAndSendNotification(entidadId, model, request);
+        companyService.getCompanyComplaints(entidadId, model);
+        producerService.sendNotification(request);
         return "buscar";
     }
     @PostMapping("/api/quejas/{id}/comentarios")
