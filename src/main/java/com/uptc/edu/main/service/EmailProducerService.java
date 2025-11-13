@@ -3,6 +3,7 @@ package com.uptc.edu.main.service;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.uptc.edu.main.dto.EmailNotificationEvent;
@@ -16,6 +17,7 @@ public class EmailProducerService {
     @Autowired
     private EmailProducer emailProducer;
 
+    @Async
     public void sendNotification(HttpServletRequest request) {
         emailProducer.sendEmailEvent(this.initEvent(request));
     }
