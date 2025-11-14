@@ -1,15 +1,18 @@
 package com.uptc.edu.main.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class EmailNotificationEvent {
+@NoArgsConstructor
+public class EmailNotificationEvent implements Serializable {
     
     private String userEmail;
     private String clientIp;
