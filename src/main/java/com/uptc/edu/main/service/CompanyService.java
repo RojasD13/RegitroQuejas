@@ -6,15 +6,15 @@ import java.util.stream.Collectors;
 
 import com.uptc.edu.main.repository.ComplaintRepo;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.uptc.edu.main.dto.CompanySummaryDTO;
+
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.model.Complaint;
+
 import com.uptc.edu.main.repository.CompanyRepo;
 
 @Service
@@ -25,12 +25,8 @@ public class CompanyService {
     @Autowired
     private CompanyRepo companyRepo;
 
-    @Autowired
-    private final SendEmail sendEmail;
-
-    CompanyService(ComplaintRepo complaintRepo, SendEmail sendEmail) {
+    CompanyService(ComplaintRepo complaintRepo) {
         this.complaintRepo = complaintRepo;
-        this.sendEmail = sendEmail;
     }
 
     public List<Company> listCompanies() {
@@ -74,17 +70,16 @@ public class CompanyService {
         model.addAttribute("tipoMensaje", type);
     }
 
-    public void getCompanyComplaintsAndSendNotification(Long entidadId, Model model, HttpServletRequest request) {
+    public void getCompanyComplaints(Long entidadId, Model model) {
         companyRepo.findById(entidadId).ifPresentOrElse(company -> {
             List<Complaint> complaint = complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId());
             model.addAttribute("quejas", complaint);
-            model.addAttribute("entidadSeleccionada", company.getName());
-            sendEmail.sendEmail(request);
+            model.addAttribute("entidadSeleccionada", company.getName());            
         }, () -> {
             model.addAttribute("quejas", List.of());
             model.addAttribute("entidadSeleccionada", "Entidad no encontrada");
         });
-    }
+    }    
 
     public List<CompanySummaryDTO> getCompanySummaries() {
         return companyRepo.findAllByOrderByNameAsc()
@@ -94,7 +89,7 @@ public class CompanyService {
                     dto.setId(company.getId());
                     dto.setCompanyName(company.getName());
                     dto.setTotalComplaints(
-                        (long) complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId()).size());
+                            (long) complaintRepo.findByCompanyIdAndIsVisibleTrue(company.getId()).size());
                     return dto;
                 }).collect(Collectors.toList());
     }

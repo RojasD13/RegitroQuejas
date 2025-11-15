@@ -1,20 +1,26 @@
 package com.uptc.edu.main;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.mock.web.MockHttpServletRequest;
+// import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.stereotype.Component;
 
-import com.uptc.edu.main.service.ResendEmailService;
+// import com.uptc.edu.main.service.ResendEmailService;
 
 @Component
 @Profile("dev")
 public class EmailTest implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailTest.class);
+    @Override
+    public void run(String... args) throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'run'");
+    }
+
+    /* private static final Logger logger = LoggerFactory.getLogger(EmailTest.class);
 
     private final ResendEmailService emailService;
 
@@ -34,5 +40,5 @@ public class EmailTest implements CommandLineRunner {
         emailService.sendEmail(request);
 
         logger.info("Email de prueba disparado (profile=dev). Revisa logs y la bandeja del admin configurado en app.admin.email.");
-    }
+    } */
 }
