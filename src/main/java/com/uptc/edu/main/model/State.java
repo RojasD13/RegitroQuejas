@@ -1,9 +1,9 @@
 package com.uptc.edu.main.model;
 
 public enum State {
-    PROCESO("En Proceso"),
+    PROCESO("Abierta"),
     REVISION("En Revisión"),
-    CERRADO("Cerrado");
+    CERRADO("Cerrada");
 
     private final String displayName;
     State(String displayName) {

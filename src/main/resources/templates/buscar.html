@@ -88,6 +88,9 @@
                                             <button type="button" class="btn btn-comment"
                                                 th:onclick="'agregarComentario(' + ${queja.id} + ')'"
                                                 title="Agregar comentario"><i class="fas fa-comment"></i></button>
+                                            <button type="button" class="btn btn-history"
+                                                th:onclick="'verHistorialEstados(' + ${queja.id} + ')'"
+                                                title="Ver historial de estados"><i class="fas fa-history"></i></button>
                                             <div class="actions-separator"></div>
                                             <button type="button" class="btn btn-delete"
                                                 th:onclick="'confirmDeleted(' + ${queja.id} + ')'"
@@ -139,15 +142,27 @@
                 <h3>Comentarios de la Queja</h3>
             </div>
             <div class="modal-body">
-                <div id="commentsList" class="comments-list">
-                </div>
+                <div id="commentsList" class="comments-list"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-cancel" onclick="closeModal('commentsModal')">Cerrar</button>
             </div>
         </div>
     </div>
-
+    <!-- Modal para ver historial de estados -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Historial de Estados</h3>
+            </div>
+            <div class="modal-body">
+                <div id="historyList" class="history-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeModal('historyModal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
     <!-- Modal para cambiar estado -->
     <div id="stateModal" class="modal">
         <div class="modal-content">
@@ -157,11 +172,12 @@
             <div class="modal-body">
                 <p id="stateModalMessage">Elija el nuevo estado para esta queja:</p>
                 <div class="state-options">
-                    <button type="button" class="btn btn-state-option" onclick="selectState('PROCESO')">En
-                        Proceso</button>
-                    <button type="button" class="btn btn-state-option" onclick="selectState('REVISION')">En
-                        Revisión</button>
-                    <button type="button" class="btn btn-state-option" onclick="selectState('CERRADO')">Cerrado</button>
+                    <button type="button" class="btn btn-state-option" onclick="selectState('PROCESO')">Abierta
+                    </button>
+                    <button type="button" class="btn btn-state-option" onclick="selectState('REVISION')">En Revisión
+                    </button>
+                    <button type="button" class="btn btn-state-option" onclick="selectState('CERRADO')">Cerrada
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -169,7 +185,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal para agregar comentario -->
     <div id="commentModal" class="modal">
         <div class="modal-content">
@@ -190,7 +205,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal de contraseña -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">

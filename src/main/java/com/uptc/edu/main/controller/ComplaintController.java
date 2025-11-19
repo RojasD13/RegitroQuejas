@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.uptc.edu.main.dto.CommentDTO;
+import com.uptc.edu.main.dto.StateHistoryDTO; // CAMBIO: Importar el nuevo DTO para el historial
 import com.uptc.edu.main.model.Company;
 import com.uptc.edu.main.service.ApiService;
 import com.uptc.edu.main.service.CommentService;
@@ -53,6 +54,7 @@ public class ComplaintController {
     public String showLoginForm() {
         return "login";
     }
+
     @PostMapping("/auth/login")
     public String login(@RequestParam String email, @RequestParam String password, 
                        RedirectAttributes redirectAttributes, HttpSession session) {
@@ -81,6 +83,7 @@ public class ComplaintController {
         String email = (String) session.getAttribute("userEmail");
         if (email != null) {
             try { apiService.logout(email); } catch (Exception e) {
+                // Ignorar errores de logout en el servicio externo
             }
             session.removeAttribute("userEmail");
         }
@@ -102,12 +105,14 @@ public class ComplaintController {
                     return ResponseEntity.ok(response);
                 }
             } catch (Exception e) {
+                // Si el servicio de autenticación falla, se considera que no está logueado
             }
         }
         
         response.put("loggedIn", false);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/registro")
     public String showRegistroForm(@RequestParam(required = false) String error, Model model) {
         model.addAttribute("entidades", getCompanyNames());
@@ -116,28 +121,33 @@ public class ComplaintController {
         }
         return "registro";
     }
+
     @PostMapping("/enviar-queja")
     public String registerComplaint(@RequestParam String entidad, @RequestParam String descripcion, Model model) {
         companyService.createComplaintForExistingCompany(entidad, descripcion, model);
         model.addAttribute("entidades", getCompanyNames());
         return "registro";
     }
+
     @GetMapping("/quejas")
     public String showComplaintsByCompany(@RequestParam(required = false) Long companyId, Model model) {
         model.addAttribute("entidades", companyService.listCompanies());
         model.addAttribute("quejas", complaintService.obtainVisibleComplaints(companyId));
         return "buscar";
     }
+
     @PatchMapping("/quejas/{id}/ocultar")
     public String hideComplaint(@PathVariable Long id, RedirectAttributes redirectAttributes, HttpSession session) {
         complaintService.hideComplaintIfExists(id, redirectAttributes, session);
         return redirectToComplaints(session);
     }
+
     @PostMapping("/buscar-quejas")
     public String searchComplaints(@RequestParam("entidad") Long entidadId, RedirectAttributes redirectAttributes) {
         redirectAttributes.addAttribute("entidadId", entidadId);
         return "redirect:/ver-quejas";
     }
+
     @GetMapping("/ver-quejas")
     public String getComplaints(@RequestParam Long entidadId, Model model, HttpServletRequest request) {
         model.addAttribute("entidades", companyService.findAll());
@@ -145,6 +155,7 @@ public class ComplaintController {
         producerService.sendNotification(request);
         return "buscar";
     }
+
     @PostMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO) {
         try {
@@ -154,6 +165,7 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
+
     @GetMapping("/api/quejas/{id}/comentarios")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
         try {
@@ -162,20 +174,39 @@ public class ComplaintController {
             return ResponseEntity.badRequest().build();
         }
     }
+
     @PatchMapping("/quejas/{id}/cambiar-estado")
-    public String changeComplaintState(@PathVariable Long id, @RequestParam String state,
-                                     RedirectAttributes redirectAttributes, HttpSession session) {
-        complaintService.changeComplaintState(id, state, redirectAttributes, session);
-        return redirectToComplaints(session);
+    public ResponseEntity<Void> changeComplaintState(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        try {
+            String state = payload.get("state");
+            complaintService.changeComplaintState(id, state);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
+    
+    @GetMapping("/api/quejas/{id}/historial-estados")
+    public ResponseEntity<List<StateHistoryDTO>> getStateHistory(@PathVariable Long id) {
+        try {
+            List<StateHistoryDTO> history = complaintService.getStateHistoryForComplaint(id);
+            return ResponseEntity.ok(history);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping("/api/notificar-captcha-completado")
     @ResponseBody
     public ResponseEntity<String> notificarCaptchaCompletado() {
         return ResponseEntity.ok("Notificación recibida correctamente");
     }
+
+    // Métodos auxiliares
     private List<String> getCompanyNames() {
         return companyService.listCompanies().stream().map(Company::getName).toList();
     }
+
     private String redirectToComplaints(HttpSession session) {
         Long companyId = (Long) session.getAttribute("ultimaEmpresaBuscada");
         return "redirect:/quejas" + (companyId != null ? "?companyId=" + companyId : "");
