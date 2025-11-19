@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.uptc.edu.main.repository.ComplaintRepo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -21,12 +20,12 @@ import com.uptc.edu.main.repository.CompanyRepo;
 public class CompanyService {
 
     private final ComplaintRepo complaintRepo;
+    
+    private final CompanyRepo companyRepo;
 
-    @Autowired
-    private CompanyRepo companyRepo;
-
-    CompanyService(ComplaintRepo complaintRepo) {
+    CompanyService(ComplaintRepo complaintRepo, CompanyRepo companyRepo) {
         this.complaintRepo = complaintRepo;
+        this.companyRepo = companyRepo;
     }
 
     public List<Company> listCompanies() {
